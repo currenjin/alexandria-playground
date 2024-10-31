@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CoordinateContainer {
+public class LineCoordinate {
+	public static final int LINE_COORDINATE_SIZE = 2;
 	private final List<Coordinate> coordinates = new ArrayList<>();
 	private final int maxSize;
 
-	public CoordinateContainer(int maxSize) {
-		this.maxSize = maxSize;
+	public LineCoordinate() {
+		this.maxSize = LINE_COORDINATE_SIZE;
 	}
 
 	public void addCoordinate(Coordinate coordinate) {
