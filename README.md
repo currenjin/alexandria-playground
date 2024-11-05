@@ -13,7 +13,7 @@
 ### 연결과 확장
 수많은 분야의 지식이 한 곳에 모이자, 그 속에서 새로운 발견과 통찰이 피어났듯이. 이 공간에서의 다양한 실험과 도전이 서로 연결되어 더 큰 아이디어로 발전하기를 기대한다.
 
-## 🪢 희망
+## 🧎🏾‍♂️ 희망
 
 *`"The mind is not a vessel to be filled, but a fire to be kindled." - Plutarch`*
 
