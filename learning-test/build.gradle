@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.currenjin'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // NOTE: mocked static 을 위해 추가합니다
+    testImplementation 'org.mockito:mockito-inline:3.6.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform ()
+}
+
+//NOTE: 테스트 수행 시, dirty 태그가 붙은 테스트는 제외
+//tasks.named('test') {
+//    useJUnitPlatform {
+//        excludeTags 'dirty'
+//    }
+//}
+
+//NOTE: gradle cleanTest 명령을 통해 clean 태그가 붙은 테스트만 수행
+//task cleanTest(type: Test) {
+//    useJUnitPlatform {
+//        includeTags 'clean'
+//    }
+//}
