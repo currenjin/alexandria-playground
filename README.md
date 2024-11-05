@@ -1,71 +1,20 @@
-# TDD
+# Alexandria Playground
 
-테스트 주도 개발(Test-driven development, TDD)은 매우 짧은 개발 사이클을 반복하는 소프트웨어 개발 프로세스 중 하나입니다. 개발자는 먼저 (1) 요구사항을 검증하는 자동화된 테스트 케이스를 작성하고, 그런 후에 (2) 그 테스트 케이스를 통과하기 위한 최소한의 코드를 생성합니다. 마지막으로 (3) 작성한 코드를 표준에 맞도록 리팩토링합니다. 이 기법을 개발했거나 '재발견' 한 것으로 인정되는 Kent Beck은 2003년에 TDD가 단순한 설계를 장려하고 자신감을 불어넣어준다고 말합니다.
+이 레포지토리의 이름은 고대 이집트 최대의 도서관이었던 '알렉산드리아 도서관'에서 영감을 받았다.
 
-## CYCLE
-1. 작은 테스트를 하나 추가한다.
-2. 모든 테스트를 실행해서 테스트가 실패하는 것을 확인한다.
-3. 조금 수정한다.
-4. 모든 테스트를 실행해서 테스트가 성공하는 것을 확인한다.
-5. 중복을 제거하기 위해 리팩토링을 한다.
+## 🏛️ 이름의 의미
 
-## PROJECT
-### Test driven development by Example
-켄트벡의 TDD by example 중 Money 예제를 TDD 로 구현한 프로젝트입니다.
+### 학습과 기록
+알렉산드리아 도서관은 당시 세계의 모든 지식을 한곳에 모으려 했다. 그것과 같이 이곳은 내가 마주치는 모든 기술과 아이디어를 모아두는 곳이다. 호기심이 닿는 모든 것을 담아내길 바란다.
 
-### Java baseball playground
-숫자야구게임을 TDD 로 구현한 프로젝트입니다.
+### 실험과 발견
+도서관은 단순히 책을 모아두는 곳이 아닌, 학자들이 모여 토론하고 연구하던 공간이었다. 이 레포지토리 역시 단순한 코드 저장소가 아닌, 새로운 시도와 실험이 가능한 놀이터가 되길 바란다.
 
-### Java racingcar playground
-자동차 경주 게임을 TDD 로 구현한 프로젝트입니다.
+### 연결과 확장
+수많은 분야의 지식이 한 곳에 모이자, 그 속에서 새로운 발견과 통찰이 피어났듯이. 이 공간에서의 다양한 실험과 도전이 서로 연결되어 더 큰 아이디어로 발전하기를 기대한다.
 
-### Java coordinate playground
-좌표 계산기를 TDD 로 구현한 프로젝트입니다.
+---
 
-### AutoParams
-autoparams 사용 예제를 TDD 로 구현한 프로젝트입니다.
+*`"The mind is not a vessel to be filled, but a fire to be kindled." - Plutarch`*
 
-### FixtureMonkey
-fixture monkey 사용 예제를 TDD 로 구현한 프로젝트입니다.
-
-### Specification
-Specification pattern 을 TDD 로 구현한 프로젝트입니다.
-
-### Visitor
-Visitor pattern 을 TDD 로 구현한 프로젝트입니다.
-
-### Builder
-Builder pattern 을 TDD 로 구현한 프로젝트입니다.
-
-### Observer
-Observer pattern 을 TDD 로 구현한 프로젝트입니다.
-
-### Fibonacci
-피보나치 수열을 TDD 로 구현한 프로젝트입니다.
-
-### Planetary Orbital Calculator
-행성의 궤도 계산기를 TDD 로 구현한 프로젝트입니다.
-
-### Challenge
-이미 TDD 로 진행했던 프로젝트에 대해 반복해서 TDD 로 구현하는 공간입니다.
-
-## PERSONAL
-- [TDD with currenjin's wiki](https://currenjin.github.io/wiki/TDD/)
-- [테스트에 관한 나의 생각(1일 1글)](https://currenjin.github.io/wiki/test/)
-
-## ETC
-- [의존성과 중복](./etc/dependency_and_duplication.md)
-
-
-# LEARNING-TEST
-학습테스트를 위한 저장공간입니다.
-
-## 학습테스트가 뭔가요?
-
-다른 사람이 구현해 놓은 것(오픈 소스 프레임워크, 라이브러리 등)을 단위 테스트로 사용법을 알 수 있습니다.
-
-## 학습테스트를 왜 하나요?
-
-- 단위테스트 방법을 학습할 수 있습니다.
-- 단위테스트 도구의 사용법을 익힐 수 있습니다.
-- 특정 라이브러리의 사용 방법을 익힐 수 있습니다.
+이 레포지토리는 단순한 코드 저장소가 아닌, 지속적인 학습과 실험이 이루어지는 살아있는 놀이터가 되기를 희망한다.
