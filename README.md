@@ -15,6 +15,6 @@
 
 ## 🧎🏾‍♂️ 희망
 
-*`"The mind is not a vessel to be filled, but a fire to be kindled." - Plutarch`*
+*"Seek, and you shall find" - Matthew 7:7*
 
 이 레포지토리는 단순한 코드 저장소가 아닌, 지속적인 학습과 실험이 이루어지는 살아있는 놀이터가 되기를 희망한다.
