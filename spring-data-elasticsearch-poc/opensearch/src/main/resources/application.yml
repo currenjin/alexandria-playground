@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+cloud:
+  aws:
+    opensearch:
+      region: ${AWS_REGION}
+      credentials:
+        username: ${OS_USERNAME}
+        password: ${OS_PASSWORD}
+      domain:
+        host: ${OS_HOST}
+        port: ${OS_PORT}
+        protocol: ${OS_PROTOCOL}

@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+version: "3"
+services:
+  post:
+    container_name: post
+    restart: always
+    ports:
+      - "5000:8080"
+    environment:
+      - POST_QUEUE_NAME
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - ZIPKIN_URL=http://host.docker.internal:9411
+    build:
+      context: ./post/
+      dockerfile: Dockerfile
+
+  delivery:
+    container_name: delivery
+    restart: always
+    ports:
+      - "5001:8080"
+    environment:
+      - POST_QUEUE_NAME
+      - DELIVERY_QUEUE_NAME
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - ZIPKIN_URL=http://host.docker.internal:9411
+    build:
+      context: ./delivery/
+      dockerfile: Dockerfile
+  zipkin-server:
+    container_name: zipkin-server
+    image: openzipkin/zipkin
+    restart: always
+    ports:
+      - "9411:9411"

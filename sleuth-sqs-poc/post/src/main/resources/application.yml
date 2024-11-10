@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: post
+
+  zipkin:
+    base-url: ${ZIPKIN_URL}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+
+    region:
+      auto: false
+      static: ap-northeast-2
+
+    stack:
+      auto: false
+
+post.queue.name: ${POST_QUEUE_NAME}
+
+logging.level.com.amazonaws.util.EC2MetadataUtils: error

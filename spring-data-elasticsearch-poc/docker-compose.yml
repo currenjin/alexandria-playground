@@ -1,0 +1,39 @@
+# docker-compose.yml
+
+version: "3"
+services:
+  elasticsearch-server:
+    container_name: elasticsearch-server
+    image: elasticsearch:7.6.2
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+
+  user-for-elasticsearch:
+    container_name: user
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      - ELASTICSEARCH_URL=host.docker.internal:9200
+    build:
+      context: ./elasticsearch/
+      dockerfile: Dockerfile
+
+  user-for-opensearch:
+    container_name: user
+    restart: always
+    ports:
+      - "8082:8080"
+    environment:
+      - AWS_REGION
+      - OS_USERNAME
+      - OS_PASSWORD
+      - OS_HOST
+      - OS_PORT=443
+      - OS_PROTOCOL=https
+    build:
+      context: ./opensearch/
+      dockerfile: Dockerfile
