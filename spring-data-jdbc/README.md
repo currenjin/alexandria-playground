@@ -1,5 +1,7 @@
 # Spring Data JDBC
 
+- [LINK](https://docs.spring.io/spring-data/jdbc/docs/current-SNAPSHOT/reference/html/#jdbc.repositories)
+
 ## JDBC Repositories
    This chapter points out the specialties for repository support for JDBC.This builds on the core repository support explained in [repositories]. You should have a sound understanding of the basic concepts explained there.
 
