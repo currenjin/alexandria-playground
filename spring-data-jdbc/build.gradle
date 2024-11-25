@@ -1,22 +1,32 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
 }
 
 group = 'com.currenjin'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '21'
+
+java {
+    sourceCompatibility = 21
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // H2 Database
+    runtimeOnly 'com.h2database:h2'
+
+    // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.assertj:assertj-core'
 }
 
-tasks.named('test') {
-    useJUnitPlatform ()
+test {
+    useJUnitPlatform()
 }
