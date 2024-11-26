@@ -30,3 +30,78 @@ References across aggregates are not guaranteed to be consistent at all times. T
 Each aggregate has exactly one aggregate root, which is one of the entities of the aggregate. The aggregate gets manipulated only through methods on that aggregate root. These are the atomic changes mentioned earlier.
 
 A repository is an abstraction over a persistent store that looks like a collection of all the aggregates of a certain type. For Spring Data in general, this means you want to have one Repository per aggregate root. In addition, for Spring Data JDBC this means that all entities reachable from an aggregate root are considered to be part of that aggregate root. Spring Data JDBC assumes that only the aggregate has a foreign key to a table storing non-root entities of the aggregate and no other entity points toward non-root entities.
+
+## Architecture
+
+![image](https://github.com/user-attachments/assets/156af241-0c2a-4f81-83b1-5fb01f0c7ae3)
+
+### API Layer
+- `java.sql.*` 패키지 내 인터페이스
+- `Driver`, `Connection`, `Statement/PreparedStatement`, `ResultSet`
+
+![image](https://github.com/user-attachments/assets/ac4e5f91-15b5-4d74-a0d9-444cb6f2e82d)
+
+### Process
+
+![image](https://github.com/user-attachments/assets/8243a747-b5cb-4d02-a7e8-cb656433b461)
+
+```java
+// 1. DriverManager: 드라이버 관리 및 Connection 생성
+Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+// 2. Connection: 데이터베이스와의 연결 관리
+Statement stmt = conn.createStatement();
+PreparedStatement pstmt = conn.prepareStatement(SQL);
+
+// 3. Statement: 정적 SQL 실행
+ResultSet rs1 = stmt.executeQuery("SELECT * FROM users");
+
+// 4. PreparedStatement: 동적 SQL 실행
+pstmt.setString(1, "username");
+ResultSet rs2 = pstmt.executeQuery();
+
+// 5. ResultSet: 결과 데이터 처리
+while (rs1.next()) {
+    String name = rs1.getString("name");
+    int age = rs1.getInt("age");
+}
+```
+
+#### 주요 패턴과 설계 원칙
+- `Factory Pattern`: DriverManager가 Connection 객체 생성
+- `Template Method Pattern`: Statement 실행 방식
+- `Bridge Pattern`: Driver 인터페이스와 실제 구현 분리
+- `Proxy Pattern`: ResultSet의 지연 로딩
+
+### Transaction
+
+![image](https://github.com/user-attachments/assets/59f503c9-e814-439e-aae1-14dc1246fe4c)
+
+### Example
+
+```java
+// Repository Layer (데이터 접근 계층)
+public class UserRepository {
+    private final DataSource dataSource;  // Connection Pool
+
+    public User findById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setLong(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return new User(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                );
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
