@@ -1,22 +1,38 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.1'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '2.7.1' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
     id 'java'
 }
 
-group = 'com.currenjin'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+allprojects {
+    group = 'com.currenjin'
+    version = '0.0.1-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+    }
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-tasks.named('test') {
-    useJUnitPlatform ()
+    sourceCompatibility = '17'
+
+    dependencies {
+        implementation "org.projectlombok:lombok:1.18.22"
+        implementation 'org.springframework.boot:spring-boot-starter'
+
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    tasks.register("prepareKotlinBuildScriptModel"){}
 }

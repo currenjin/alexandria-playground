@@ -1,1 +1,3 @@
 rootProject.name = 'wire-mock'
+
+include("internal-api")

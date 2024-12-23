@@ -1,11 +1,13 @@
-package com.currenjin;
+package com.currenjin.internalapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MainApplication {
+public class InternalApiApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(MainApplication.class, args);
+		SpringApplication.run(InternalApiApplication.class, args);
 	}
+
 }
