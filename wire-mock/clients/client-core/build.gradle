@@ -6,4 +6,7 @@ plugins {
 dependencies {
 	api 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'io.github.openfeign:feign-httpclient'
+
+	testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testFixturesImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 }

@@ -1,5 +1,4 @@
 rootProject.name = 'wire-mock'
-include(
-        'clients:client-core',
-        'applications:internal-api'
-)
+include 'clients:client-core'
+include 'clients:client-httpbin'
+include 'applications:internal-api'

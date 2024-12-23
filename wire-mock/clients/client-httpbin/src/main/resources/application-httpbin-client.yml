@@ -1,0 +1,15 @@
+spring:
+  config:
+    import:
+      - classpath:application-client-core.yml
+
+feign:
+  client:
+    config:
+      httpBinClient:
+        connectTimeout: 1000
+        readTimeout: 3000
+
+client:
+  httpbin-api:
+    access-url: http://httpbin.org

@@ -1,31 +1,35 @@
-plugins {
-    id 'org.springframework.boot' version '2.7.1' apply false
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
-    id 'java'
+repositories {
+    mavenCentral()
 }
 
-allprojects {
-    group = 'com.currenjin'
-    version = '0.0.1-SNAPSHOT'
+buildscript {
+    ext {
+        javaVersion = "17"
+        springBootVersion = "2.7.5"
+        springCloudVersion = "2021.0.5"
+    }
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
+        classpath group: "org.sonarsource.scanner.gradle", name: "sonarqube-gradle-plugin", version: "3.3"
+    }
+}
+
+def demoProjects = subprojects - project(":clients")
+configure(demoProjects) {
+    apply plugin: "java"
+    apply plugin: "java-library"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.spring.dependency-management"
 
     repositories {
         mavenCentral()
     }
-}
-
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
-    buildscript {
-        ext {
-            springBootVersion = '2.7.5'
-            springCloudVersion = '2021.0.5'
-        }
-    }
-
-    sourceCompatibility = '17'
 
     dependencyManagement {
         imports {
@@ -33,19 +37,29 @@ subprojects {
         }
     }
 
-    dependencies {
-        implementation 'org.projectlombok:lombok:1.18.22'
-        implementation 'org.springframework.boot:spring-boot-starter'
-
-        annotationProcessor 'org.projectlombok:lombok:1.18.22'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
-
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-
-    tasks.named('test') {
+    tasks.named("test") {
         useJUnitPlatform()
     }
 
-    tasks.register('prepareKotlinBuildScriptModel'){}
+    dependencies {
+        implementation "org.projectlombok:lombok:1.18.22"
+        implementation "com.fasterxml.jackson.core:jackson-databind"
+        implementation "com.fasterxml.jackson.core:jackson-core"
+        implementation "com.fasterxml.jackson.core:jackson-annotations"
+
+        annotationProcessor "org.projectlombok:lombok:1.18.22"
+        testAnnotationProcessor "org.projectlombok:lombok:1.18.22"
+
+        implementation "org.springframework.boot:spring-boot-starter"
+        testImplementation "org.springframework.boot:spring-boot-starter-test"
+
+        testImplementation(testFixtures(project(":clients:client-core")))
+    }
+}
+
+def clientProjects = project(":clients").subprojects - project(":clients:client-core")
+configure(clientProjects) {
+    dependencies {
+        implementation(project(":clients:client-core"))
+    }
 }
