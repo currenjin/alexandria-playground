@@ -1,5 +1,5 @@
 rootProject.name = 'wire-mock'
 include(
         'clients:client-core',
-        'internal-api'
+        'applications:internal-api'
 )
