@@ -1,0 +1,39 @@
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 3000
+      retry:
+        period: 500
+        maxPeriod: 1000
+        maxAttempts: 3
+  httpclient:
+    enabled: true
+---
+spring:
+  config:
+    activate:
+      on-profile: local | test
+
+feign:
+  httpclient:
+    disableSslValidation: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local | develop | beta
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test

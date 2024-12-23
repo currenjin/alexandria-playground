@@ -1,0 +1,9 @@
+plugins {
+	id 'java-library'
+	id 'java-test-fixtures'
+}
+
+dependencies {
+	api 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'io.github.openfeign:feign-httpclient'
+}
