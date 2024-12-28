@@ -1,63 +1,54 @@
 package com.currenjin.jpa.save;
 
-import org.hibernate.Session;
-import org.hibernate.engine.spi.EntityEntry;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.engine.spi.Status;
-import org.hibernate.internal.SessionImpl;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
+
+import com.currenjin.domain.Post;
+import com.currenjin.infrastucture.PostRepository;
 
 @SpringBootTest
-public class SaveTest {
-    @Autowired
-    SampleRepository repository;
+class SaveTest {
+    PostRepository repository;
 
-    @PersistenceContext
-    EntityManager em;
+    @SpyBean
+    EntityManager entityManager;
 
-    private SessionImpl getSessionImpl() {
-        SharedSessionContractImplementor session = em.unwrap(SharedSessionContractImplementor.class);
-        return (SessionImpl) session;
+    @BeforeEach
+    void setUp() {
+        JpaRepositoryFactory factory = new JpaRepositoryFactory(entityManager);
+        repository = factory.getRepository(PostRepository.class);
     }
 
     @Test
     @Transactional
-    void persist() {
+    void save_메소드는_ID가_없으면_persist를_호출한다() {
         Post post = new Post();
+        post.setTitle("제목1");
 
         repository.save(post);
 
-        EntityEntry entry = getSessionImpl()
-                .getPersistenceContextInternal()
-                .getEntry(post);
-
-        assertEquals(Status.MANAGED, entry.getStatus());
-        assertTrue(entry.isExistsInDatabase());
+        verify(entityManager).persist(post);
+        verify(entityManager, never()).merge(post);
     }
 
     @Test
     @Transactional
-    void merge() {
+    void save_메소드는_ID가_있으면_merge를_호출한다() {
         Post post = new Post();
-        Post savedPost = repository.save(post);
+        post.setId(2L);
 
-        savedPost.setId(savedPost.getId() + 1L);
         repository.save(post);
 
-        EntityEntry mergedEntry = getSessionImpl()
-                .getPersistenceContextInternal()
-                .getEntry(savedPost);
-
-        assertEquals(Status.MANAGED, mergedEntry.getStatus());
-        assertTrue(mergedEntry.isExistsInDatabase());
+        verify(entityManager, never()).persist(post);
+        verify(entityManager).merge(post);
     }
 }
