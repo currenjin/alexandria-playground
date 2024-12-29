@@ -1,7 +1,6 @@
 package com.currenjin.application;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,19 @@ public class PostService {
 		Post post = repository.findById(dto.getId()).orElseThrow();
 
 		post.setTitle(dto.getTitle());
+
+		repository.save(post);
+	}
+
+	public void saveWithId(Long id) {
+		Post post = new Post();
+		post.setId(id);
+
+		repository.save(post);
+	}
+
+	public void saveWithoutId() {
+		Post post = new Post();
 
 		repository.save(post);
 	}
