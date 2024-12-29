@@ -1,5 +1,7 @@
 package com.currenjin.jpa.save;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -50,5 +52,28 @@ class SaveTest {
 
         verify(entityManager, never()).persist(post);
         verify(entityManager).merge(post);
+    }
+
+    @Test
+    @Transactional
+    void persist에서_반환한_인스턴스는_동일하다() {
+        Post post = new Post();
+
+        Post savedPost = repository.save(post);
+
+        verify(entityManager).persist(post);
+        assertEquals(post, savedPost);
+    }
+
+    @Test
+    @Transactional
+    void merge에서_반환한_인스턴스는_다르다() {
+        Post post = new Post();
+        post.setId(1L);
+
+        Post savedPost = repository.save(post);
+
+        verify(entityManager).merge(post);
+        assertNotEquals(post, savedPost);
     }
 }
