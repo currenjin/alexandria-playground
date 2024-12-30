@@ -3,14 +3,10 @@ package com.currenjin.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
+@NamedEntityGraph(name = "Post.withComments", attributeNodes = @NamedAttributeNode("comments"))
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -39,5 +35,10 @@ public class Post {
 
     public List<Comment> getComments() {
         return this.comments;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setPost(this);
     }
 }
