@@ -1,5 +1,6 @@
 package com.currenjin.support;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -13,6 +14,7 @@ public class LogCapture {
         List<String> sqlLogs = new ArrayList<>();
 
         Logger logger = (Logger) LoggerFactory.getLogger("org.hibernate.SQL");
+        logger.setLevel(Level.DEBUG);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
