@@ -45,6 +45,20 @@ public class IdGenerationTest {
 
     @Test
     @Transactional
+    void auto를_persist하면_call이_발생한다() {
+        BookAuto book = new BookAuto();
+
+        List<String> sqlLogs = LogCapture.execute(() -> entityManager.persist(book));
+
+        List<String> insertQueries = sqlLogs.stream()
+                .filter(sql -> sql.trim().toUpperCase().contains("CALL NEXT VALUE FOR HIBERNATE_SEQUENCE"))
+                .toList();
+
+        assertEquals(1, insertQueries.size());
+    }
+
+    @Test
+    @Transactional
     void table을_persist하면_select와_update가_발생한다() {
         BookTable book = new BookTable();
 
