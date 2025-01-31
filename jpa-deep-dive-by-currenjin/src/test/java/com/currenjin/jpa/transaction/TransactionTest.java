@@ -2,20 +2,23 @@ package com.currenjin.jpa.transaction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.currenjin.domain.Comment;
-import com.currenjin.domain.Post;
+import com.currenjin.application.TransactionService;
 import com.currenjin.infrastucture.CommentRepository;
 import com.currenjin.infrastucture.PostRepository;
 
 @SpringBootTest
 class TransactionTest {
+
+	@Autowired
+	TransactionService transactionService;
 
 	@Autowired
 	PostRepository postRepository;
@@ -24,76 +27,24 @@ class TransactionTest {
 	CommentRepository commentRepository;
 
 	@BeforeEach
-	void setUp() {
-		postRepository.deleteAll();
+	void setup() {
 		commentRepository.deleteAll();
+		postRepository.deleteAll();
 	}
 
 	@Test
-	void 트랜잭션이_없으면_일부_데이터만_롤백된다() {
-		Post post = new Post();
-		post.setTitle("제목1");
-		postRepository.save(post);
-		Long postId = post.getId();
+	void 트랜잭션이_없으면_데이터_정합성이_깨진다() {
+		assertThrows(RuntimeException.class, () -> transactionService.withoutTransaction());
 
-		try {
-			Comment comment = new Comment();
-			comment.setPost(post);
-			comment.setContent("댓글1");
-			commentRepository.save(comment);
-
-			post.setTitle("제목2");
-			throw new RuntimeException("예외 발생!");
-		} catch (RuntimeException e) {
-			Post foundPost = postRepository.findById(postId).get();
-			assertEquals("제목1", foundPost.getTitle());
-			assertEquals(1, commentRepository.findByPostId(postId).size());
-		}
+		assertEquals("제목1", postRepository.findAll().stream().findFirst().get().getTitle());
+		assertEquals(1, commentRepository.count());
 	}
 
 	@Test
-	@Transactional
-	void 트랜잭션이_있으면_모든_작업이_롤백된다() {
-		Post post = new Post();
-		post.setTitle("제목1");
-		postRepository.save(post);
-		Long postId = post.getId();
+	void 트랜잭션의_원자성_테스트() {
+		assertThrows(RuntimeException.class, () -> transactionService.withTransaction());
 
-		try {
-			Comment comment = new Comment();
-			comment.setPost(post);
-			comment.setContent("댓글1");
-			commentRepository.save(comment);
-
-			post.setTitle("제목2");
-			throw new RuntimeException("예외 발생!");
-		} catch (RuntimeException e) {
-			Post foundPost = postRepository.findById(postId).get();
-			assertEquals("제목1", foundPost.getTitle());
-			assertEquals(0, commentRepository.findByPostId(postId).size());
-		}
-	}
-
-	@Test
-	@Transactional
-	void 트랜잭션이_있으면_모든_작업이_롤백된다_이상한케이스() {
-		Post post = new Post();
-		post.setTitle("제목1");
-		postRepository.save(post);
-		Long postId = post.getId();
-
-		try {
-			Comment comment = new Comment();
-			comment.setPost(post);
-			comment.setContent("댓글1");
-			commentRepository.save(comment);
-
-			post.setTitle("제목2");
-			throw new RuntimeException("예외 발생!");
-		} catch (RuntimeException e) {
-			Post foundPost = postRepository.findById(postId).get();
-			assertEquals("제목1", foundPost.getTitle());
-			assertEquals(0, commentRepository.findByPostId(postId).size());
-		}
+		assertEquals(0, postRepository.count());
+		assertEquals(0, commentRepository.count());
 	}
 }
