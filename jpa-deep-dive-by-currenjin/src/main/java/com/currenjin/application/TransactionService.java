@@ -1,7 +1,13 @@
 package com.currenjin.application;
 
+import static java.lang.Thread.sleep;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.currenjin.domain.Comment;
@@ -48,5 +54,31 @@ public class TransactionService {
 
 	private static void exception() {
 		throw new RuntimeException("예외 발생!");
+	}
+
+	@PersistenceContext
+	EntityManager entityManager;
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public void readCommittedTransaction() throws InterruptedException {
+		Post post = postRepository.findById(1L).orElseThrow();
+		System.out.println("조회된 Post 제목: " + post.getTitle());
+
+		sleep(3000);
+		entityManager.clear();
+
+		Post foundPost = postRepository.findById(1L).orElseThrow();
+		System.out.println("다시 조회된 Post 제목: " + foundPost.getTitle());
+	}
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public void updatePostTitle() throws InterruptedException {
+		sleep(1000);
+
+		Post post = postRepository.findAll().get(0);
+		post.setTitle("B");
+		postRepository.save(post);
+
+		System.out.println("Thread B - 제목 변경 후 커밋 완료");
 	}
 }

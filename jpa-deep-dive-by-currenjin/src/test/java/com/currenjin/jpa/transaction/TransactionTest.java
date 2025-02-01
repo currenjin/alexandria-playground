@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.currenjin.application.TransactionService;
+import com.currenjin.domain.Post;
 import com.currenjin.infrastucture.CommentRepository;
 import com.currenjin.infrastucture.PostRepository;
 
@@ -43,5 +44,37 @@ class TransactionTest {
 		assertThrows(RuntimeException.class, () -> transactionService.withTransaction());
 
 		assertEquals(0, postRepository.count());
+	}
+
+	@Test
+	void readCommittedTest() throws InterruptedException {
+		Post post = new Post();
+		post.setTitle("A");
+		postRepository.save(post);
+
+		Thread threadA = new Thread(this::readCommittedTransaction);
+		Thread threadB = new Thread(this::updatePostTitle);
+
+		threadA.start();
+		threadB.start();
+
+		threadA.join();
+		threadB.join();
+	}
+
+	private void readCommittedTransaction() {
+		try {
+			transactionService.readCommittedTransaction();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void updatePostTitle() {
+		try {
+			transactionService.updatePostTitle();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
