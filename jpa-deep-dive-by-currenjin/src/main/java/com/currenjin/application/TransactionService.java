@@ -71,7 +71,17 @@ public class TransactionService {
 		System.out.println("다시 조회된 Post 제목: " + foundPost.getTitle());
 	}
 
-	@Transactional(isolation = Isolation.READ_COMMITTED)
+	@Transactional(isolation = Isolation.REPEATABLE_READ)
+	public void repeatableReadTransaction() throws InterruptedException {
+		Post post = postRepository.findById(1L).orElseThrow();
+		System.out.println("조회된 Post 제목: " + post.getTitle());
+
+		sleep(3000);
+
+		Post foundPost = postRepository.findById(1L).orElseThrow();
+		System.out.println("다시 조회된 Post 제목: " + foundPost.getTitle());
+	}
+
 	public void updatePostTitle() throws InterruptedException {
 		sleep(1000);
 

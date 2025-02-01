@@ -62,9 +62,34 @@ class TransactionTest {
 		threadB.join();
 	}
 
+	@Test
+	void repeatableReadTest() throws InterruptedException {
+		Post post = new Post();
+		post.setTitle("A");
+		postRepository.save(post);
+
+		Thread threadA = new Thread(this::repeatableReadTransaction);
+		Thread threadB = new Thread(this::updatePostTitle);
+
+		threadA.start();
+		threadB.start();
+
+		threadA.join();
+		threadB.join();
+	}
+
 	private void readCommittedTransaction() {
 		try {
 			transactionService.readCommittedTransaction();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	private void repeatableReadTransaction() {
+		try {
+			transactionService.repeatableReadTransaction();
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
