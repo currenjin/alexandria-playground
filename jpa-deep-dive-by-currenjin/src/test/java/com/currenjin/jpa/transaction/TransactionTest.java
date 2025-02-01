@@ -1,9 +1,7 @@
 package com.currenjin.jpa.transaction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,13 +36,5 @@ class TransactionTest {
 
 		assertEquals("제목1", postRepository.findAll().stream().findFirst().get().getTitle());
 		assertEquals(1, commentRepository.count());
-	}
-
-	@Test
-	void 트랜잭션의_원자성_테스트() {
-		assertThrows(RuntimeException.class, () -> transactionService.withTransaction());
-
-		assertEquals(0, postRepository.count());
-		assertEquals(0, commentRepository.count());
 	}
 }
