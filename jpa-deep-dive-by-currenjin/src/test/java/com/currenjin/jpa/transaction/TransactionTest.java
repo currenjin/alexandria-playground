@@ -34,7 +34,14 @@ class TransactionTest {
 	void 트랜잭션이_없으면_데이터_정합성이_깨진다() {
 		assertThrows(RuntimeException.class, () -> transactionService.withoutTransaction());
 
-		assertEquals("제목1", postRepository.findAll().stream().findFirst().get().getTitle());
+		assertEquals(1, postRepository.count());
 		assertEquals(1, commentRepository.count());
+	}
+
+	@Test
+	void 트랜잭션이_있으면_데이터_정합성이_유지된다() {
+		assertThrows(RuntimeException.class, () -> transactionService.withTransaction());
+
+		assertEquals(0, postRepository.count());
 	}
 }

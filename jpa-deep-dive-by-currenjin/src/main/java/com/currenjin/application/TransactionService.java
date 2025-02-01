@@ -1,11 +1,7 @@
 package com.currenjin.application;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.currenjin.domain.Comment;
@@ -22,54 +18,35 @@ public class TransactionService {
 	CommentRepository commentRepository;
 
 	public void withoutTransaction() {
-		Post post = new Post();
-		post.setTitle("제목1");
-		postRepository.save(post);
-
-		Comment comment = new Comment();
-		comment.setPost(post);
-		comment.setContent("댓글1");
-		commentRepository.save(comment);
-
-		post.setTitle("제목2");
-		throw new RuntimeException("예외 발생!");
+		createPostAndComment();
 	}
 
 	@Transactional
 	public void withTransaction() {
+		createPostAndComment();
+	}
+
+	private void createPostAndComment() {
 		Post post = new Post();
-		post.setTitle("제목1");
+		post.setTitle("트랜잭션 테스트");
+
+		Comment comment1 = new Comment();
+		comment1.setContent("첫 번째 댓글");
+		comment1.setPost(post);
+
+		Comment comment2 = new Comment();
+		comment2.setContent("두 번째 댓글");
+		comment2.setPost(post);
+
 		postRepository.save(post);
+		commentRepository.save(comment1);
 
-		Comment comment = new Comment();
-		comment.setPost(post);
-		comment.setContent("댓글1");
-		commentRepository.save(comment);
+		exception();
 
+		commentRepository.save(comment2);
+	}
+
+	private static void exception() {
 		throw new RuntimeException("예외 발생!");
 	}
-
-	@PersistenceContext
-	private EntityManager em;
-
-	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
-	public void insertPost() {
-		Post post = new Post();
-		post.setTitle("제목1");
-		em.persist(post);
-		em.flush();
-	}
-
-	@Transactional(isolation = Isolation.READ_UNCOMMITTED)
-	public boolean hasPost() {
-		return em.createQuery("select count(p) from Post p", Long.class)
-			.getSingleResult() > 0;
-	}
-
-	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public boolean hasPostCommitted() {
-		return em.createQuery("select count(p) from Post p", Long.class)
-			.getSingleResult() > 0;
-	}
-
 }
