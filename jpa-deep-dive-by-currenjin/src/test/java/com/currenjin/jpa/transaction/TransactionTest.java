@@ -47,7 +47,7 @@ class TransactionTest {
 	}
 
 	@Test
-	void readCommittedTest() throws InterruptedException {
+	void 격리_수준이_READ_COMMITTED_인_경우_조회() throws InterruptedException {
 		Post post = new Post();
 		post.setTitle("A");
 		postRepository.save(post);
@@ -63,7 +63,7 @@ class TransactionTest {
 	}
 
 	@Test
-	void repeatableReadTest() throws InterruptedException {
+	void 격리_수준이_REPEATABLE_READ_인_경우_조회() throws InterruptedException {
 		Post post = new Post();
 		post.setTitle("A");
 		postRepository.save(post);
@@ -85,7 +85,6 @@ class TransactionTest {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 	private void repeatableReadTransaction() {
 		try {
