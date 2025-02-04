@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.currenjin.domain.PostWithVersion;
 import com.currenjin.infrastucture.PostWithVersionRepository;
+import com.currenjin.util.Sleep;
 
 @Service
 public class OptimisticPostService {
@@ -18,7 +19,7 @@ public class OptimisticPostService {
 		PostWithVersion post = repository.findById(postId).orElseThrow();
 		System.out.println("Thread A - 조회된 Post 제목: " + post.getTitle());
 
-		sleep(3000);
+		Sleep.delay(3000);
 
 		post.setTitle("낙관적 락 테스트 - 변경된 제목");
 		repository.save(post);
@@ -27,12 +28,12 @@ public class OptimisticPostService {
 
 	@Transactional
 	public void optimisticLockConflictTest(Long postId) {
-		sleep(1000);
+		Sleep.delay(1000);
 
 		PostWithVersion post = repository.findById(postId).orElseThrow();
 		System.out.println("Thread B - 조회된 Post 제목: " + post.getTitle());
 
-		sleep(3000);
+		Sleep.delay(3000);
 
 		post.setTitle("낙관적 락 테스트 - 충돌 발생");
 		try {
@@ -40,14 +41,6 @@ public class OptimisticPostService {
 			System.out.println("Thread B - 변경 후 저장 완료");
 		} catch (ObjectOptimisticLockingFailureException e) {
 			System.out.println("Thread B - 낙관적 락 충돌 발생!");
-		}
-	}
-
-	private void sleep(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
 		}
 	}
 }
