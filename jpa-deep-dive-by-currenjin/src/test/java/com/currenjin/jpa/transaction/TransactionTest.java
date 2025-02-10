@@ -44,6 +44,7 @@ class TransactionTest {
 		assertThrows(RuntimeException.class, () -> transactionService.withTransaction());
 
 		assertEquals(0, postRepository.count());
+		assertEquals(0, commentRepository.count());
 	}
 
 	@Test

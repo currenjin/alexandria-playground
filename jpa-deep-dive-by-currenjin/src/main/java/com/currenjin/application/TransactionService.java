@@ -77,6 +77,7 @@ public class TransactionService {
 		System.out.println("조회된 Post 제목: " + post.getTitle());
 
 		sleep(3000);
+		entityManager.clear();
 
 		Post foundPost = postRepository.findById(1L).orElseThrow();
 		System.out.println("다시 조회된 Post 제목: " + foundPost.getTitle());
