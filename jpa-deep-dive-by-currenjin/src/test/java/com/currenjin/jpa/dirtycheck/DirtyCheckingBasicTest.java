@@ -16,6 +16,7 @@ import com.currenjin.infrastucture.PostRepository;
 
 @SpringBootTest
 public class DirtyCheckingBasicTest {
+    public static final String OLD_TITLE = "원본 제목";
     public static final String NEW_TITLE = "변경된 제목";
     @PersistenceContext
     private EntityManager entityManager;
@@ -33,7 +34,7 @@ public class DirtyCheckingBasicTest {
         postRepository.deleteAll();
 
         Post post = new Post();
-        post.setTitle("원본 제목");
+        post.setTitle(OLD_TITLE);
         Post savedPost = postRepository.save(post);
         testPostId = savedPost.getId();
     }
