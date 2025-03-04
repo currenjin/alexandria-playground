@@ -1,27 +1,30 @@
 package com.currenjin.jpa.dirtycheck;
 
-import com.currenjin.domain.Post;
-import com.currenjin.infrastucture.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.currenjin.application.DirtyCheckingService;
+import com.currenjin.domain.Post;
+import com.currenjin.infrastucture.PostRepository;
 
 @SpringBootTest
 public class DirtyCheckingBasicTest {
+    public static final String NEW_TITLE = "변경된 제목";
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private DirtyCheckingService sut;
 
     private Long testPostId;
 
@@ -36,20 +39,20 @@ public class DirtyCheckingBasicTest {
     }
 
     @Test
-    @Transactional
-    void 기본_더티체킹_테스트() {
-        Post post = entityManager.find(Post.class, testPostId);
-        String originalTitle = post.getTitle();
+    void 더티체킹_없이_수정한다() {
+        sut.updateTitleWithSave(testPostId, NEW_TITLE);
 
-        String newTitle = "변경된 제목";
-        post.setTitle(newTitle);
+        Post actual = postRepository.findById(testPostId).get();
 
-        entityManager.flush();
-        entityManager.clear();
+        assertEquals(NEW_TITLE, actual.getTitle());
+    }
 
-        Post updatedPost = entityManager.find(Post.class, testPostId);
+    @Test
+    void 더티체킹으로_수정한다() {
+        sut.updateTitleWithoutSave(testPostId, NEW_TITLE);
 
-        assertEquals(newTitle, updatedPost.getTitle());
-        assertNotEquals(originalTitle, updatedPost.getTitle());
+        Post actual = postRepository.findById(testPostId).get();
+
+        assertEquals(NEW_TITLE, actual.getTitle());
     }
 }
