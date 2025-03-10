@@ -43,7 +43,7 @@ public class DirtyCheckingBasicTest {
     }
 
     @Test
-    void 더티체킹_없이_수정한다() {
+    void save로_수정한다() {
         sut.updateTitleWithSave(testPostId, NEW_TITLE);
 
         Post actual = postRepository.findById(testPostId).get();
@@ -110,6 +110,7 @@ public class DirtyCheckingBasicTest {
     public void 비영속_필드_변경은_감지되지_않음() {
         PostWithTransient post = new PostWithTransient();
         post.setTitle(OLD_TITLE);
+        post.setTransientTitle(OLD_TITLE);
         post.setId(testPostId);
         postWithTransientRepository.save(post);
 
