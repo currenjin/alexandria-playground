@@ -63,7 +63,7 @@ public class DirtyCheckingBasicTest {
     @Test
     public void 엔티티_로드() {
         // 브레이크포인트 1: 엔티티 로드 직전
-        Post post = postRepository.findById(1L).get();
+        Post post = postRepository.findById(testPostId).get();
 
         // 브레이크포인트 2: 엔티티 로드 직후
         post.setTitle("변경된 제목");
@@ -76,7 +76,7 @@ public class DirtyCheckingBasicTest {
     @Transactional
     public void 자동_플러시_로직() {
         // 브레이크포인트 1: 엔티티 변경 전
-        Post post = postRepository.findById(1L).get();
+        Post post = postRepository.findById(testPostId).get();
         post.setTitle("변경된 제목");
 
         // 브레이크포인트 2: JPQL 쿼리 실행 직전 (자동 플러시 발생 지점)
@@ -89,7 +89,7 @@ public class DirtyCheckingBasicTest {
     @Transactional
     public void 더티체킹_로직() {
         // 브레이크포인트 1: 트랜잭션 시작
-        Post post = postRepository.findById(1L).get();
+        Post post = postRepository.findById(testPostId).get();
 
         // 브레이크포인트 2: 여러 필드 변경
         post.setTitle("새 제목");
