@@ -1,32 +1,31 @@
 package com.currenjin.jpa.dirtycheck;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import com.currenjin.application.DirtyCheckingService;
+import com.currenjin.domain.Post;
+import com.currenjin.domain.PostWithTransient;
+import com.currenjin.infrastucture.PostRepository;
+import com.currenjin.infrastucture.PostWithTransientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.currenjin.application.DirtyCheckingService;
-import com.currenjin.domain.Post;
-import com.currenjin.infrastucture.PostRepository;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 public class DirtyCheckingBasicTest {
     public static final String OLD_TITLE = "원본 제목";
     public static final String NEW_TITLE = "변경된 제목";
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private PostWithTransientRepository postWithTransientRepository;
 
     @Autowired
     private DirtyCheckingService sut;
@@ -97,4 +96,30 @@ public class DirtyCheckingBasicTest {
 
         // 브레이크포인트 3: 트랜잭션 종료 직전 (커밋 시점)
     } // 트랜잭션 종료 - 자동 플러시 발생
+
+    @Test
+    public void 준영속_상태_엔티티_변경은_감지되지_않음() {
+        sut.updateDetached(testPostId, NEW_TITLE);
+
+        Post actual = postRepository.findById(testPostId).get();
+
+        assertEquals(OLD_TITLE, actual.getTitle());
+    }
+
+    @Test
+    public void 비영속_필드_변경은_감지되지_않음() {
+        PostWithTransient post = new PostWithTransient();
+        post.setTitle(OLD_TITLE);
+        post.setId(testPostId);
+        postWithTransientRepository.save(post);
+
+        PostWithTransient result = sut.updateTransientFieldAndReturn(testPostId, NEW_TITLE);
+
+        assertEquals(NEW_TITLE, result.getTitle());
+        assertEquals(NEW_TITLE, result.getTransientTitle());
+
+        PostWithTransient reloaded = sut.findPostWithTransientById(testPostId);
+        assertEquals(NEW_TITLE, reloaded.getTitle());
+        assertNull(reloaded.getTransientTitle());
+    }
 }
