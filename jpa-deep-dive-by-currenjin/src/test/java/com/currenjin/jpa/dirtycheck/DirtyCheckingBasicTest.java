@@ -62,7 +62,7 @@ public class DirtyCheckingBasicTest {
     }
 
     @Test
-    public void loadEntityAndTrackChanges() {
+    public void 엔티티_로드() {
         // 브레이크포인트 1: 엔티티 로드 직전
         Post post = postRepository.findById(1L).get();
 
@@ -75,7 +75,7 @@ public class DirtyCheckingBasicTest {
 
     @Test
     @Transactional
-    public void flushTriggeredByJPQL() {
+    public void 자동_플러시_로직() {
         // 브레이크포인트 1: 엔티티 변경 전
         Post post = postRepository.findById(1L).get();
         post.setTitle("변경된 제목");
@@ -88,7 +88,7 @@ public class DirtyCheckingBasicTest {
 
     @Test
     @Transactional
-    public void dirtyCheckingProcess() {
+    public void 더티체킹_로직() {
         // 브레이크포인트 1: 트랜잭션 시작
         Post post = postRepository.findById(1L).get();
 
