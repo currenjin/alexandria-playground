@@ -1,9 +1,10 @@
 package com.currenjin.graphic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompoundGraphic implements Graphic {
-    private List<Graphic> graphics;
+    private final List<Graphic> graphics = new ArrayList<>();
 
     public void add(Graphic graphic) {
         this.graphics.add(graphic);
