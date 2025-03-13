@@ -84,6 +84,26 @@ class ShapeTest {
     }
 
     @Nested
+    class CircleTest {
+        private static final int RADIUS = 3;
+
+        private Shape circle;
+
+        @BeforeEach
+        void setUp() {
+            circle = new Circle(X, Y, RADIUS, BLACK);
+        }
+
+        @Test
+        void constructor() {
+            assertThat(circle.getX()).isEqualTo(X);
+            assertThat(circle.getY()).isEqualTo(Y);
+            assertThat(circle.getWidth()).isEqualTo(RADIUS * 2);
+            assertThat(circle.getHeight()).isEqualTo(RADIUS * 2);
+        }
+    }
+
+    @Nested
     class RectangleTest {
         private static final int WIDTH = 1;
         private static final int HEIGHT = 1;
