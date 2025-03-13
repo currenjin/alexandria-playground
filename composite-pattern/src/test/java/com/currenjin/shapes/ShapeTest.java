@@ -63,4 +63,23 @@ class ShapeTest {
         }
     }
 
+    @Nested
+    class DotTest {
+        public static final int DOT_SIZE = 3;
+
+        Shape dot;
+
+        @BeforeEach
+        void setUp() {
+            dot = new Dot(X, Y, BLACK);
+        }
+
+        @Test
+        void constructor() {
+            assertThat(dot.getX()).isEqualTo(X);
+            assertThat(dot.getY()).isEqualTo(Y);
+            assertThat(dot.getWidth()).isEqualTo(DOT_SIZE);
+            assertThat(dot.getHeight()).isEqualTo(DOT_SIZE);
+        }
+    }
 }
