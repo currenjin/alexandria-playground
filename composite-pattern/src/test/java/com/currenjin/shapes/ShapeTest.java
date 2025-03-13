@@ -67,7 +67,7 @@ class ShapeTest {
     class DotTest {
         public static final int DOT_SIZE = 3;
 
-        Shape dot;
+        private Shape dot;
 
         @BeforeEach
         void setUp() {
@@ -80,6 +80,27 @@ class ShapeTest {
             assertThat(dot.getY()).isEqualTo(Y);
             assertThat(dot.getWidth()).isEqualTo(DOT_SIZE);
             assertThat(dot.getHeight()).isEqualTo(DOT_SIZE);
+        }
+    }
+
+    @Nested
+    class RectangleTest {
+        private static final int WIDTH = 1;
+        private static final int HEIGHT = 1;
+
+        private Shape rectangle;
+
+        @BeforeEach
+        void setUp() {
+            rectangle = new Rectangle(X, Y, WIDTH, HEIGHT, BLACK);
+        }
+
+        @Test
+        void constructor() {
+            assertThat(rectangle.getX()).isEqualTo(X);
+            assertThat(rectangle.getY()).isEqualTo(Y);
+            assertThat(rectangle.getWidth()).isEqualTo(WIDTH);
+            assertThat(rectangle.getHeight()).isEqualTo(HEIGHT);
         }
     }
 }
