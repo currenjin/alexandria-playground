@@ -30,5 +30,33 @@ class OrganizationTest {
 
             assertThat(organization.getCommunicationStatus()).isEqualTo(CommunicationStatus.NORMAL);
         }
+
+        @Test
+        void defcon_4() {
+            organization.command(Defcon.LEVEL_4);
+
+            assertThat(organization.getCommunicationStatus()).isEqualTo(CommunicationStatus.LIMITED);
+        }
+
+        @Test
+        void defcon_3() {
+            organization.command(Defcon.LEVEL_3);
+
+            assertThat(organization.getCommunicationStatus()).isEqualTo(CommunicationStatus.ENCRYPTED);
+        }
+
+        @Test
+        void defcon_2() {
+            organization.command(Defcon.LEVEL_2);
+
+            assertThat(organization.getCommunicationStatus()).isEqualTo(CommunicationStatus.ENCRYPTED);
+        }
+
+        @Test
+        void defcon_1() {
+            organization.command(Defcon.LEVEL_1);
+
+            assertThat(organization.getCommunicationStatus()).isEqualTo(CommunicationStatus.FALLBACK_READY);
+        }
     }
 }
