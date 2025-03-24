@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb2
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+test-specific:
+  property: test-value
