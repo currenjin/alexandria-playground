@@ -98,4 +98,12 @@ public class SimpleJVMInterpreterTest {
         assertEquals(1, stack.size(), "스택에 하나의 요소만 있어야 합니다");
         assertEquals(5, stack.peek(), "스택의 최상위 값은 5여야 합니다 (2+3)");
     }
+
+    @Test
+    public void testThrowsWhenLocalVariables() {
+        byte[] bytecode = {0x36, 0x03};
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        assertThrowsExactly(IllegalStateException.class, interpreter::execute);
+    }
 }
