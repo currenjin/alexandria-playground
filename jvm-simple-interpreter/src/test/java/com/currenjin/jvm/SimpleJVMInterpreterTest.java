@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Stack;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleJVMInterpreterTest {
 
@@ -43,5 +42,25 @@ public class SimpleJVMInterpreterTest {
         assertEquals(2, stack.pop(), "스택의 3번째 값은 2이어야 한다");
         assertEquals(1, stack.pop(), "스택의 2번째 값은 1이어야 한다");
         assertEquals(0, stack.pop(), "스택의 1번째 값은 0이어야 한다");
+    }
+
+    @Test
+    void testAddition() {
+        byte[] bytecode = { 0x04, 0x05, 0x60 };
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        interpreter.execute();
+
+        Stack<Integer> stack = interpreter.getOperandStack();
+        assertEquals(1, stack.size(), "스택에 하나의 요소만 있어야 한다");
+        assertEquals(3, stack.peek(), "스택의 최상위 요소는 3이어야 한다");
+    }
+
+    @Test
+    void testThrowExceptionWhenAddition() {
+        byte[] bytecode = { 0x04, 0x60 };
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        assertThrowsExactly(IllegalStateException.class, interpreter::execute);
     }
 }

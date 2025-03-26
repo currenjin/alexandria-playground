@@ -8,6 +8,8 @@ public class SimpleJVMInterpreter {
     private static final byte ICONST_2 = 0x05;
     private static final byte ICONST_3 = 0x06;
 
+    private static final byte IADD = 0x60;
+
     private final byte[] bytecode;
     private int pc = 0;
     private Stack<Integer> operandStack = new Stack<>();
@@ -38,6 +40,16 @@ public class SimpleJVMInterpreter {
                     break;
                 case ICONST_3:
                     operandStack.push(3);
+                    break;
+                case IADD:
+                    if (operandStack.size() < 2) {
+                        throw new IllegalStateException("IADD requires at least two operands");
+                    }
+
+                    Integer value1 = operandStack.pop();
+                    Integer value2 = operandStack.pop();
+
+                    operandStack.push(value1 + value2);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported opcode: " + opcode);
