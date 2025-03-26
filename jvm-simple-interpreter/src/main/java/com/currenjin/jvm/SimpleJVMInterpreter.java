@@ -8,12 +8,16 @@ public class SimpleJVMInterpreter {
     private static final byte ICONST_2 = 0x05;
     private static final byte ICONST_3 = 0x06;
 
+    private static final byte ILOAD = 0x15;
+    private static final byte ISTORE = 0x36;
+
     private static final byte IADD = 0x60;
     private static final byte ISUB = 0x64;
 
     private final byte[] bytecode;
     private int pc = 0;
-    private Stack<Integer> operandStack = new Stack<>();
+    private final Stack<Integer> operandStack = new Stack<>();
+    private final int[] localVariables = new int[256];
 
     public SimpleJVMInterpreter(byte[] bytecode) {
         this.bytecode = bytecode;
@@ -64,9 +68,26 @@ public class SimpleJVMInterpreter {
                     operandStack.push(value2 - value1);
                     break;
                 }
+                case ISTORE: {
+                    int index = bytecode[pc++] & 0xFF;
+                    if (operandStack.isEmpty()) {
+                        throw new IllegalStateException("ISTORE requires at least one operand");
+                    }
+                    localVariables[index] = operandStack.pop();
+                    break;
+                }
+                case ILOAD: {
+                    int index = bytecode[pc++] & 0xFF;
+                    operandStack.push(localVariables[index]);
+                    break;
+                }
                 default:
                     throw new UnsupportedOperationException("Unsupported opcode: " + opcode);
             }
         }
+    }
+
+    public double getLocalVariable(int index) {
+        return localVariables[index];
     }
 }

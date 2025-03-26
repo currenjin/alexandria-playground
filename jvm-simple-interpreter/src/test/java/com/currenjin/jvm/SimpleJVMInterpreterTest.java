@@ -83,4 +83,19 @@ public class SimpleJVMInterpreterTest {
 
         assertThrowsExactly(IllegalStateException.class, interpreter::execute);
     }
+
+    @Test
+    public void testLocalVariables() {
+        byte[] bytecode = {0x05, 0x36, 0x01, 0x06, 0x36, 0x02, 0x15, 0x01, 0x15, 0x02, 0x60};
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        interpreter.execute();
+
+        assertEquals(2, interpreter.getLocalVariable(1), "로컬 변수 1의 값은 2여야 합니다");
+        assertEquals(3, interpreter.getLocalVariable(2), "로컬 변수 2의 값은 3이어야 합니다");
+
+        Stack<Integer> stack = interpreter.getOperandStack();
+        assertEquals(1, stack.size(), "스택에 하나의 요소만 있어야 합니다");
+        assertEquals(5, stack.peek(), "스택의 최상위 값은 5여야 합니다 (2+3)");
+    }
 }
