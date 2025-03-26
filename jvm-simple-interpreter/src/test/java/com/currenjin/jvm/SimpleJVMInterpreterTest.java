@@ -63,4 +63,24 @@ public class SimpleJVMInterpreterTest {
 
         assertThrowsExactly(IllegalStateException.class, interpreter::execute);
     }
+
+    @Test
+    void testSubtraction() {
+        byte[] bytecode = { 0x06, 0x04, 0x64 };
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        interpreter.execute();
+
+        Stack<Integer> stack = interpreter.getOperandStack();
+        assertEquals(1, stack.size(), "스택에 하나의 요소만 있어야 한다");
+        assertEquals(2, stack.peek(), "스택의 최상위 요소는 2이어야 한다");
+    }
+
+    @Test
+    void testThrowExceptionWhenSubtraction() {
+        byte[] bytecode = { 0x04, 0x64 };
+        SimpleJVMInterpreter interpreter = new SimpleJVMInterpreter(bytecode);
+
+        assertThrowsExactly(IllegalStateException.class, interpreter::execute);
+    }
 }

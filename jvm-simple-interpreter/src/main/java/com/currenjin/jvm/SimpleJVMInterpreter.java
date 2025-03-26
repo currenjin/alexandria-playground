@@ -9,6 +9,7 @@ public class SimpleJVMInterpreter {
     private static final byte ICONST_3 = 0x06;
 
     private static final byte IADD = 0x60;
+    private static final byte ISUB = 0x64;
 
     private final byte[] bytecode;
     private int pc = 0;
@@ -41,16 +42,28 @@ public class SimpleJVMInterpreter {
                 case ICONST_3:
                     operandStack.push(3);
                     break;
-                case IADD:
+                case IADD: {
                     if (operandStack.size() < 2) {
                         throw new IllegalStateException("IADD requires at least two operands");
                     }
 
-                    Integer value1 = operandStack.pop();
-                    Integer value2 = operandStack.pop();
+                    int value1 = operandStack.pop();
+                    int value2 = operandStack.pop();
 
                     operandStack.push(value1 + value2);
                     break;
+                }
+                case ISUB: {
+                    if (operandStack.size() < 2) {
+                        throw new IllegalStateException("ISUB requires at least two operands");
+                    }
+
+                    int value1 = operandStack.pop();
+                    int value2 = operandStack.pop();
+
+                    operandStack.push(value2 - value1);
+                    break;
+                }
                 default:
                     throw new UnsupportedOperationException("Unsupported opcode: " + opcode);
             }
