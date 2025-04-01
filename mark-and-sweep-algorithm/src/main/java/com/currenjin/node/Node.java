@@ -1,15 +1,17 @@
 package com.currenjin.node;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Node {
     private final String id;
-    private boolean marked = false;
-    private List<Node> references = new ArrayList<>();
+    private boolean marked;
+    private final Set<Node> references;
 
     public Node(String id) {
         this.id = id;
+        this.marked = false;
+        this.references = new HashSet<>();
     }
 
     public String getId() {
@@ -20,7 +22,7 @@ public class Node {
         return this.marked;
     }
 
-    public List<Node> getReferences() {
+    public Set<Node> getReferences() {
         return this.references;
     }
 
