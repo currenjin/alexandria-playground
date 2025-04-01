@@ -1,4 +1,4 @@
-package com.currenjin.node;
+package com.currenjin.markandsweep;
 
 import java.util.HashSet;
 import java.util.Set;

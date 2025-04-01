@@ -1,4 +1,4 @@
-package com.currenjin.node;
+package com.currenjin.markandsweep;
 
 import org.junit.jupiter.api.Test;
 
