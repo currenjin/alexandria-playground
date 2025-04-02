@@ -26,3 +26,4 @@ nbdist/
 
 ### ETC ###
 .DS_Store
+**/out
