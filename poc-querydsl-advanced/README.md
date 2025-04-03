@@ -11,6 +11,13 @@
 
 ### Domain
 - Domain
+  - Member
+  - Address
+  - Order
+  - OrderItem
+  - Address
+  - Product
+  - Category
 - Repository
 
 ## QueryDSL Scenario
