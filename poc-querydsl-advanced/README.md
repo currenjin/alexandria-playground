@@ -10,13 +10,8 @@
 - Service
 
 ### Domain
-- Member
-  - Address
-- Order
-  - OrderItem
-  - Address
-- Product
-- Category
+- Domain
+- Repository
 
 ## QueryDSL Scenario
 
