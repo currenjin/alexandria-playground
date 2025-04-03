@@ -3,10 +3,9 @@ package com.currenjin.controller;
 import com.currenjin.domain.Book;
 import com.currenjin.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +26,35 @@ public class BookRestController {
     }
     
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable String id) {
-        return bookService.getBookById(id);
+    public ResponseEntity<Book> getBookById(@PathVariable String id) {
+        return bookService.getBookById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @PostMapping
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        Book savedBook = bookService.saveBook(book);
+        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable String id, @RequestBody Book book) {
+        return bookService.getBookById(id)
+                .map(existingBook -> {
+                    book.setId(id);
+                    return ResponseEntity.ok(bookService.saveBook(book));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable String id) {
+        return bookService.getBookById(id)
+                .map(book -> {
+                    bookService.deleteBook(id);
+                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

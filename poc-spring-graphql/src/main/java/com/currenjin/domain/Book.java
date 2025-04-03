@@ -1,24 +1,58 @@
 package com.currenjin.domain;
 
-import java.util.Arrays;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public record Book(String id, String name, int pageCount, String authorId) {
+@Entity
+@Table(name = "books")
+public class Book {
 
-    private static List<Book> books = Arrays.asList(
-            new Book("book-1", "Effective Java", 416, "author-1"),
-            new Book("book-2", "Hitchhiker's Guide to the Galaxy", 208, "author-2"),
-            new Book("book-3", "Down Under", 436, "author-3")
-    );
+    @Id
+    private String id;
+    private String name;
+    private int pageCount;
+    private String authorId;
 
-    public static Book getById(String id) {
-        return books.stream()
-                .filter(book -> book.id().equals(id))
-                .findFirst()
-                .orElse(null);
+    public Book() {
     }
-    
-    public static List<Book> getAll() {
-        return books;
+
+    public Book(String id, String name, int pageCount, String authorId) {
+        this.id = id;
+        this.name = name;
+        this.pageCount = pageCount;
+        this.authorId = authorId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 }
