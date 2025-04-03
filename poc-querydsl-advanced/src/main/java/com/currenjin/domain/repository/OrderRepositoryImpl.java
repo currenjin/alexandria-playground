@@ -86,7 +86,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .fetch();
     }
 
-    // 동적 쿼리를 위한 메서드들
     private BooleanExpression memberNameEq(String memberName) {
         if (memberName == null || memberName.isEmpty()) {
             return null;

@@ -63,7 +63,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .fetch();
     }
 
-    // 동적 쿼리를 위한 메서드들
     private BooleanExpression nameContains(String nameContains) {
         if (nameContains == null) {
             return null;

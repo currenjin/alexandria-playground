@@ -28,31 +28,26 @@ public class OrderService {
 
     @Transactional
     public Long order(Long memberId, Long productId, int count) {
-        // 엔티티 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
-        // 주문상품 생성
         OrderItem orderItem = OrderItem.builder()
                 .product(product)
                 .orderPrice(product.getPrice())
                 .count(count)
                 .build();
 
-        // 주문 생성
         Order order = Order.builder()
                 .member(member)
                 .status(OrderStatus.PENDING)
                 .deliveryAddress(member.getAddress())
                 .build();
 
-        // 주문상품과 주문 연결
         order.addOrderItem(orderItem);
 
-        // 주문 저장
         orderRepository.save(order);
 
         return order.getId();
@@ -60,11 +55,9 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long orderId) {
-        // 주문 엔티티 조회
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문입니다."));
 
-        // 주문 취소
         order.getOrderItems().forEach(OrderItem::cancel);
         order.setStatus(OrderStatus.CANCELLED);
     }

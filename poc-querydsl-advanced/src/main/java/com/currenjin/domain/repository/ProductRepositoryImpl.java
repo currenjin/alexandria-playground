@@ -73,7 +73,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetch();
     }
 
-    // 동적 쿼리를 위한 메서드들
     private BooleanExpression nameContains(String name) {
         if (name == null || name.isEmpty()) {
             return null;

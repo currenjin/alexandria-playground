@@ -25,8 +25,8 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private int orderPrice; // 주문 당시 가격
-    private int count; // 주문 수량
+    private int orderPrice;
+    private int count;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

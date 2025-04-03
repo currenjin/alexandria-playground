@@ -24,7 +24,6 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(Member member) {
-        // 중복 회원 검증 로직
         List<Member> findMembers = memberRepository.findByNameAndAgeGreaterThan(member.getName(), 0);
         if (!findMembers.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");

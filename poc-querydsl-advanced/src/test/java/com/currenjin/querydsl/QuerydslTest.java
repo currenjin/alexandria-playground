@@ -9,7 +9,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,12 +35,10 @@ public class QuerydslTest {
     public void setup() {
         queryFactory = new JPAQueryFactory(em);
 
-        // 테스트 데이터 초기화
         initTestData();
     }
 
     private void initTestData() {
-        // 카테고리 데이터 생성
         Category electronics = Category.builder()
                 .name("전자제품")
                 .build();
@@ -58,7 +55,6 @@ public class QuerydslTest {
         em.persist(clothing);
         em.persist(food);
 
-        // 상품 데이터 생성
         Product laptop = Product.builder()
                 .name("노트북")
                 .price(1000000)
@@ -96,7 +92,6 @@ public class QuerydslTest {
         em.persist(shirt);
         em.persist(apple);
 
-        // 회원 데이터 생성
         Member member1 = Member.builder()
                 .name("김철수")
                 .email("kim@email.com")
@@ -125,7 +120,6 @@ public class QuerydslTest {
         em.persist(member2);
         em.persist(member3);
 
-        // 주문 데이터 생성
         Order order1 = Order.builder()
                 .member(member1)
                 .status(OrderStatus.DELIVERED)
@@ -254,7 +248,6 @@ public class QuerydslTest {
         QProduct product = QProduct.product;
         QCategory category = QCategory.category;
 
-        // POJO 객체로 프로젝션
         List<ProductProjection> results = queryFactory
                 .select(Projections.constructor(
                         ProductProjection.class,
@@ -276,7 +269,7 @@ public class QuerydslTest {
         QProduct product = QProduct.product;
 
         String nameParam = "노트북";
-        Integer priceParam = null; // 가격 조건은 없음
+        Integer priceParam = null;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -302,7 +295,7 @@ public class QuerydslTest {
         QProduct product = QProduct.product;
 
         String nameParam = "노트북";
-        Integer priceParam = null; // 가격 조건은 없음
+        Integer priceParam = null;
 
         List<Product> results = queryFactory
                 .selectFrom(product)
@@ -341,7 +334,6 @@ public class QuerydslTest {
         assertThat(results).isNotEmpty();
     }
 
-    // DTO 클래스
     public static class ProductProjection {
         private Long productId;
         private String productName;
