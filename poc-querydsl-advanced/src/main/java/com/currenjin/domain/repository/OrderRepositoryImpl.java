@@ -6,7 +6,6 @@ import com.currenjin.domain.Order;
 import com.currenjin.domain.Order.OrderStatus;
 import com.currenjin.domain.QMember;
 import com.currenjin.domain.QOrder;
-import com.currenjin.domain.QOrderItem;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

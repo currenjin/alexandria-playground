@@ -1,8 +1,8 @@
 package com.currenjin.domain.repository;
 
+import com.currenjin.application.dto.ProductSearchDto;
 import com.currenjin.domain.Product;
 import com.currenjin.domain.Product.ProductStatus;
-import com.currenjin.application.dto.ProductSearchDto;
 
 import java.util.List;
 

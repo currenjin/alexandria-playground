@@ -3,7 +3,6 @@ package com.currenjin.domain.repository;
 import com.currenjin.domain.Member;
 import com.currenjin.domain.Member.MemberStatus;
 import com.currenjin.domain.QMember;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
