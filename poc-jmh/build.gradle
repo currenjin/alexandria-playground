@@ -1,26 +1,19 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.1'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id "me.champeau.jmh" version "0.6.6"
+    id "me.champeau.jmh" version "0.7.2"
 }
 
 group = 'com.currenjin'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.openjdk.jmh:jmh-core:1.35'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+    jmh 'org.openjdk.jmh:jmh-core:1.36'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
 
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-tasks.named('test') {
-    useJUnitPlatform ()
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
 }
