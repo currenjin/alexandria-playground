@@ -17,6 +17,7 @@ import com.currenjin.inventory.domain.repository.InventoryRepository;
 
 @ExtendWith(MockitoExtension.class)
 class InventoryServiceTest {
+	private final int AMOUNT = 1;
 	private final Long PRODUCT_ID = 1L;
 	private final Long WAREHOUSE_ID = 1L;
 
@@ -25,7 +26,8 @@ class InventoryServiceTest {
 	@Mock
 	private InventoryRepository inventoryRepository;
 
-	private final Inventory inventory = new Inventory();
+	@Mock
+	private Inventory inventory;
 
 	@BeforeEach
 	void setUp() {
@@ -48,5 +50,16 @@ class InventoryServiceTest {
 			.thenReturn(Optional.empty());
 
 		assertThrows(IllegalArgumentException.class, () -> sut.findInventory(PRODUCT_ID, WAREHOUSE_ID));
+	}
+
+	@Test
+	void increase_inventory() {
+		when(inventoryRepository.findByProductIdAndWarehouseId(PRODUCT_ID, WAREHOUSE_ID))
+			.thenReturn(Optional.of(inventory));
+
+		sut.increaseStock(PRODUCT_ID, WAREHOUSE_ID, AMOUNT);
+
+		verify(inventoryRepository).findByProductIdAndWarehouseId(PRODUCT_ID, WAREHOUSE_ID);
+		verify(inventory).increaseStock(AMOUNT);
 	}
 }
