@@ -1,0 +1,21 @@
+package com.currenjin.inventory.application;
+
+import org.springframework.stereotype.Service;
+
+import com.currenjin.inventory.domain.Inventory;
+import com.currenjin.inventory.domain.repository.InventoryRepository;
+
+@Service
+public class InventoryService {
+
+	private final InventoryRepository inventoryRepository;
+
+	public InventoryService(InventoryRepository inventoryRepository) {
+		this.inventoryRepository = inventoryRepository;
+	}
+
+	public Inventory findInventory(Long productId, Long warehouseId) {
+		return inventoryRepository.findByProductIdAndWarehouseId(productId, warehouseId)
+			.orElseThrow(() -> new IllegalArgumentException("Inventory not found. Product id: " + productId + ", warehouse id: " + warehouseId));
+	}
+}

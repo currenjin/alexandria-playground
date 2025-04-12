@@ -58,4 +58,12 @@ public class Inventory {
 
 		this.quantity -= amount;
 	}
+
+	public Long getProductId() {
+		return this.productId;
+	}
+
+	public Long getWarehouseId() {
+		return this.warehouseId;
+	}
 }
