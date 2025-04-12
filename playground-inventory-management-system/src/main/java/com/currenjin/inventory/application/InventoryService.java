@@ -1,5 +1,7 @@
 package com.currenjin.inventory.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +33,15 @@ public class InventoryService {
 	public void decreaseStock(Long productId, Long warehouseId, int amount) {
 		Inventory inventory = findInventory(productId, warehouseId);
 		inventory.decreaseStock(amount);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Inventory> findInventoriesByProductId(Long productId) {
+		return inventoryRepository.findAllByProductId(productId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Inventory> findInventoriesByWarehouseId(Long warehouseId) {
+		return inventoryRepository.findAllByWarehouseId(warehouseId);
 	}
 }

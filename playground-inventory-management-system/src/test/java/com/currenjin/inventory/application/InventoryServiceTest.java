@@ -73,4 +73,18 @@ class InventoryServiceTest {
 		verify(inventoryRepository).findByProductIdAndWarehouseId(PRODUCT_ID, WAREHOUSE_ID);
 		verify(inventory).decreaseStock(AMOUNT);
 	}
+
+	@Test
+	void find_inventories_by_productId() {
+		sut.findInventoriesByProductId(PRODUCT_ID);
+
+		verify(inventoryRepository).findAllByProductId(PRODUCT_ID);
+	}
+
+	@Test
+	void find_inventories_by_warehouseId() {
+		sut.findInventoriesByWarehouseId(WAREHOUSE_ID);
+
+		verify(inventoryRepository).findAllByWarehouseId(WAREHOUSE_ID);
+	}
 }
