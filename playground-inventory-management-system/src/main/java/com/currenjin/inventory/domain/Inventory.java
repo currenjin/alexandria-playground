@@ -1,11 +1,30 @@
 package com.currenjin.inventory.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "inventories")
 public class Inventory {
 	public static final int POSITIVE_CONDITION = 1;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name = "product_id", nullable = false)
 	private Long productId;
+
+	@Column(name = "warehouse_id", nullable = false)
 	private Long warehouseId;
+
+	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
+
 
 	public Inventory(Long productId, Long warehouseId, Integer quantity) {
 		this.productId = productId;
