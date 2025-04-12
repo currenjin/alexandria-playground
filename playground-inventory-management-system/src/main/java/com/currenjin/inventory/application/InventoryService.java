@@ -15,6 +15,7 @@ public class InventoryService {
 		this.inventoryRepository = inventoryRepository;
 	}
 
+	@Transactional(readOnly = true)
 	public Inventory findInventory(Long productId, Long warehouseId) {
 		return inventoryRepository.findByProductIdAndWarehouseId(productId, warehouseId)
 			.orElseThrow(() -> new IllegalArgumentException("Inventory not found. Product id: " + productId + ", warehouse id: " + warehouseId));
