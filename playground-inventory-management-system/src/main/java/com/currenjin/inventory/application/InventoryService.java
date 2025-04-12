@@ -26,4 +26,10 @@ public class InventoryService {
 		Inventory inventory = findInventory(productId, warehouseId);
 		inventory.increaseStock(amount);
 	}
+
+	@Transactional
+	public void decreaseStock(Long productId, Long warehouseId, int amount) {
+		Inventory inventory = findInventory(productId, warehouseId);
+		inventory.decreaseStock(amount);
+	}
 }
