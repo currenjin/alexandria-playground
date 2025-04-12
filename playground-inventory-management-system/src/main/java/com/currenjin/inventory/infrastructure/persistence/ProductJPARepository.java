@@ -1,4 +1,4 @@
-package com.currenjin.inventory.infrastructure;
+package com.currenjin.inventory.infrastructure.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
