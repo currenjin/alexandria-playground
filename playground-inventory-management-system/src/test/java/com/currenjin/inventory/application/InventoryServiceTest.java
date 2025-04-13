@@ -1,5 +1,8 @@
 package com.currenjin.inventory.application;
 
+import static com.currenjin.inventory.application.TestSupport.AMOUNT;
+import static com.currenjin.inventory.application.TestSupport.PRODUCT_ID;
+import static com.currenjin.inventory.application.TestSupport.WAREHOUSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,10 +20,6 @@ import com.currenjin.inventory.domain.repository.InventoryRepository;
 
 @ExtendWith(MockitoExtension.class)
 class InventoryServiceTest {
-	private final int AMOUNT = 1;
-	private final Long PRODUCT_ID = 1L;
-	private final Long WAREHOUSE_ID = 1L;
-
 	private InventoryService sut;
 
 	@Mock
