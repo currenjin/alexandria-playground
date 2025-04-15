@@ -1,8 +1,8 @@
 package com.currenjin.inventory.application;
 
-import static com.currenjin.inventory.application.TestSupport.AMOUNT;
-import static com.currenjin.inventory.application.TestSupport.PRODUCT_ID;
-import static com.currenjin.inventory.application.TestSupport.WAREHOUSE_ID;
+import static com.currenjin.inventory.TestSupport.AMOUNT;
+import static com.currenjin.inventory.TestSupport.PRODUCT_ID;
+import static com.currenjin.inventory.TestSupport.WAREHOUSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
