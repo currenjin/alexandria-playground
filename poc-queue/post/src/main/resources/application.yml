@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: post
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: myuser
+    password: secret
+
+post:
+  queue:
+    name: ${POST_QUEUE_NAME}
+
+logging.level.com.amazonaws.util.EC2MetadataUtils: error
