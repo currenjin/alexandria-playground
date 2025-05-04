@@ -1,6 +1,7 @@
 package com.currenjin.queues
 
 import com.currenjin.messages.Message
+import java.io.File
 import java.util.LinkedList
 import java.util.Queue
 import java.util.concurrent.locks.ReentrantLock
@@ -18,6 +19,7 @@ class InMemoryQueue(
     val name: String,
 ) {
     private val messageQueue: Queue<Message> = LinkedList()
+    private val messageLog = File("messages.log")
 
     private val lock = ReentrantLock()
 
@@ -33,9 +35,12 @@ class InMemoryQueue(
         headers: Map<String, String> = mapOf(),
     ): Message {
         val message = Message(payload = payload, headers = headers)
+        messageLog.appendText("${message.toLogString()}\n")
+
         lock.withLock {
             messageQueue.offer(message)
         }
+
         return message
     }
 

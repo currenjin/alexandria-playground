@@ -18,4 +18,6 @@ data class Message(
     val payload: String,
     val timestamp: Long = Instant.now().toEpochMilli(),
     val headers: Map<String, String> = mapOf(),
-)
+) {
+    fun toLogString(): String = "$timestamp::$id::$payload"
+}
