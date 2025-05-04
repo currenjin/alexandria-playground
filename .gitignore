@@ -1,6 +1,7 @@
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
+package-lock.json
 
 ### STS ###
 .apt_generated
