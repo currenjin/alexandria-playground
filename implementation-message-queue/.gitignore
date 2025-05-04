@@ -1,0 +1,9 @@
+# IDEA
+.idea
+
+# Gradle
+.gradle
+build
+
+# Message Queue
+messages.log
