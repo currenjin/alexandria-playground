@@ -1,6 +1,6 @@
 package com.currenjin.messages
 
-import java.time.Instant
+import java.time.LocalDateTime
 import java.util.UUID
 
 /**
@@ -16,7 +16,7 @@ import java.util.UUID
 data class Message(
     val id: String = UUID.randomUUID().toString(),
     val payload: String,
-    val timestamp: Long = Instant.now().toEpochMilli(),
+    val timestamp: String = LocalDateTime.now().toString(),
     val headers: Map<String, String> = mapOf(),
 ) {
     fun toLogString(): String = "$timestamp::$id::$payload"

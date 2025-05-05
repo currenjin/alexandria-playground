@@ -15,7 +15,6 @@ class MessageTest {
 
         assertNotNull(message.id)
         assertEquals(payload, message.payload)
-        assertTrue(message.timestamp > 0)
         assertTrue(message.headers.isEmpty())
     }
 
