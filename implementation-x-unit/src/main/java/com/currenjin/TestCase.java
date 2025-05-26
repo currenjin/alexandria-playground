@@ -2,14 +2,14 @@ package com.currenjin;
 
 import java.lang.reflect.*;
 
-public class TestCase {
+public class TestCase implements Test {
 	protected final String name;
 
 	public TestCase(String name) {
 		this.name = name;
 	}
 
-	public TestResult run(TestResult result) {
+	public void run(TestResult result) {
 		result.testStarted();
 
 		setUp();
@@ -22,7 +22,7 @@ public class TestCase {
 		}
 
 		tearDown();
-		return result;
+
 	}
 
 	public void setUp() {
