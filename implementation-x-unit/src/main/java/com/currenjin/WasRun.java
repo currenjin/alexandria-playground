@@ -2,6 +2,7 @@ package com.currenjin;
 
 public class WasRun extends TestCase {
 	public boolean wasRun;
+	public boolean wasSetUp;
 
 	public WasRun(String name) {
 		super(name);
@@ -11,4 +12,8 @@ public class WasRun extends TestCase {
 		wasRun = true;
 	}
 
+	@Override
+	public void setUp() {
+		wasSetUp = true;
+	}
 }
