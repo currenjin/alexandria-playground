@@ -3,9 +3,9 @@ package com.currenjin;
 import java.util.*;
 
 public class TestSuite {
-	List<WasRun> tests = new ArrayList<>();
+	List<TestCase> tests = new ArrayList<>();
 
-	public void add(WasRun test) {
+	public void add(TestCase test) {
 		tests.add(test);
 	}
 
