@@ -9,7 +9,7 @@ public class TestSuite implements Test {
 
 	public TestSuite(Class<? extends TestCase> testClass) {
 		Arrays.stream(testClass.getMethods())
-				.filter(method -> method.getName().startsWith("test"))
+				.filter(method -> method.isAnnotationPresent(com.currenjin.annotation.Test.class))
 				.forEach(method -> {
                     try {
 						add(testClass.getConstructor(String.class).newInstance(method.getName()));
