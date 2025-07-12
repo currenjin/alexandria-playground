@@ -1,9 +1,9 @@
 package com.currenjin
 
-class Consumer(
+class Publisher(
     messageQueue: MessageQueue,
 ) {
-    fun subscribe(any: Any) {
+    fun publish(message: Message) {
         TODO("Not yet implemented")
     }
 }

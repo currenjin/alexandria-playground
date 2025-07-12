@@ -1,9 +1,9 @@
 package com.currenjin
 
-class Producer(
+class Subscriber(
     messageQueue: MessageQueue,
 ) {
-    fun publish(message: Message) {
+    fun subscribe(any: Any) {
         TODO("Not yet implemented")
     }
 }

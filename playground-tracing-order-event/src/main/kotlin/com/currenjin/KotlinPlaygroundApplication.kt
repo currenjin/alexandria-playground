@@ -6,10 +6,10 @@ class KotlinPlaygroundApplication
 
 fun main(args: Array<String>) {
     val messageQueue = MessageQueue()
-    val producer = Producer(messageQueue)
-    val consumer = Consumer(messageQueue)
+    val publisher = Publisher(messageQueue)
+    val subscriber = Subscriber(messageQueue)
 
-    producer.publish(
+    publisher.publish(
         OrderEvent(
             orderId = "orderId",
             userId = "userId",
@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
         ),
     )
 
-    consumer.subscribe { event: Message -> println("order event : $event") }
+    subscriber.subscribe { event: Message -> println("order event : $event") }
 }
 
 data class OrderEvent(
