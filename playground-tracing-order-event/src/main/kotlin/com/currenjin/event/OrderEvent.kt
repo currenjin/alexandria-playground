@@ -1,6 +1,5 @@
 package com.currenjin.event
 
-import com.currenjin.Message
 import java.math.BigDecimal
 
 data class OrderEvent(
@@ -8,4 +7,4 @@ data class OrderEvent(
     val userId: String,
     val amount: BigDecimal,
     val eventType: String,
-) : Message()
+)
