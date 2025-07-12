@@ -19,5 +19,5 @@ fun main(args: Array<String>) {
         ),
     )
 
-    subscriber.subscribe { event: Message -> println("order event : $event") }
+    subscriber.subscribe { event: OrderEvent -> println("order event : $event") }
 }

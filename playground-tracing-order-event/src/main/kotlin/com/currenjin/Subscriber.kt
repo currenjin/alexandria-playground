@@ -1,9 +1,11 @@
 package com.currenjin
 
+import com.currenjin.event.OrderEvent
+
 class Subscriber(
-    messageQueue: MessageQueue,
+    private val messageQueue: MessageQueue,
 ) {
-    fun subscribe(any: Any) {
-        TODO("Not yet implemented")
+    fun subscribe(callback: (OrderEvent) -> Unit) {
+        messageQueue.subscribe(callback)
     }
 }
