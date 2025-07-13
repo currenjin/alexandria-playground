@@ -25,5 +25,16 @@ fun main(args: Array<String>) {
         ),
     )
 
+    Thread.sleep(1000)
+
+    publisher.publish(
+        OrderEvent(
+            orderId = "orderId2",
+            userId = "userId",
+            amount = BigDecimal(100.0),
+            eventType = "CREATED",
+        ),
+    )
+
     Thread.sleep(2000)
 }
