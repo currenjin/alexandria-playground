@@ -20,4 +20,6 @@ fun main(args: Array<String>) {
     )
 
     subscriber.subscribe { event: OrderEvent -> println("order event : $event") }
+
+//    Thread.sleep(2000)
 }
