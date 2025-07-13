@@ -17,10 +17,11 @@ class Subscriber(
 
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
-                val event = messageQueue.poll()
+                val event = messageQueue.poll(subscriberId)
 
                 if (event != null) {
                     callback(event)
+                    messageQueue.ack(subscriberId)
                 }
 
                 delay(100)
