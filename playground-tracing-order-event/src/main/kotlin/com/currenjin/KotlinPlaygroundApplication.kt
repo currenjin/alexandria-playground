@@ -8,7 +8,13 @@ class KotlinPlaygroundApplication
 fun main(args: Array<String>) {
     val messageQueue = MessageQueue()
     val publisher = Publisher(messageQueue)
-    val subscriber = Subscriber(messageQueue)
+    val subscriber1 = Subscriber(messageQueue)
+    val subscriber2 = Subscriber(messageQueue)
+    val subscriber3 = Subscriber(messageQueue)
+
+    subscriber1.subscribe { event: OrderEvent -> println("Number 1 : $event") }
+    subscriber2.subscribe { event: OrderEvent -> println("Number 2 : $event") }
+    subscriber3.subscribe { event: OrderEvent -> println("Number 3 : $event") }
 
     publisher.publish(
         OrderEvent(
@@ -19,7 +25,5 @@ fun main(args: Array<String>) {
         ),
     )
 
-    subscriber.subscribe { event: OrderEvent -> println("order event : $event") }
-
-//    Thread.sleep(2000)
+    Thread.sleep(2000)
 }
