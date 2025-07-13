@@ -18,9 +18,11 @@ class Subscriber(
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
                 val event = messageQueue.poll()
+
                 if (event != null) {
                     callback(event)
                 }
+
                 delay(100)
             }
         }
