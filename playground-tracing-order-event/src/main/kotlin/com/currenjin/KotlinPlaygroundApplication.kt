@@ -13,7 +13,10 @@ fun main(args: Array<String>) {
     val subscriber3 = Subscriber(messageQueue)
 
     subscriber1.subscribe { event: OrderEvent -> println("Number 1 : $event") }
-    subscriber2.subscribe { event: OrderEvent -> println("Number 2 : $event") }
+    subscriber2.subscribe { event: OrderEvent ->
+        Thread.sleep(2000)
+        println("Number 2 SLOW : $event")
+    }
     subscriber3.subscribe { event: OrderEvent -> println("Number 3 : $event") }
 
     publisher.publish(
@@ -36,5 +39,5 @@ fun main(args: Array<String>) {
         ),
     )
 
-    Thread.sleep(2000)
+    Thread.sleep(4000)
 }
