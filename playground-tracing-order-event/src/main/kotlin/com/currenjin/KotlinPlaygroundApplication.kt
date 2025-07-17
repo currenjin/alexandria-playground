@@ -29,6 +29,7 @@ fun main(args: Array<String>) {
     )
 
     Thread.sleep(1000)
+    println(messageQueue.getStatus())
 
     publisher.publish(
         OrderEvent(
@@ -40,4 +41,5 @@ fun main(args: Array<String>) {
     )
 
     Thread.sleep(4000)
+    println(messageQueue.getStatus())
 }

@@ -8,6 +8,8 @@ class MessageQueue {
     private val subscriberIds = mutableListOf<String>()
     private val subscriberProgress = mutableMapOf<String, Int>()
 
+    fun getStatus() = "Messages: ${messages.size}, Progress: $subscriberProgress"
+
     fun push(event: OrderEvent) {
         messages.add(event)
     }
@@ -37,7 +39,7 @@ class MessageQueue {
     private fun cleanupMessages() {
         val minimumIndex = subscriberProgress.minBy { it.value }.value
 
-        if (minimumIndex > 0 && minimumIndex < messages.size) {
+        if (minimumIndex > 0 && minimumIndex <= messages.size) {
             repeat(minimumIndex) {
                 messages.removeFirst()
             }
