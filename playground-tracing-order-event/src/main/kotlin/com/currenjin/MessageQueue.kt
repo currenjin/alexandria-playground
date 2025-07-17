@@ -30,5 +30,22 @@ class MessageQueue {
     fun ack(subscriberId: String) {
         val currentIndex = subscriberProgress[subscriberId] ?: 0
         subscriberProgress[subscriberId] = currentIndex + 1
+
+        cleanupMessages()
+    }
+
+    private fun cleanupMessages() {
+        val minimumIndex = subscriberProgress.minBy { it.value }.value
+
+        if (minimumIndex > 0 && minimumIndex < messages.size) {
+            repeat(minimumIndex) {
+                messages.removeFirst()
+            }
+
+            subscriberProgress.keys.forEach { subscriberId ->
+                val currentIndex = subscriberProgress[subscriberId] ?: 0
+                subscriberProgress[subscriberId] = currentIndex - minimumIndex
+            }
+        }
     }
 }
