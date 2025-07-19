@@ -11,6 +11,7 @@ fun main(args: Array<String>) {
     val subscriber1 = Subscriber(messageQueue)
     val subscriber2 = Subscriber(messageQueue)
     val subscriber3 = Subscriber(messageQueue)
+    val exceptionSubscriber = Subscriber(messageQueue)
 
     subscriber1.subscribe { event: OrderEvent -> println("Number 1 : $event") }
     subscriber2.subscribe { event: OrderEvent ->
@@ -18,6 +19,7 @@ fun main(args: Array<String>) {
         println("Number 2 SLOW : $event")
     }
     subscriber3.subscribe { event: OrderEvent -> println("Number 3 : $event") }
+    exceptionSubscriber.subscribe { event: OrderEvent -> throw RuntimeException("RuntimeException : $event") }
 
     publisher.publish(
         OrderEvent(

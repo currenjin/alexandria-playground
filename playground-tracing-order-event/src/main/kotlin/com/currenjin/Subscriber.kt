@@ -20,11 +20,37 @@ class Subscriber(
                 val event = messageQueue.poll(subscriberId)
 
                 if (event != null) {
-                    callback(event)
-                    messageQueue.ack(subscriberId)
+                    processWithRetry(callback, event)
                 }
 
                 delay(100)
+            }
+        }
+    }
+
+    private suspend fun processWithRetry(
+        callback: (OrderEvent) -> Unit,
+        event: OrderEvent,
+    ) {
+        val maxRetries = 3
+        var attempt: Int = 0
+
+        while (attempt < maxRetries) {
+            try {
+                callback(event)
+                messageQueue.ack(subscriberId)
+                return
+            } catch (e: Exception) {
+                attempt++
+                println("재시도 $attempt/$maxRetries - ${e.message}")
+
+                if (attempt >= maxRetries) {
+                    println("재시도 후 포기: $event")
+                    messageQueue.ack(subscriberId)
+                    return
+                }
+
+                delay(1000)
             }
         }
     }
