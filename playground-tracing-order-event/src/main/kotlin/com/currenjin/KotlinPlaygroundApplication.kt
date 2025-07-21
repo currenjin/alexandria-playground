@@ -54,6 +54,6 @@ fun main(args: Array<String>) {
         )
     publisher.publish(Message(payload = payment, type = payment.javaClass.simpleName))
 
-    Thread.sleep(4000)
+    Thread.sleep(5000)
     println(messageQueue.getStatus())
 }
