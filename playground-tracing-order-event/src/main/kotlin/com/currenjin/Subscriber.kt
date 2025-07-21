@@ -1,6 +1,5 @@
 package com.currenjin
 
-import com.currenjin.event.OrderEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,7 +11,7 @@ class Subscriber(
 ) {
     private val subscriberId = UUID.randomUUID().toString()
 
-    fun subscribe(callback: (OrderEvent) -> Unit) {
+    fun subscribe(callback: (Message) -> Unit) {
         messageQueue.subscribe(subscriberId)
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -29,8 +28,8 @@ class Subscriber(
     }
 
     private suspend fun processWithRetry(
-        callback: (OrderEvent) -> Unit,
-        event: OrderEvent,
+        callback: (Message) -> Unit,
+        event: Message,
     ) {
         val maxRetries = 3
         var attempt: Int = 0

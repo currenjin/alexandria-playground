@@ -1,17 +1,16 @@
 package com.currenjin
 
-import com.currenjin.event.OrderEvent
 import java.util.Collections
 
 class MessageQueue {
-    private val messages = Collections.synchronizedList(mutableListOf<OrderEvent>())
+    private val messages = Collections.synchronizedList(mutableListOf<Message>())
     private val subscriberIds = mutableListOf<String>()
     private val subscriberProgress = mutableMapOf<String, Int>()
 
     fun getStatus() = "Messages: ${messages.size}, Progress: $subscriberProgress"
 
-    fun push(event: OrderEvent) {
-        messages.add(event)
+    fun push(message: Message) {
+        messages.add(message)
     }
 
     fun subscribe(subscriberId: String) {
@@ -19,7 +18,7 @@ class MessageQueue {
         subscriberProgress[subscriberId] = 0
     }
 
-    fun poll(subscriberId: String): OrderEvent? {
+    fun poll(subscriberId: String): Message? {
         val index = subscriberProgress[subscriberId] ?: 0
 
         if (index < messages.size) {
