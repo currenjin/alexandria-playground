@@ -1,18 +1,12 @@
 package com.currenjin
 
-import java.util.Collections
 import kotlin.reflect.KClass
 
-class MessageQueue {
-    private val messages = Collections.synchronizedList(mutableListOf<Message>())
+class MessageQueue : AbstractMessageQueue<Message>() {
     private val subscriberIds = mutableListOf<String>()
     private val subscriberProgress = mutableMapOf<String, Int>()
 
     fun getStatus() = "Messages: ${messages.size}, Progress: $subscriberProgress"
-
-    fun push(message: Message) {
-        messages.add(message)
-    }
 
     fun subscribe(subscriberId: String) {
         subscriberIds.add(subscriberId)
@@ -43,7 +37,7 @@ class MessageQueue {
         cleanupMessages()
     }
 
-    private fun cleanupMessages() {
+    override fun cleanupMessages() {
         val minimumIndex = subscriberProgress.minBy { it.value }.value
 
         if (minimumIndex > 0 && minimumIndex <= messages.size) {
