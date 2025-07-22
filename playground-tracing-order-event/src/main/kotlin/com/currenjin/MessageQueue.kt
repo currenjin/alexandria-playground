@@ -1,6 +1,6 @@
 package com.currenjin
 
-import java.util.*
+import java.util.Collections
 import kotlin.reflect.KClass
 
 class MessageQueue {
