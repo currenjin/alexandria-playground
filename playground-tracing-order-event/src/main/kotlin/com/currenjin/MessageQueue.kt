@@ -1,6 +1,6 @@
 package com.currenjin
 
-import java.util.Collections
+import java.util.*
 import kotlin.reflect.KClass
 
 class MessageQueue {
@@ -17,16 +17,6 @@ class MessageQueue {
     fun subscribe(subscriberId: String) {
         subscriberIds.add(subscriberId)
         subscriberProgress[subscriberId] = 0
-    }
-
-    fun poll(subscriberId: String): Message? {
-        val index = subscriberProgress[subscriberId] ?: 0
-
-        if (index < messages.size) {
-            return messages[index]
-        }
-
-        return null
     }
 
     fun <T : Any> poll(
