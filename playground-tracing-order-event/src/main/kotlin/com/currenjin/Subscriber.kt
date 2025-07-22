@@ -5,9 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.reflect.KClass
 
 class Subscriber(
     private val messageQueue: MessageQueue,
+    private val targetEvent: KClass<*>,
 ) {
     private val subscriberId = UUID.randomUUID().toString()
 
@@ -16,7 +18,7 @@ class Subscriber(
 
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
-                val event = messageQueue.poll(subscriberId)
+                val event = messageQueue.poll(subscriberId, targetEvent)
 
                 if (event != null) {
                     processWithRetry(callback, event)

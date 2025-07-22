@@ -1,6 +1,7 @@
 package com.currenjin
 
 import java.util.Collections
+import kotlin.reflect.KClass
 
 class MessageQueue {
     private val messages = Collections.synchronizedList(mutableListOf<Message>())
@@ -25,6 +26,23 @@ class MessageQueue {
             return messages[index]
         }
 
+        return null
+    }
+
+    fun <T : Any> poll(
+        subscriberId: String,
+        targetEvent: KClass<T>,
+    ): Message? {
+        val index = subscriberProgress[subscriberId] ?: 0
+
+        if (index < messages.size) {
+            val message = messages[index]
+            if (message.type == targetEvent.simpleName) {
+                return message
+            } else {
+                ack(subscriberId)
+            }
+        }
         return null
     }
 

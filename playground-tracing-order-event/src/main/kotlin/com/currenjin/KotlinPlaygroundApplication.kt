@@ -9,18 +9,18 @@ class KotlinPlaygroundApplication
 fun main(args: Array<String>) {
     val messageQueue = MessageQueue()
     val publisher = Publisher(messageQueue)
-    val subscriber1 = Subscriber(messageQueue)
-    val subscriber2 = Subscriber(messageQueue)
-    val subscriber3 = Subscriber(messageQueue)
-    val exceptionSubscriber = Subscriber(messageQueue)
+    val orderSubscriber1 = Subscriber(messageQueue = messageQueue, targetEvent = OrderEvent::class)
+    val orderSubscriber2 = Subscriber(messageQueue = messageQueue, targetEvent = OrderEvent::class)
+    val paymentSubscriber1 = Subscriber(messageQueue = messageQueue, targetEvent = PaymentEvent::class)
+    val exceptionPaymentSubscriber = Subscriber(messageQueue = messageQueue, targetEvent = PaymentEvent::class)
 
-    subscriber1.subscribe { event: Message -> println("Number 1 : $event") }
-    subscriber2.subscribe { event: Message ->
+    orderSubscriber1.subscribe { event: Message -> println("OrderSubscriber 1 : $event") }
+    orderSubscriber2.subscribe { event: Message ->
         Thread.sleep(2000)
-        println("Number 2 SLOW : $event")
+        println("OrderSubscriber 2 SLOW : $event")
     }
-    subscriber3.subscribe { event: Message -> println("Number 3 : $event") }
-    exceptionSubscriber.subscribe { event: Message -> throw RuntimeException("RuntimeException : $event") }
+    paymentSubscriber1.subscribe { event: Message -> println("PaymentSubscriber 3 : $event") }
+    exceptionPaymentSubscriber.subscribe { event: Message -> throw RuntimeException("RuntimeException : $event") }
 
     val firstOrder =
         OrderEvent(
@@ -44,7 +44,6 @@ fun main(args: Array<String>) {
     publisher.publish(Message(payload = secondOrder, type = secondOrder.javaClass.simpleName))
 
     Thread.sleep(1000)
-    println(messageQueue.getStatus())
 
     val payment =
         PaymentEvent(
