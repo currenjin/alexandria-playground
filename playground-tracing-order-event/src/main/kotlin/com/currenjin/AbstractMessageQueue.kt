@@ -9,5 +9,7 @@ abstract class AbstractMessageQueue<T> {
         messages.add(message)
     }
 
+    fun messageSize(): Int = messages.size
+
     abstract fun cleanupMessages()
 }

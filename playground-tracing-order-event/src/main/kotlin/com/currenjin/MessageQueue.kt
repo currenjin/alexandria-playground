@@ -6,7 +6,7 @@ class MessageQueue : AbstractMessageQueue<Message>() {
     private val subscriberIds = mutableListOf<String>()
     private val subscriberProgress = mutableMapOf<String, Int>()
 
-    fun getStatus() = "Messages: ${messages.size}, Progress: $subscriberProgress"
+    fun getStatus() = "Messages: ${messageSize()}, Progress: $subscriberProgress"
 
     fun subscribe(subscriberId: String) {
         subscriberIds.add(subscriberId)
@@ -19,7 +19,7 @@ class MessageQueue : AbstractMessageQueue<Message>() {
     ): Message? {
         val index = subscriberProgress[subscriberId] ?: 0
 
-        if (index < messages.size) {
+        if (index < messageSize()) {
             val message = messages[index]
             if (message.type == targetEvent.simpleName) {
                 return message
