@@ -2,7 +2,7 @@ package com.currenjin
 
 import kotlin.reflect.KClass
 
-class MessageQueue : AbstractMessageQueue<Message>() {
+class MessageQueue : AbstractMessageQueue() {
     private val subscriberIds = mutableListOf<String>()
     private val subscriberProgress = mutableMapOf<String, Int>()
 
