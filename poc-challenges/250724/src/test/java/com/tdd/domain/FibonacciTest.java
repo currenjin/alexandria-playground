@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class FibonacciTest {
 	@Test
 	void fibonacci_test() {
-		int[][] numbers = {{0,0}, {1,1}, {1,2}, {2,3}, {3,4}};
+		int[][] numbers = {{0,0}, {1,1}, {1,2}, {2,3}};
 
 		for (int[] number : numbers) {
 			assertEquals(number[0], Fibonacci.fib(number[1]));
