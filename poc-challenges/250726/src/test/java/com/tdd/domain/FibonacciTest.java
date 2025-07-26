@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class FibonacciTest {
 	@ParameterizedTest
-	@CsvSource(value = {"0,0", "1,1", "1,2", "2,3", "3,4", "5,5"})
+	@CsvSource(value = {"0,0", "1,1", "1,2", "2,3", "3,4", "5,5", "8,6", "13,7"})
 	void fibonacci(int result, int n) {
 		assertEquals(result, Fibonacci.fib(n));
 	}
