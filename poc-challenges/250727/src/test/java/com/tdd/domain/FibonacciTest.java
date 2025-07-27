@@ -10,5 +10,6 @@ public class FibonacciTest {
 		assertEquals(0, Fibonacci.fib(0));
 		assertEquals(1, Fibonacci.fib(1));
 		assertEquals(1, Fibonacci.fib(2));
+		assertEquals(2, Fibonacci.fib(3));
 	}
 }
