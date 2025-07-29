@@ -10,10 +10,12 @@ public class FibonacciTest {
 		assertEquals(0, fib(0));
 		assertEquals(1, fib(1));
 		assertEquals(1, fib(2));
+		assertEquals(2, fib(3));
 	}
 
 	private int fib(int i) {
 		if (i == 0) return 0;
-		return 1;
+		if (i <= 2) return 1;
+		return 2;
 	}
 }
