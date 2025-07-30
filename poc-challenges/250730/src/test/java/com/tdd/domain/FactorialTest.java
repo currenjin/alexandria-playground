@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class FactorialTest {
 	@Test
 	void factorial_test() {
-		int[][] numbers = {{1,1}, {2,2}, {6,3}, {24,4}};
+		int[][] numbers = {{1,1}, {2,2}, {6,3}, {24,4}, {120,5}};
 
 		for (int[] number : numbers) {
 			assertEquals(number[0], Factorial.fac(number[1]));
