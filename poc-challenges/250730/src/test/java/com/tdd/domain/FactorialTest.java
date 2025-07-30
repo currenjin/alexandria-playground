@@ -16,7 +16,7 @@ public class FactorialTest {
 
 	private static class Factorial {
 		public static int fac(int i) {
-			if (i <= 2) return i;
+			if (i == 1) return 1;
 			return fac(i - 1) * i;
 		}
 	}
