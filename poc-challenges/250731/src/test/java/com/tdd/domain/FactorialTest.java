@@ -8,9 +8,10 @@ public class FactorialTest {
     @Test
     void factorial_test() {
         assertEquals(0, fac(0));
+        assertEquals(1, fac(1));
     }
 
     private int fac(int n) {
-        return 0;
+        return n;
     }
 }
