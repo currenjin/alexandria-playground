@@ -1,15 +1,15 @@
 package com.tdd.domain;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorialTest {
-	@Test
-	void factorial_test() {
-		assertEquals(1, fac(1));
-		assertEquals(2, fac(2));
-		assertEquals(6, fac(3));
+	@ParameterizedTest
+	@CsvSource(value = {"1,1", "2,2", "6,3"})
+	void factorial_test(int result, int number) {
+		assertEquals(result, fac(number));
 	}
 
 	private int fac(int i) {
