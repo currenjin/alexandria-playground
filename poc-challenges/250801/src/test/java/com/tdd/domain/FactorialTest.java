@@ -7,13 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorialTest {
 	@ParameterizedTest
-	@CsvSource(value = {"1,1", "2,2", "6,3"})
+	@CsvSource(value = {"1,1", "2,2", "6,3", "24,4"})
 	void factorial_test(int result, int number) {
 		assertEquals(result, fac(number));
 	}
 
 	private int fac(int i) {
 		if (i <= 2) return i;
-		return (i - 2) * (i - 1) * i;
+		return fac(i - 1) * i;
 	}
 }
