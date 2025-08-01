@@ -9,9 +9,11 @@ public class FactorialTest {
 	void factorial_test() {
 		assertEquals(1, fac(1));
 		assertEquals(2, fac(2));
+		assertEquals(6, fac(3));
 	}
 
 	private int fac(int i) {
-		return i;
+		if (i <= 2) return i;
+		return 6;
 	}
 }
