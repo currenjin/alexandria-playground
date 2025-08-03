@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class FactorialTest {
 	@ParameterizedTest
-	@CsvSource(value = {"1,1", "2,2", "6,3"})
+	@CsvSource(value = {"1,1", "2,2", "6,3", "24,4"})
 	void factorial_test(int result, int number) {
 		assertEquals(result, fac(number));
 	}
