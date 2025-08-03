@@ -14,6 +14,6 @@ public class FactorialTest {
 
 	private int fac(int n) {
 		if (n <= 2) return n;
-		return (n - 2) * (n - 1) * n;
+		return fac(n - 1) * n;
 	}
 }
