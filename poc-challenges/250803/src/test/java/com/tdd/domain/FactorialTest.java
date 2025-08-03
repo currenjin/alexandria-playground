@@ -11,6 +11,6 @@ public class FactorialTest {
 	}
 
 	private int fac(int n) {
-		return 0;
+		return n;
 	}
 }
