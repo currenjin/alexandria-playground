@@ -2,13 +2,14 @@ package com.tdd.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class FactorialTest {
-	@Test
-	void factorial_test() {
-		assertEquals(1, fac(1));
-		assertEquals(2, fac(2));
+	@ParameterizedTest
+	@CsvSource(value = {"1,1", "2,2"})
+	void factorial_test(int result, int number) {
+		assertEquals(result, fac(number));
 	}
 
 	private int fac(int n) {
