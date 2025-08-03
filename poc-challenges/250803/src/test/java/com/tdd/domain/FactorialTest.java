@@ -13,7 +13,7 @@ public class FactorialTest {
 	}
 
 	private int fac(int n) {
-		if (n <= 2) return n;
+		if (n == 1) return n;
 		return fac(n - 1) * n;
 	}
 }
