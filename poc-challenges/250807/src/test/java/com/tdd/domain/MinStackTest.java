@@ -35,4 +35,16 @@ public class MinStackTest {
 
 		assertEquals(3, stack.getMin());
 	}
+
+	@Test
+	void pop_then_getMin_changesCorrectly() {
+		MinStack stack = new MinStack();
+
+		stack.push(5);
+		stack.push(1);
+		stack.push(3);
+		stack.pop();
+
+		assertEquals(1, stack.getMin());
+	}
 }

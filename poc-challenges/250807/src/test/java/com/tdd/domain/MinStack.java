@@ -30,4 +30,12 @@ public class MinStack {
 		}
 		return minStack.get(minStack.size() - 1);
 	}
+
+	public void pop() {
+		if (minStack.isEmpty()) {
+			throw new NoSuchElementException("stack is empty");
+		}
+		data.remove(data.size() - 1);
+		minStack.remove(minStack.size() - 1);
+	}
 }
