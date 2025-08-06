@@ -1,14 +1,14 @@
 package com.tdd.domain;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FibonacciTest {
-    @Test
-    void fibonacci() {
-        assertEquals(0, Fibonacci.fib(0));
-        assertEquals(1, Fibonacci.fib(1));
-        assertEquals(1, Fibonacci.fib(2));
+    @ParameterizedTest
+    @CsvSource(value = {"0,0", "1,1", "1,2"})
+    void fibonacci(int result, int number) {
+        assertEquals(result, Fibonacci.fib(number));
     }
 }
