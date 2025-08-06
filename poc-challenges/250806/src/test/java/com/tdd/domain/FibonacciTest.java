@@ -9,5 +9,6 @@ public class FibonacciTest {
     void fibonacci() {
         assertEquals(0, Fibonacci.fib(0));
         assertEquals(1, Fibonacci.fib(1));
+        assertEquals(1, Fibonacci.fib(2));
     }
 }
