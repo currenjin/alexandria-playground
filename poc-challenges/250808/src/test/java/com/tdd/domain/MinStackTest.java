@@ -23,4 +23,13 @@ public class MinStackTest {
 
 		assertEquals(5, minStack.top());
 	}
+
+	@Test
+	void push_differentValue_then_top_returnsThatValue() {
+		MinStack minStack = new MinStack();
+
+		minStack.push(100);
+
+		assertEquals(100, minStack.top());
+	}
 }
