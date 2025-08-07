@@ -20,6 +20,10 @@ public class MinStack {
 	}
 
 	public void pop() {
-		throw new NoSuchElementException("minStack is empty");
+		if (data.isEmpty()) {
+			throw new NoSuchElementException("minStack is empty");
+		}
+
+		data.remove(data.size() - 1);
 	}
 }
