@@ -30,6 +30,10 @@ public class MinStack {
 	}
 
 	public int getMin() {
-		throw new NoSuchElementException("minStack is empty");
+		if (data.isEmpty()) {
+			throw new NoSuchElementException("minStack is empty");
+		}
+
+		return data.get(data.size() - 1);
 	}
 }

@@ -68,4 +68,13 @@ public class MinStackTest {
 
 		assertThrows(NoSuchElementException.class, minStack::getMin);
 	}
+
+	@Test
+	void push_oneValue_then_getMin_returnsSame() {
+		MinStack minStack = new MinStack();
+
+		minStack.push(1);
+
+		assertEquals(1, minStack.getMin());
+	}
 }
