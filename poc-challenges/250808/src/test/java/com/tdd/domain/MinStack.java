@@ -12,7 +12,7 @@ public class MinStack {
 			throw new NoSuchElementException("minStack is empty");
 		}
 
-		return data.get(0);
+		return data.get(data.size() - 1);
 	}
 
 	public void push(int i) {

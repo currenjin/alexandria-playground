@@ -32,4 +32,14 @@ public class MinStackTest {
 
 		assertEquals(100, minStack.top());
 	}
+
+	@Test
+	void push_multipleValues_then_top_returnsLastPushed() {
+		MinStack minStack = new MinStack();
+
+		minStack.push(100);
+		minStack.push(1);
+
+		assertEquals(1, minStack.top());
+	}
 }
