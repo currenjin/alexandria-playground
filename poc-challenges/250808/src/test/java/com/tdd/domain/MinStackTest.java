@@ -13,4 +13,13 @@ public class MinStackTest {
 
 		assertThrows(NoSuchElementException.class, minStack::top);
 	}
+
+	@Test
+	void push_doesNotAffect_top_whenNotImplemented() {
+		MinStack minStack = new MinStack();
+
+		minStack.push(5);
+
+		assertThrows(NoSuchElementException.class, minStack::top);
+	}
 }

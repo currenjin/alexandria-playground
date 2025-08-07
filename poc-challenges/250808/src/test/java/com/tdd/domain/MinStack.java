@@ -6,4 +6,8 @@ public class MinStack {
 	public void top() {
 		throw new NoSuchElementException("minStack is empty");
 	}
+
+	public void push(int i) {
+
+	}
 }
