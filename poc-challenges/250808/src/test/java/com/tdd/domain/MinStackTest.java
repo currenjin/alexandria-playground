@@ -87,4 +87,26 @@ public class MinStackTest {
 
 		assertEquals(1, minStack.getMin());
 	}
+
+	@Test
+	void push_multipleValues_then_pop_then_getMin_returnsMinimumValue() {
+		MinStack minStack = new MinStack();
+
+		minStack.push(100);
+		minStack.push(1);
+		minStack.push(50);
+		minStack.push(40);
+
+		minStack.pop();
+		assertEquals(1, minStack.getMin());
+
+		minStack.pop();
+		assertEquals(1, minStack.getMin());
+
+		minStack.pop();
+		assertEquals(1, minStack.getMin());
+
+		minStack.pop();
+		assertThrows(NoSuchElementException.class, minStack::getMin);
+	}
 }
