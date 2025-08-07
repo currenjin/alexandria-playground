@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.junit.jupiter.api.function.Executable;
+
 public class MinStack {
 	private final List<Integer> data = new ArrayList<>();
 
@@ -25,5 +27,9 @@ public class MinStack {
 		}
 
 		data.remove(data.size() - 1);
+	}
+
+	public int getMin() {
+		throw new NoSuchElementException("minStack is empty");
 	}
 }
