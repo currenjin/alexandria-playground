@@ -8,6 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 
 public class MinStack {
 	private final List<Integer> data = new ArrayList<>();
+	private List<Integer> minStack = new ArrayList<>();
 
 	public int top() {
 		validateEmpty();
@@ -17,6 +18,9 @@ public class MinStack {
 
 	public void push(int i) {
 		data.add(i);
+
+		int min = minStack.isEmpty() ? i : Math.min(i, minStack.get(minStack.size() - 1));
+		minStack.add(min);
 	}
 
 	public void pop() {
@@ -28,7 +32,7 @@ public class MinStack {
 	public int getMin() {
 		validateEmpty();
 
-		return data.get(data.size() - 1);
+		return minStack.get(minStack.size() - 1);
 	}
 
 	private void validateEmpty() {
