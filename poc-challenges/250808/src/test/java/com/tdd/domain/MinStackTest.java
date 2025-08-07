@@ -42,4 +42,11 @@ public class MinStackTest {
 
 		assertEquals(1, minStack.top());
 	}
+
+	@Test
+	void pop_throwsException_whenStackIsEmpty() {
+		MinStack minStack = new MinStack();
+
+		assertThrows(NoSuchElementException.class, minStack::pop);
+	}
 }
