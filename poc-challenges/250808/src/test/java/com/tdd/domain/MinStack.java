@@ -1,13 +1,21 @@
 package com.tdd.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class MinStack {
-	public void top() {
-		throw new NoSuchElementException("minStack is empty");
+	private final List<Integer> data = new ArrayList<>();
+
+	public int top() {
+		if (data.isEmpty()) {
+			throw new NoSuchElementException("minStack is empty");
+		}
+
+		return data.get(0);
 	}
 
 	public void push(int i) {
-
+		data.add(i);
 	}
 }
