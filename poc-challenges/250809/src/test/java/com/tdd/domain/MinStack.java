@@ -28,6 +28,7 @@ public class MinStack {
         validateEmpty();
 
         data.remove(data.size() - 1);
+        minStack.remove(minStack.size() - 1);
     }
 
     public int getMin() {
