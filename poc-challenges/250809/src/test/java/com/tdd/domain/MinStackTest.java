@@ -40,4 +40,15 @@ public class MinStackTest {
 
 		assertThrows(NoSuchElementException.class, stack::pop);
 	}
+
+	@Test
+	void push_twoValues_then_pop_then_top_returnsFirstValue() {
+		MinStack stack = new MinStack();
+		stack.push(1);
+		stack.push(2);
+
+		stack.pop();
+
+		assertEquals(1, stack.top());
+	}
 }
