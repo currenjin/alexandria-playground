@@ -27,4 +27,8 @@ public class MinStack {
 
         data.remove(data.size() - 1);
     }
+
+    public void getMin() {
+        throw new NoSuchElementException("stack is empty");
+    }
 }
