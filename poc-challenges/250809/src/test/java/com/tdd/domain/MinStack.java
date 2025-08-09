@@ -19,4 +19,8 @@ public class MinStack {
     public void push(int i) {
         data.add(i);
     }
+
+    public void pop() {
+        throw new NoSuchElementException("stack is empty");
+    }
 }
