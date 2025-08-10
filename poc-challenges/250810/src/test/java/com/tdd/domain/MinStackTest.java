@@ -1,5 +1,6 @@
 package com.tdd.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.NoSuchElementException;
@@ -13,5 +14,14 @@ public class MinStackTest {
 		MinStack stack = new MinStack();
 
 		assertThrows(NoSuchElementException.class, stack::top);
+	}
+
+	@Test
+	void push_then_top_returnsPushedValue() {
+		MinStack stack = new MinStack();
+
+		stack.push(1);
+
+		assertEquals(1, stack.top());
 	}
 }
