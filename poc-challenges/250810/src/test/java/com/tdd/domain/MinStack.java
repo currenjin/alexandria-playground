@@ -8,6 +8,7 @@ public class MinStack {
 
 	public static final String STACK_IS_EMPTY = "stack is empty";
 	private final List<Integer> data = new ArrayList<>();
+	private final List<Integer> minData = new ArrayList<>();
 
 	public int top() {
 		validateEmptyStack();
@@ -17,6 +18,9 @@ public class MinStack {
 
 	public void push(int i) {
 		data.add(i);
+
+		int min = minData.isEmpty() ? i : minData.get(minData.size() - 1);
+		minData.add(min);
 	}
 
 	public void pop() {
@@ -34,6 +38,6 @@ public class MinStack {
 	public int getMin() {
 		validateEmptyStack();
 
-		return data.get(data.size() - 1);
+		return minData.get(minData.size() - 1);
 	}
 }
