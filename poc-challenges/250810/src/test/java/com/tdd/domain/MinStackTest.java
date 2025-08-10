@@ -89,6 +89,9 @@ public class MinStackTest {
 
 		stack.pop();
 		assertEquals(10, stack.getMin());
+
+		stack.pop();
+		assertThrows(NoSuchElementException.class, stack::getMin);
 	}
 
 	@Test

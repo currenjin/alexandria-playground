@@ -27,17 +27,18 @@ public class MinStack {
 		validateEmptyStack();
 
 		data.remove(data.size() - 1);
-	}
-
-	private void validateEmptyStack() {
-		if (data.isEmpty()) {
-			throw new NoSuchElementException(STACK_IS_EMPTY);
-		}
+		minData.remove(minData.size() - 1);
 	}
 
 	public int getMin() {
 		validateEmptyStack();
 
 		return minData.get(minData.size() - 1);
+	}
+
+	private void validateEmptyStack() {
+		if (data.isEmpty() && minData.isEmpty()) {
+			throw new NoSuchElementException(STACK_IS_EMPTY);
+		}
 	}
 }
