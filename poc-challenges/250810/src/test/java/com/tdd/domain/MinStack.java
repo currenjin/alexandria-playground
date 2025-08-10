@@ -34,6 +34,6 @@ public class MinStack {
 	public int getMin() {
 		validateEmptyStack();
 
-		return data.get(0);
+		return data.get(data.size() - 1);
 	}
 }
