@@ -31,7 +31,9 @@ public class MinStack {
 		}
 	}
 
-	public void getMin() {
+	public int getMin() {
 		validateEmptyStack();
+
+		return data.get(0);
 	}
 }
