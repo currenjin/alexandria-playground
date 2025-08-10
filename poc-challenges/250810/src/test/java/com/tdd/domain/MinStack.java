@@ -19,7 +19,7 @@ public class MinStack {
 	public void push(int i) {
 		data.add(i);
 
-		int min = minData.isEmpty() ? i : minData.get(minData.size() - 1);
+		int min = minData.isEmpty() ? i : Math.min(minData.get(minData.size() - 1), i);
 		minData.add(min);
 	}
 
