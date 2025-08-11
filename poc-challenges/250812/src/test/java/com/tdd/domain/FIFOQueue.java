@@ -9,7 +9,7 @@ public class FIFOQueue {
 	private final Deque<Integer> out = new ArrayDeque<>();
 
 	public boolean isEmpty() {
-		return in.isEmpty();
+		return in.isEmpty() && out.isEmpty();
 	}
 
 	public void enqueue(int i) {
