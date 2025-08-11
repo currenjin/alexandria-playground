@@ -1,9 +1,7 @@
 package com.tdd.domain;
 
-import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 public class FIFOQueue {
@@ -18,6 +16,10 @@ public class FIFOQueue {
 	}
 
 	public void peek() {
+		throw new NoSuchElementException("queue is empty");
+	}
+
+	public void dequeue() {
 		throw new NoSuchElementException("queue is empty");
 	}
 }

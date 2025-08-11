@@ -33,4 +33,11 @@ public class FIFOQueueTest {
 
 		assertThrows(NoSuchElementException.class, stack::peek);
 	}
+
+	@Test
+	void dequeue_throwsException_whenEmpty() {
+		FIFOQueue stack = new FIFOQueue();
+
+		assertThrows(NoSuchElementException.class, stack::dequeue);
+	}
 }
