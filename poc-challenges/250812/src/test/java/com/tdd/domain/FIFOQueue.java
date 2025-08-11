@@ -5,14 +5,15 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 
 public class FIFOQueue {
-	private final Deque<Integer> stack = new ArrayDeque<>();
+	private final Deque<Integer> in = new ArrayDeque<>();
+	private final Deque<Integer> out = new ArrayDeque<>();
 
 	public boolean isEmpty() {
-		return stack.isEmpty();
+		return in.isEmpty();
 	}
 
 	public void enqueue(int i) {
-		stack.push(i);
+		in.push(i);
 	}
 
 	public int peek() {
@@ -20,6 +21,12 @@ public class FIFOQueue {
 			throw new NoSuchElementException("stack is empty");
 		}
 
-		return stack.peek();
+		if (out.isEmpty()) {
+			while (!in.isEmpty()) {
+				out.push(in.pop());
+			}
+		}
+
+		return out.peek();
 	}
 }
