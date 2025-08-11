@@ -17,9 +17,7 @@ public class FIFOQueue {
 	}
 
 	public int peek() {
-		if (isEmpty()) {
-			throw new NoSuchElementException("stack is empty");
-		}
+		validateEmpty();
 
 		if (out.isEmpty()) {
 			while (!in.isEmpty()) {
@@ -31,6 +29,10 @@ public class FIFOQueue {
 	}
 
 	public void dequeue() {
+		validateEmpty();
+	}
+
+	private void validateEmpty() {
 		if (isEmpty()) {
 			throw new NoSuchElementException("stack is empty");
 		}
