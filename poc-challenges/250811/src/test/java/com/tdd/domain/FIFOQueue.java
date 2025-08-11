@@ -9,7 +9,7 @@ public class FIFOQueue {
 	private final Deque<Integer> out = new ArrayDeque<>();
 
 	public boolean isEmpty() {
-		return in.isEmpty();
+		return in.isEmpty() && out.isEmpty();
 	}
 
 	public void enqueue(int i) {
@@ -17,9 +17,15 @@ public class FIFOQueue {
 	}
 
 	public int peek() {
-		if (isEmpty()) {
-			throw new NoSuchElementException("queue is empty");
-		}
+		validateEmptyQueue();
+
+		moveIfNeeded();
+
+		return out.pop();
+	}
+
+	public int dequeue() {
+		validateEmptyQueue();
 
 		moveIfNeeded();
 
@@ -34,7 +40,9 @@ public class FIFOQueue {
 		}
 	}
 
-	public void dequeue() {
-		throw new NoSuchElementException("queue is empty");
+	private void validateEmptyQueue() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("queue is empty");
+		}
 	}
 }
