@@ -29,4 +29,10 @@ public class FIFOQueue {
 
 		return out.peek();
 	}
+
+	public void dequeue() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("stack is empty");
+		}
+	}
 }

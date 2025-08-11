@@ -54,4 +54,11 @@ public class FIFOQueueTest {
 
 		assertEquals(1, stack.peek());
 	}
+
+	@Test
+	void dequeue_throwsException_whenEmpty() {
+		FIFOQueue stack = new FIFOQueue();
+
+		assertThrows(NoSuchElementException.class, stack::dequeue);
+	}
 }
