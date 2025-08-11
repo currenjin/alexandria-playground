@@ -28,8 +28,16 @@ public class FIFOQueue {
 		return out.peek();
 	}
 
-	public void dequeue() {
+	public int dequeue() {
 		validateEmpty();
+
+		if (out.isEmpty()) {
+			while (!in.isEmpty()) {
+				out.push(in.pop());
+			}
+		}
+
+		return out.pop();
 	}
 
 	private void validateEmpty() {

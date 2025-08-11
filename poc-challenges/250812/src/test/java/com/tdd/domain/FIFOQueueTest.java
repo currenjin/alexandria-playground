@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.NoSuchElementException;
 
-import javax.swing.*;
-
 import org.junit.jupiter.api.Test;
 
 public class FIFOQueueTest {
@@ -60,5 +58,14 @@ public class FIFOQueueTest {
 		FIFOQueue stack = new FIFOQueue();
 
 		assertThrows(NoSuchElementException.class, stack::dequeue);
+	}
+
+	@Test
+	void enqueue_then_dequeue_returnsValue() {
+		FIFOQueue stack = new FIFOQueue();
+
+		stack.enqueue(1);
+
+		assertEquals(1, stack.dequeue());
 	}
 }
