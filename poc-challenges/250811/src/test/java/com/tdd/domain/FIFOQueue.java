@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 
 public class FIFOQueue {
 	private final Deque<Integer> in = new ArrayDeque<>();
+	private final Deque<Integer> out = new ArrayDeque<>();
 
 	public boolean isEmpty() {
 		return in.isEmpty();
@@ -15,8 +16,16 @@ public class FIFOQueue {
 		in.push(i);
 	}
 
-	public void peek() {
-		throw new NoSuchElementException("queue is empty");
+	public int peek() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("queue is empty");
+		}
+
+		if (out.isEmpty()) {
+			out.push(in.pop());
+		}
+
+		return out.pop();
 	}
 
 	public void dequeue() {

@@ -1,5 +1,6 @@
 package com.tdd.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,5 +40,14 @@ public class FIFOQueueTest {
 		FIFOQueue stack = new FIFOQueue();
 
 		assertThrows(NoSuchElementException.class, stack::dequeue);
+	}
+
+	@Test
+	void enqueue_then_peek_returnsFirst() {
+		FIFOQueue stack = new FIFOQueue();
+
+		stack.enqueue(10);
+
+		assertEquals(10, stack.peek());
 	}
 }
