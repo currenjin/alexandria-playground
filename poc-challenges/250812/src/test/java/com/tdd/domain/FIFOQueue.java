@@ -1,6 +1,5 @@
 package com.tdd.domain;
 
-import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
@@ -16,7 +15,11 @@ public class FIFOQueue {
 		stack.push(i);
 	}
 
-	public void peek() {
-		throw new NoSuchElementException("stack is empty");
+	public int peek() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("stack is empty");
+		}
+
+		return stack.peek();
 	}
 }
