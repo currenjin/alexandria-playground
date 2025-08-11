@@ -82,4 +82,15 @@ public class FIFOQueueTest {
 		assertEquals(3, stack.dequeue());
 		assertTrue(stack.isEmpty());
 	}
+
+	@Test
+	void dequeue_then_peek_moves_to_next() {
+		FIFOQueue stack = new FIFOQueue();
+
+		stack.enqueue(2);
+		stack.enqueue(3);
+
+		assertEquals(2, stack.dequeue());
+		assertEquals(3, stack.peek());
+	}
 }
