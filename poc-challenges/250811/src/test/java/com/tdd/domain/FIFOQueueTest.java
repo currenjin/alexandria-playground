@@ -50,4 +50,15 @@ public class FIFOQueueTest {
 
 		assertEquals(10, stack.peek());
 	}
+
+	@Test
+	void enqueue_multipleValues_then_peek_returnsFirst() {
+		FIFOQueue stack = new FIFOQueue();
+
+		stack.enqueue(1);
+		stack.enqueue(2);
+		stack.enqueue(3);
+
+		assertEquals(1, stack.peek());
+	}
 }

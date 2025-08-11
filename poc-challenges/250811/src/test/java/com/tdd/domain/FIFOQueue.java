@@ -21,11 +21,17 @@ public class FIFOQueue {
 			throw new NoSuchElementException("queue is empty");
 		}
 
-		if (out.isEmpty()) {
-			out.push(in.pop());
-		}
+		moveIfNeeded();
 
 		return out.pop();
+	}
+
+	private void moveIfNeeded() {
+		if (out.isEmpty()) {
+			while (!in.isEmpty()) {
+				out.push(in.pop());
+			}
+		}
 	}
 
 	public void dequeue() {
