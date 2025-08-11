@@ -1,7 +1,10 @@
 package com.tdd.domain;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.NoSuchElementException;
 
 import javax.swing.*;
 
@@ -22,5 +25,12 @@ public class FIFOQueueTest {
 		stack.enqueue(1);
 
 		assertFalse(stack.isEmpty());
+	}
+
+	@Test
+	void peek_throwsException_whenEmpty() {
+		FIFOQueue stack = new FIFOQueue();
+
+		assertThrows(NoSuchElementException.class, stack::peek);
 	}
 }
