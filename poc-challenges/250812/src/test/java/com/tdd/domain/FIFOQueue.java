@@ -19,11 +19,7 @@ public class FIFOQueue {
 	public int peek() {
 		validateEmpty();
 
-		if (out.isEmpty()) {
-			while (!in.isEmpty()) {
-				out.push(in.pop());
-			}
-		}
+		moveIfNeeded();
 
 		return out.peek();
 	}
@@ -31,13 +27,17 @@ public class FIFOQueue {
 	public int dequeue() {
 		validateEmpty();
 
+		moveIfNeeded();
+
+		return out.pop();
+	}
+
+	private void moveIfNeeded() {
 		if (out.isEmpty()) {
 			while (!in.isEmpty()) {
 				out.push(in.pop());
 			}
 		}
-
-		return out.pop();
 	}
 
 	private void validateEmpty() {
