@@ -21,7 +21,7 @@ public class FIFOQueue {
 
 		moveIfNeeded();
 
-		return out.pop();
+		return out.peek();
 	}
 
 	public int dequeue() {
