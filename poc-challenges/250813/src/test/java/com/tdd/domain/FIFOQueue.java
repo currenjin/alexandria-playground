@@ -30,7 +30,11 @@ public class FIFOQueue {
 		return out.peek();
 	}
 
-	public void dequeue() {
-		throw new NoSuchElementException("Queue is empty");
+	public int dequeue() {
+		if (isEmpty()) {
+			throw new NoSuchElementException("Queue is empty");
+		}
+
+		return in.pop();
 	}
 }
