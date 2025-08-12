@@ -14,4 +14,8 @@ public class FIFOQueue {
 	public void enqueue(int i) {
 		in.push(i);
 	}
+
+	public int peek() {
+		return in.peek();
+	}
 }
