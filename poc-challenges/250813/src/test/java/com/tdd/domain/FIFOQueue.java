@@ -31,7 +31,13 @@ public class FIFOQueue {
 	public int dequeue() {
 		validateEmpty();
 
-		return in.pop();
+		if (out.isEmpty()) {
+			while (!in.isEmpty()) {
+				out.push(in.pop());
+			}
+		}
+
+		return out.pop();
 	}
 
 	private void validateEmpty() {
