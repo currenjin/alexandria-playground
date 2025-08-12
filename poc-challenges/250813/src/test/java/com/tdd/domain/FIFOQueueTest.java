@@ -94,4 +94,20 @@ public class FIFOQueueTest {
 		assertEquals(2, queue.dequeue());
 		assertEquals(3, queue.dequeue());
 	}
+
+	@Test
+	void interleaved_operations_behave_consistently() {
+		FIFOQueue queue = new FIFOQueue();
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+		assertEquals(1, queue.dequeue());
+
+		queue.enqueue(3);
+		assertEquals(2, queue.peek());
+		assertEquals(2, queue.dequeue());
+		assertEquals(3, queue.dequeue());
+
+		assertTrue(queue.isEmpty());
+	}
 }
