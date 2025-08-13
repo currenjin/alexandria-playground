@@ -30,4 +30,13 @@ public class FIFOQueueTest {
 
 		assertThrows(NoSuchElementException.class, queue::peek);
 	}
+
+	@Test
+	void enqueue_then_peek_returnsValue() {
+		FIFOQueue queue = new FIFOQueue();
+
+		queue.enqueue(1);
+
+		assertEquals(1, queue.peek());
+	}
 }

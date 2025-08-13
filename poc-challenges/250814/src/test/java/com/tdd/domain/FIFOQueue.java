@@ -20,6 +20,10 @@ public class FIFOQueue {
 	}
 
 	public int peek() {
-		throw new NoSuchElementException("queue is empty");
+		if (isEmpty()) {
+			throw new NoSuchElementException("queue is empty");
+		}
+
+		return in.peek();
 	}
 }
