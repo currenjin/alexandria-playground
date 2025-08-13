@@ -77,4 +77,17 @@ public class FIFOQueueTest {
 
 		assertEquals(1, queue.dequeue());
 	}
+
+	@Test
+	void enqueue_multipleValues_then_dequeue_returnsValueInOrder() {
+		FIFOQueue queue = new FIFOQueue();
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+
+		assertEquals(1, queue.dequeue());
+		assertEquals(2, queue.dequeue());
+		assertEquals(3, queue.dequeue());
+	}
 }
