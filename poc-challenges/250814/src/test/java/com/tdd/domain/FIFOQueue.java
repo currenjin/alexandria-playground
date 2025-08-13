@@ -20,19 +20,25 @@ public class FIFOQueue {
 	public int peek() {
 		validateEmptyQueue();
 
-		return in.getLast();
+		moveInOrder();
+
+		return out.peek();
 	}
 
 	public int dequeue() {
 		validateEmptyQueue();
 
+		moveInOrder();
+
+		return out.pop();
+	}
+
+	private void moveInOrder() {
 		if (out.isEmpty()) {
 			while (!in.isEmpty()) {
 				out.push(in.pop());
 			}
 		}
-
-		return out.pop();
 	}
 
 	private void validateEmptyQueue() {
