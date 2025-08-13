@@ -24,6 +24,6 @@ public class FIFOQueue {
 			throw new NoSuchElementException("queue is empty");
 		}
 
-		return in.peek();
+		return in.getLast();
 	}
 }
