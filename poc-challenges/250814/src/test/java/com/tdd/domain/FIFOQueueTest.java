@@ -2,23 +2,32 @@ package com.tdd.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.NoSuchElementException;
+import java.util.PriorityQueue;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FIFOQueueTest {
 	@Test
 	void isEmpty_returnsTrue() {
-		FIFOQueue stack = new FIFOQueue();
+		FIFOQueue queue = new FIFOQueue();
 
-		assertTrue(stack.isEmpty());
+		assertTrue(queue.isEmpty());
 	}
 
 	@Test
 	void enqueue_then_isEmpty_returnsFalse() {
-		FIFOQueue stack = new FIFOQueue();
+		FIFOQueue queue = new FIFOQueue();
 
-		stack.enqueue(1);
+		queue.enqueue(1);
 
-		assertFalse(stack.isEmpty());
+		assertFalse(queue.isEmpty());
+	}
+
+	@Test
+	void peek_throwsException_whenEmpty() {
+		FIFOQueue queue = new FIFOQueue();
+
+		assertThrows(NoSuchElementException.class, queue::peek);
 	}
 }
