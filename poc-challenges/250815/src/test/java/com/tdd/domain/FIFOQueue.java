@@ -1,8 +1,16 @@
 package com.tdd.domain;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class FIFOQueue {
+	private final Deque<Integer> in = new ArrayDeque<>();
 
 	public boolean isEmpty() {
-		return true;
+		return in.isEmpty();
+	}
+
+	public void enqueue(int i) {
+		in.push(i);
 	}
 }
