@@ -41,4 +41,15 @@ public class FIFOQueueTest {
 
 		assertEquals(1, queue.peek());
 	}
+
+	@Test
+	void enqueue_multipleValues_then_peek_returnsFirstValue() {
+		FIFOQueue queue = new FIFOQueue();
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+
+		assertEquals(1, queue.peek());
+	}
 }
