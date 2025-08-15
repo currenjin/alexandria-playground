@@ -92,4 +92,18 @@ public class FIFOQueueTest {
 		assertEquals(2, queue.dequeue());
 		assertEquals(3, queue.dequeue());
 	}
+
+	@Test
+	void dequeue_then_peek_moves_to_next() {
+		FIFOQueue queue = new FIFOQueue();
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+
+		assertEquals(1, queue.dequeue());
+		assertEquals(2, queue.peek());
+		assertEquals(2, queue.dequeue());
+		assertEquals(3, queue.dequeue());
+	}
 }
