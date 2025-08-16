@@ -10,10 +10,11 @@ public class MinStack {
 	private final List<Integer> stack = new ArrayList<>();
 	private final List<Integer> min = new ArrayList<>();
 
-	public int pop() {
+	public void pop() {
 		validateEmptyStack();
 
-		return stack.remove(stack.size() - 1);
+		stack.remove(stack.size() - 1);
+		min.remove(min.size() - 1);
 	}
 
 	public void push(int i) {

@@ -16,12 +16,13 @@ public class MinStackTest {
 	}
 
 	@Test
-	void push_then_pop_returnsValue() {
+	void push_then_pop_then_top_throwsException() {
 		MinStack stack = new MinStack();
 
 		stack.push(1);
+		stack.pop();
 
-		assertEquals(1, stack.pop());
+		assertThrows(NoSuchElementException.class, stack::top);
 	}
 
 	@Test
@@ -31,21 +32,11 @@ public class MinStackTest {
 		stack.push(1);
 		stack.push(2);
 		stack.push(3);
+		assertEquals(3, stack.top());
 
-		assertEquals(3, stack.pop());
-	}
+		stack.pop();
 
-	@Test
-	void push_multipleValues_then_multiplePop_returnsLastValue() {
-		MinStack stack = new MinStack();
-
-		stack.push(1);
-		stack.push(2);
-		stack.push(3);
-
-		assertEquals(3, stack.pop());
-		assertEquals(2, stack.pop());
-		assertEquals(1, stack.pop());
+		assertEquals(2, stack.top());
 	}
 
 	@Test
