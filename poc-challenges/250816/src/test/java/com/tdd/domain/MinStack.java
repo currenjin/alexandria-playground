@@ -21,7 +21,11 @@ public class MinStack {
 		stack.add(i);
 	}
 
-	public void getMin() {
-		throw new NoSuchElementException("stack is empty");
+	public int getMin() {
+		if (stack.isEmpty()) {
+			throw new NoSuchElementException("stack is empty");
+		}
+
+		return stack.get(0);
 	}
 }
