@@ -13,7 +13,7 @@ public class MinStack {
 	public int pop() {
 		validateEmptyStack();
 
-		return 1;
+		return stack.remove(stack.size() - 1);
 	}
 
 	public void push(int i) {
