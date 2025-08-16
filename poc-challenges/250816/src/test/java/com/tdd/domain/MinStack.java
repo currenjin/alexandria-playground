@@ -10,9 +10,7 @@ public class MinStack {
 	private final List<Integer> stack = new ArrayList<>();
 
 	public int pop() {
-		if (stack.isEmpty()) {
-			throw new NoSuchElementException("stack is empty");
-		}
+		validateEmptyStack();
 
 		return 1;
 	}
@@ -22,10 +20,14 @@ public class MinStack {
 	}
 
 	public int getMin() {
+		validateEmptyStack();
+
+		return stack.get(0);
+	}
+
+	private void validateEmptyStack() {
 		if (stack.isEmpty()) {
 			throw new NoSuchElementException("stack is empty");
 		}
-
-		return stack.get(0);
 	}
 }
