@@ -23,4 +23,15 @@ public class MinStackTest {
 
 		assertEquals(1, stack.pop());
 	}
+
+	@Test
+	void push_multipleValues_then_pop_returnsLastValue() {
+		MinStack stack = new MinStack();
+
+		stack.push(1);
+		stack.push(2);
+		stack.push(3);
+
+		assertEquals(1, stack.pop());
+	}
 }
