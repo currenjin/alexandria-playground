@@ -90,4 +90,23 @@ public class MinStackTest {
 
 		assertEquals(1, stack.top());
 	}
+
+	@Test
+	void integration_test() {
+		MinStack stack = new MinStack();
+
+		stack.push(10);
+		stack.push(20);
+
+		assertEquals(20, stack.top());
+		assertEquals(10, stack.getMin());
+
+		stack.pop();
+		assertEquals(10, stack.top());
+		assertEquals(10, stack.getMin());
+
+		stack.push(5);
+		assertEquals(5, stack.top());
+		assertEquals(5, stack.getMin());
+	}
 }
