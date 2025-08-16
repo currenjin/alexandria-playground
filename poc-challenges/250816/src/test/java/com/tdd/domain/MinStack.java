@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 public class MinStack {
 
 	private final List<Integer> stack = new ArrayList<>();
+	private final List<Integer> min = new ArrayList<>();
 
 	public int pop() {
 		validateEmptyStack();
@@ -17,12 +18,14 @@ public class MinStack {
 
 	public void push(int i) {
 		stack.add(i);
+		int minimumValue = min.isEmpty() ? i : Math.min(i, min.get(min.size() - 1));
+		min.add(minimumValue);
 	}
 
 	public int getMin() {
 		validateEmptyStack();
 
-		return stack.get(0);
+		return min.get(min.size() - 1);
 	}
 
 	private void validateEmptyStack() {

@@ -50,4 +50,15 @@ public class MinStackTest {
 
 		assertEquals(1, stack.getMin());
 	}
+
+	@Test
+	void push_multipleValues_then_getMin_returnsMinValue() {
+		MinStack stack = new MinStack();
+
+		stack.push(2);
+		stack.push(3);
+		stack.push(1);
+
+		assertEquals(1, stack.getMin());
+	}
 }
