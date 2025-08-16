@@ -34,7 +34,9 @@ public class MinStack {
 		}
 	}
 
-	public void top() {
+	public int top() {
 		validateEmptyStack();
+
+		return stack.get(stack.size() - 1);
 	}
 }
