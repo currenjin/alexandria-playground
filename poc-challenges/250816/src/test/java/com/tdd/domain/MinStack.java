@@ -20,4 +20,8 @@ public class MinStack {
 	public void push(int i) {
 		stack.add(i);
 	}
+
+	public void getMin() {
+		throw new NoSuchElementException("stack is empty");
+	}
 }
