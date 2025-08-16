@@ -33,4 +33,8 @@ public class MinStack {
 			throw new NoSuchElementException("stack is empty");
 		}
 	}
+
+	public void top() {
+		validateEmptyStack();
+	}
 }

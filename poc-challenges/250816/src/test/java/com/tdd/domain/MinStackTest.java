@@ -74,4 +74,11 @@ public class MinStackTest {
 
 		assertEquals(1, stack.getMin());
 	}
+
+	@Test
+	void top_throwsException_whenEmpty() {
+		MinStack stack = new MinStack();
+
+		assertThrows(NoSuchElementException.class, stack::top);
+	}
 }
