@@ -1,6 +1,6 @@
 package com.currenjin.calculator;
 
-public class CalculatorTest {
+public class CalculatorTestOnRuntime {
 
 	private int nbErrors = 0;
 
@@ -14,7 +14,7 @@ public class CalculatorTest {
 	}
 
 	public static void main(String[] args) {
-		CalculatorTest test = new CalculatorTest();
+		CalculatorTestOnRuntime test = new CalculatorTestOnRuntime();
 
 		try {
 			test.testAdd();
