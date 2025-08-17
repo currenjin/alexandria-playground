@@ -92,4 +92,21 @@ public class CircularQueueTest {
 
 		assertThrows(IllegalStateException.class, () -> queue.enqueue(3));
 	}
+
+	@Test
+	void wrap_around() {
+		CircularQueue q = new CircularQueue(3);
+
+		q.enqueue(1);
+		q.enqueue(2);
+		q.enqueue(3);
+		assertEquals(1, q.dequeue());
+
+		q.enqueue(4);
+		assertEquals(2, q.dequeue());
+		assertEquals(3, q.dequeue());
+		assertEquals(4, q.dequeue());
+
+		assertTrue(q.isEmpty());
+	}
 }
