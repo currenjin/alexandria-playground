@@ -83,4 +83,13 @@ public class CircularQueueTest {
 
 		assertTrue(queue.isFull());
 	}
+
+	@Test
+	void enqueue_throwsException_whenFull() {
+		CircularQueue queue = new CircularQueue(1);
+
+		queue.enqueue(1);
+
+		assertThrows(IllegalStateException.class, () -> queue.enqueue(3));
+	}
 }
