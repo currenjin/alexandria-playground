@@ -20,6 +20,10 @@ public class CircularQueue {
 	}
 
 	public void enqueue(int i) {
+		if (isFull()) {
+			throw new IllegalStateException("Queue is full");
+		}
+
 		data[tail] = i;
 		tail = (tail + 1) % capacity;
 		size++;
