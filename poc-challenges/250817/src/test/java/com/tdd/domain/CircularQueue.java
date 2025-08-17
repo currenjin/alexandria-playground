@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 public class CircularQueue {
 
 	private boolean empty = true;
+	private int single;
 
 	public CircularQueue(int i) {
 
@@ -16,11 +17,12 @@ public class CircularQueue {
 
 	public void enqueue(int i) {
 		empty = false;
+		single = i;
 	}
 
 	public int peek() {
 		if (empty) { throw new NoSuchElementException("queue is empty"); }
 
-		return 1;
+		return single;
 	}
 }
