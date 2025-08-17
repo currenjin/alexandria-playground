@@ -64,4 +64,14 @@ public class CircularQueueTest {
 
 		assertFalse(queue.isFull());
 	}
+
+	@Test
+	void enqueue_multipleValues_then_peek_returnsHeadValue() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+
+		assertEquals(1, queue.peek());
+	}
 }

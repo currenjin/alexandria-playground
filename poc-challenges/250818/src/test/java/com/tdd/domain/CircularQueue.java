@@ -4,20 +4,24 @@ import java.util.NoSuchElementException;
 
 public class CircularQueue {
 
-	private Integer single;
 	private final int capacity;
-	private int size = 0;
+	private final int[] data;
+
+	private Integer single;
+	private int head = 0, tail = 0, size = 0;
 
 	public CircularQueue(int i) {
 		capacity = i;
+		data = new int[capacity];
 	}
 
 	public boolean isEmpty() {
-		return single == null;
+		return size == 0;
 	}
 
 	public void enqueue(int i) {
-		single = i;
+		data[tail] = i;
+		tail = (tail + 1) % capacity;
 		size++;
 	}
 
@@ -26,7 +30,7 @@ public class CircularQueue {
 			throw new NoSuchElementException("Queue is empty");
 		}
 
-		return single;
+		return data[head];
 	}
 
 	public boolean isFull() {
