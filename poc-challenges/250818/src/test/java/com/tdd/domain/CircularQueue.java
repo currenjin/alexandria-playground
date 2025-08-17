@@ -25,4 +25,8 @@ public class CircularQueue {
 
 		return single;
 	}
+
+	public boolean isFull() {
+		return true;
+	}
 }

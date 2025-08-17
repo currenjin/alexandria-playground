@@ -9,6 +9,8 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import com.sun.org.apache.xerces.internal.util.AugmentationsImpl;
+
 public class CircularQueueTest {
 	@Test
 	void isEmpty_returnsTrue_whenEmpty() {
@@ -40,5 +42,16 @@ public class CircularQueueTest {
 		queue.enqueue(1);
 
 		assertEquals(1, queue.peek());
+	}
+
+	@Test
+	void enqueue_then_isFull_returnsTrue_whenFull() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+
+		assertTrue(queue.isFull());
 	}
 }
