@@ -26,8 +26,10 @@ public class CircularQueue {
 		return single;
 	}
 
-	public void dequeue() {
+	public int dequeue() {
 		validateEmptyQueue();
+
+		return single;
 	}
 
 	private void validateEmptyQueue() {

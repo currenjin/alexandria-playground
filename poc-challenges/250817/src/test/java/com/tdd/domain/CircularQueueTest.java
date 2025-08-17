@@ -50,4 +50,13 @@ public class CircularQueueTest {
 
 		assertThrows(NoSuchElementException.class, queue::dequeue);
 	}
+
+	@Test
+	void enqueue_thenDequeue_returnsValue() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+
+		assertEquals(1, queue.dequeue());
+	}
 }
