@@ -109,4 +109,23 @@ public class CircularQueueTest {
 
 		assertTrue(q.isEmpty());
 	}
+
+	@Test
+	void interleaved_operations_consistent() {
+		CircularQueue q = new CircularQueue(3);
+		q.enqueue(10);
+		assertEquals(10, q.peek());
+
+		q.enqueue(20);
+		assertEquals(10, q.dequeue());
+
+		q.enqueue(30);
+		q.enqueue(40);
+		assertTrue(q.isFull());
+		assertEquals(20, q.dequeue());
+		assertEquals(30, q.dequeue());
+		assertEquals(40, q.dequeue());
+		assertTrue(q.isEmpty());
+	}
+
 }
