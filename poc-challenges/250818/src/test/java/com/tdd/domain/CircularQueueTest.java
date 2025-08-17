@@ -54,4 +54,14 @@ public class CircularQueueTest {
 
 		assertTrue(queue.isFull());
 	}
+
+	@Test
+	void enqueue_then_isFull_returnsFalse_whenNotFull() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+
+		assertFalse(queue.isFull());
+	}
 }
