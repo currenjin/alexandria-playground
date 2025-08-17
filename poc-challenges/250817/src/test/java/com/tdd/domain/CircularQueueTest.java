@@ -59,4 +59,15 @@ public class CircularQueueTest {
 
 		assertEquals(1, queue.dequeue());
 	}
+
+	@Test
+	void enqueueMultipleValues_thenDequeue_returnsValuesInOrder() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+
+		assertEquals(1, queue.dequeue());
+		assertEquals(2, queue.dequeue());
+	}
 }

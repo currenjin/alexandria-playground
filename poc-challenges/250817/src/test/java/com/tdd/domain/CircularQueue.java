@@ -4,35 +4,47 @@ import java.util.NoSuchElementException;
 
 public class CircularQueue {
 
+	private final int capacity;
 	private boolean empty = true;
-	private int single;
+	private final int[] data;
+	private int head = 0, tail = 0, size = 0;
 
 	public CircularQueue(int i) {
-
+		capacity = i;
+		data = new int[capacity];
 	}
 
 	public boolean isEmpty() {
-		return empty;
+		return size == 0;
 	}
 
 	public void enqueue(int i) {
-		empty = false;
-		single = i;
+		if (size == capacity) {
+			throw new IllegalStateException("queue is full");
+		}
+
+		data[tail] = i;
+		tail = (tail + 1) % capacity;
+		size++;
 	}
 
 	public int peek() {
 		validateEmptyQueue();
 
-		return single;
+		return data[head];
 	}
 
 	public int dequeue() {
 		validateEmptyQueue();
 
-		return single;
+		int value = data[head];
+		head = (head + 1) % capacity;
+		size--;
+
+		return value;
 	}
 
 	private void validateEmptyQueue() {
-		if (empty) { throw new NoSuchElementException("queue is empty"); }
+		if (isEmpty()) { throw new NoSuchElementException("queue is empty"); }
 	}
 }
