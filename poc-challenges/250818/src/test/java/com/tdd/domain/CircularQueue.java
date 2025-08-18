@@ -7,7 +7,6 @@ public class CircularQueue {
 	private final int capacity;
 	private final int[] data;
 
-	private Integer single;
 	private int head = 0, tail = 0, size = 0;
 
 	public CircularQueue(int i) {
