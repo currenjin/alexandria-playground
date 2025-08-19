@@ -30,4 +30,8 @@ public class CircularQueue {
 
 		return data[head];
 	}
+
+	public boolean isFull() {
+		return false;
+	}
 }
