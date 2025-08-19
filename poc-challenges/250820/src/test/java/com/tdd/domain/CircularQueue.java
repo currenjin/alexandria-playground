@@ -32,6 +32,6 @@ public class CircularQueue {
 	}
 
 	public boolean isFull() {
-		return false;
+		return size == capacity;
 	}
 }
