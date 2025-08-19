@@ -2,17 +2,17 @@ package com.tdd.domain;
 
 public class CircularQueue {
 
-	private Integer single;
+	private Integer data;
 
 	public CircularQueue(int i) {
 
 	}
 
 	public boolean isEmpty() {
-		return single == null;
+		return data == null;
 	}
 
 	public void enqueue(int i) {
-		single = i;
+		data = i;
 	}
 }
