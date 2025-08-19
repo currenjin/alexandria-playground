@@ -33,8 +33,10 @@ public class CircularQueue {
 		return size == capacity;
 	}
 
-	public void dequeue() {
+	public int dequeue() {
 		validateEmptyQueue();
+
+		return data[tail];
 	}
 
 	private void validateEmptyQueue() {
