@@ -1,5 +1,6 @@
 package com.tdd.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,5 +31,14 @@ public class CircularQueueTest {
 		CircularQueue queue = new CircularQueue(1);
 
 		assertThrows(NoSuchElementException.class, queue::peek);
+	}
+
+	@Test
+	void enqueue_then_peek_returnsValue() {
+		CircularQueue queue = new CircularQueue(1);
+
+		queue.enqueue(1);
+
+		assertEquals(1, queue.peek());
 	}
 }
