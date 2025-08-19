@@ -35,7 +35,14 @@ public class CircularQueue {
         return size == capacity;
     }
 
-    public void dequeue() {
-        throw new NoSuchElementException("queue is empty");
+    public int dequeue() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("queue is empty");
+        }
+
+        int value = data[tail];
+        tail = (tail + 1) % capacity;
+
+        return value;
     }
 }
