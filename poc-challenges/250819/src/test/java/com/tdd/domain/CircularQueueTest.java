@@ -1,5 +1,6 @@
 package com.tdd.domain;
 
+import com.sun.org.apache.xerces.internal.util.AugmentationsImpl;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -40,5 +41,12 @@ public class CircularQueueTest {
         queue.enqueue(1);
 
         assertEquals(1, queue.peek());
+    }
+
+    @Test
+    void isFull_returnsFalse() {
+        CircularQueue queue = new CircularQueue(1);
+
+        assertFalse(queue.isFull());
     }
 }
