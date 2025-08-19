@@ -42,6 +42,7 @@ public class CircularQueue {
 
         int value = data[tail];
         tail = (tail + 1) % capacity;
+        size--;
 
         return value;
     }
