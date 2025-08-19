@@ -72,4 +72,11 @@ public class CircularQueueTest {
 
 		assertTrue(queue.isFull());
 	}
+
+	@Test
+	void dequeue_throwsException_whenEmpty() {
+		CircularQueue queue = new CircularQueue(1);
+
+		assertThrows(NoSuchElementException.class, queue::dequeue);
+	}
 }
