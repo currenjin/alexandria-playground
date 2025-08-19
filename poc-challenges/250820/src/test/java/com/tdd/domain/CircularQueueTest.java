@@ -103,6 +103,16 @@ public class CircularQueueTest {
 	}
 
 	@Test
+	void enqueue_throwsException_whenFull() {
+		CircularQueue queue = new CircularQueue(2);
+
+		queue.enqueue(1);
+		queue.enqueue(2);
+
+		assertThrows(IllegalStateException.class, () -> queue.enqueue(3));
+	}
+
+	@Test
 	void integration() {
 		CircularQueue queue = new CircularQueue(3);
 
