@@ -1,19 +1,19 @@
 package com.tdd.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CircularQueue {
-	private final List<Integer> data = new ArrayList<>();
+	private final int[] data;
 	private final int capacity;
+	private int head = 0, tail = 0, size = 0;
 
 	public CircularQueue(int i) {
 		capacity = i;
+		data = new int[capacity];
 	}
 
 	public boolean isEmpty() {
-		return data.isEmpty();
+		return size == 0;
 	}
 
 	public void enqueue(int i) {
@@ -21,23 +21,29 @@ public class CircularQueue {
 			throw new IllegalStateException("queue is full");
 		}
 
-		data.add(i);
+		data[tail] = i;
+		tail = (tail + 1) % capacity;
+		size++;
 	}
 
 	public int peek() {
 		validateEmptyQueue();
 
-		return data.get(0);
+		return data[head];
 	}
 
 	public boolean isFull() {
-		return data.size() == capacity;
+		return size == capacity;
 	}
 
 	public int dequeue() {
 		validateEmptyQueue();
 
-		return data.remove(0);
+		int value = data[head];
+		head = (head + 1) % capacity;
+		size--;
+
+		return value;
 	}
 
 	private void validateEmptyQueue() {
