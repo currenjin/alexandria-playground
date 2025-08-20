@@ -120,4 +120,24 @@ public class CircularQueueTest {
 		assertEquals(2, queue.dequeue());
 		assertEquals(3, queue.dequeue());
 	}
+
+	@Test
+	void wrap_around() {
+		CircularQueue queue = new CircularQueue(3);
+
+		queue.enqueue(1);
+		assertEquals(1, queue.peek());
+		assertEquals(1, queue.dequeue());
+
+		queue.enqueue(2);
+		queue.enqueue(3);
+		queue.enqueue(4);
+
+		assertTrue(queue.isFull());
+		assertEquals(2, queue.peek());
+		assertEquals(2, queue.dequeue());
+		assertEquals(3, queue.dequeue());
+		assertEquals(4, queue.dequeue());
+		assertTrue(queue.isEmpty());
+	}
 }
