@@ -41,6 +41,6 @@ public class CircularQueue {
 			throw new NoSuchElementException("queue is empty");
 		}
 
-		return data.remove(data.size() - 1);
+		return data.remove(0);
 	}
 }
