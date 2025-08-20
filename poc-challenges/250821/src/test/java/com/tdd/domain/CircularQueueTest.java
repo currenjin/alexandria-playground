@@ -32,4 +32,13 @@ public class CircularQueueTest {
 
 		assertThrows(NoSuchElementException.class, queue::peek);
 	}
+
+	@Test
+	void enqueue_then_peek_returnsValue() {
+		CircularQueue queue = new CircularQueue(1);
+
+		queue.enqueue(1);
+
+		assertEquals(1, queue.peek());
+	}
 }
