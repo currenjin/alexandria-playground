@@ -35,4 +35,8 @@ public class CircularQueue {
 	public boolean isFull() {
 		return data.size() == capacity;
 	}
+
+	public void dequeue() {
+		throw new NoSuchElementException("queue is empty");
+	}
 }
