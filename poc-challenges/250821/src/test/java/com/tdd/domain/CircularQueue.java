@@ -1,5 +1,7 @@
 package com.tdd.domain;
 
+import java.util.NoSuchElementException;
+
 public class CircularQueue {
 	private Integer data;
 
@@ -13,5 +15,9 @@ public class CircularQueue {
 
 	public void enqueue(int i) {
 		data = i;
+	}
+
+	public void peek() {
+		throw new NoSuchElementException("queue is empty");
 	}
 }
