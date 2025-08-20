@@ -26,4 +26,8 @@ public class CircularQueue {
 
 		return data.get(0);
 	}
+
+	public boolean isFull() {
+		return false;
+	}
 }
