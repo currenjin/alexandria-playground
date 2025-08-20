@@ -1,20 +1,22 @@
 package com.tdd.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CircularQueue {
-	private Integer data;
+	private final List<Integer> data = new ArrayList<>();
 
 	public CircularQueue(int i) {
 
 	}
 
 	public boolean isEmpty() {
-		return data == null;
+		return data.isEmpty();
 	}
 
 	public void enqueue(int i) {
-		data = i;
+		data.add(i);
 	}
 
 	public int peek() {
@@ -22,6 +24,6 @@ public class CircularQueue {
 			throw new NoSuchElementException("queue is empty");
 		}
 
-		return data;
+		return data.get(0);
 	}
 }
