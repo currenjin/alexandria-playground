@@ -6,9 +6,10 @@ import java.util.NoSuchElementException;
 
 public class CircularQueue {
 	private final List<Integer> data = new ArrayList<>();
+	private final int capacity;
 
 	public CircularQueue(int i) {
-
+		capacity = i;
 	}
 
 	public boolean isEmpty() {
@@ -28,6 +29,6 @@ public class CircularQueue {
 	}
 
 	public boolean isFull() {
-		return false;
+		return data.size() == capacity;
 	}
 }
