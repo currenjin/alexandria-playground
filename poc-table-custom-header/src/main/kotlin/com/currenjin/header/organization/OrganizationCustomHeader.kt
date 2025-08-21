@@ -1,9 +1,11 @@
 package com.currenjin.header.organization
 
 data class OrganizationCustomHeader(
+    val organizationId: Long,
     val tableName: String,
     val columnName: String,
     val sequence: Int,
+    val isVisible: Boolean,
 ) {
     init {
         require(tableName.isNotBlank()) { "tableName must not be blank" }

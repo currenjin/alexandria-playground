@@ -9,9 +9,11 @@ class OrganizationCustomHeaderTest {
     fun create() {
         val template =
             OrganizationCustomHeader(
+                organizationId = 1L,
                 tableName = "오더관리",
                 columnName = "지급운임",
                 sequence = 1,
+                isVisible = true,
             )
 
         assertEquals("지급운임", template.columnName)
@@ -23,9 +25,11 @@ class OrganizationCustomHeaderTest {
     fun create_throwsException_whenEmptyOrBlankTableName() {
         assertThrows<IllegalArgumentException> {
             OrganizationCustomHeader(
+                organizationId = 1L,
                 tableName = "",
                 columnName = "지급운임",
                 sequence = 1,
+                isVisible = false,
             )
         }
     }
@@ -34,9 +38,11 @@ class OrganizationCustomHeaderTest {
     fun create_throwsException_whenEmptyOrBlankColumnName() {
         assertThrows<IllegalArgumentException> {
             OrganizationCustomHeader(
+                organizationId = 1L,
                 tableName = "오더관리",
                 columnName = "",
                 sequence = 1,
+                isVisible = true,
             )
         }
     }
@@ -45,9 +51,11 @@ class OrganizationCustomHeaderTest {
     fun create_throwsException_whenZeroSequence() {
         assertThrows<IllegalArgumentException> {
             OrganizationCustomHeader(
+                organizationId = 1L,
                 tableName = "오더관리",
                 columnName = "지급운임",
                 sequence = 0,
+                isVisible = true,
             )
         }
     }
