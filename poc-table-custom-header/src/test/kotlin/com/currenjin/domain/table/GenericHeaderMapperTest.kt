@@ -1,24 +1,15 @@
 package com.currenjin.domain.table
 
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
-import com.currenjin.domain.order.Order
+import com.currenjin.support.OrderFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 import kotlin.test.assertTrue
 
 class GenericHeaderMapperTest {
     @Test
     fun map_by_order_value() {
-        val order =
-            Order(
-                id = Order.OrderId(1),
-                buyerId = Order.BuyerId(1),
-                buyerName = "거래처",
-                receivedDate = LocalDate.of(2025, 5, 24),
-                orderCode = "R-123-123",
-                orderNumber = "O-123-123",
-            )
+        val order = OrderFixture.create()
 
         val result =
             GenericHeaderMapper.mapList(
@@ -36,17 +27,17 @@ class GenericHeaderMapperTest {
         assertEquals(true, result.columns.all { it.visible })
 
         val row = result.rows.first()
-        assertEquals(1L, row["id"])
-        assertEquals(1L, row["buyerId"])
-        assertEquals("거래처", row["buyerName"])
-        assertEquals("2025-05-24", row["receivedDate"])
-        assertEquals("R-123-123", row["orderCode"])
-        assertEquals("O-123-123", row["orderNumber"])
+        assertEquals(order.id.value, row["id"])
+        assertEquals(order.buyerId?.value, row["buyerId"])
+        assertEquals(order.buyerName, row["buyerName"])
+        assertEquals(order.receivedDate.toString(), row["receivedDate"])
+        assertEquals(order.orderCode, row["orderCode"])
+        assertEquals(order.orderNumber, row["orderNumber"])
     }
 
     @Test
     fun visible_by_organization_custom_header() {
-        val order = Order(id = Order.OrderId(1), buyerName = "세방")
+        val order = OrderFixture.create()
         val orgHeaders =
             listOf(
                 OrganizationCustomHeader(
@@ -72,7 +63,7 @@ class GenericHeaderMapperTest {
 
     @Test
     fun sort_by_sequence() {
-        val order = Order(id = Order.OrderId(1), orderCode = "R-1", orderNumber = "O-1")
+        val order = OrderFixture.create()
 
         val orgHeaders =
             listOf(
@@ -102,7 +93,7 @@ class GenericHeaderMapperTest {
 
     @Test
     fun remove_invisible_rows() {
-        val order = Order(id = Order.OrderId(1), buyerName = "세방")
+        val order = OrderFixture.create()
         val orgHeaders =
             listOf(
                 OrganizationCustomHeader(
