@@ -8,12 +8,12 @@ object GenericHeaderMapper {
         entities: List<T>,
         columns: List<Column<T>>,
         tableName: String,
-        orgHeaders: List<OrganizationCustomHeader>,
+        organizationCustomHeaderList: List<OrganizationCustomHeader>,
         includeHiddenInRows: Boolean = true,
         labelProvider: (String) -> String = { it },
-        formatter: (String, Any?) -> Any? = { _, v -> normalize(v) },
+        formatter: (String, Any?) -> Any? = { _, value -> normalize(value) },
     ): TableResult {
-        val policy = buildPolicy(tableName, orgHeaders)
+        val policy = buildPolicy(tableName, organizationCustomHeaderList)
 
         val metas =
             columns
@@ -48,15 +48,15 @@ object GenericHeaderMapper {
 
     private fun buildPolicy(
         table: String,
-        org: List<OrganizationCustomHeader>,
+        organizationCustomHeaderList: List<OrganizationCustomHeader>,
     ): Map<String, Pair<Int, Boolean>> =
-        org
+        organizationCustomHeaderList
             .filter { it.tableName == table }
             .associate { it.columnName to (it.sequence to it.isVisible) }
 
-    private fun normalize(v: Any?): Any? =
-        when (v) {
-            is LocalDate -> v.toString()
-            else -> v
+    private fun normalize(value: Any?): Any? =
+        when (value) {
+            is LocalDate -> value.toString()
+            else -> value
         }
 }
