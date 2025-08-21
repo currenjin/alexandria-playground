@@ -12,7 +12,7 @@ object GenericHeaderMapper {
         includeHiddenInRows: Boolean = true,
         labelProvider: (String) -> String = { it },
         formatter: (String, Any?) -> Any? = { _, v -> normalize(v) },
-    ): TableResponse {
+    ): TableResult {
         val policy = buildPolicy(tableName, orgHeaders)
 
         val metas =
@@ -39,7 +39,7 @@ object GenericHeaderMapper {
                 row
             }
 
-        return TableResponse(
+        return TableResult(
             table = tableName,
             columns = metas,
             rows = rows,

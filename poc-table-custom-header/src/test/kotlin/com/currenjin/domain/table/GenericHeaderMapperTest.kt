@@ -20,7 +20,7 @@ class GenericHeaderMapperTest {
                 orderNumber = "O-123-123",
             )
 
-        val response =
+        val result =
             GenericHeaderMapper.mapList(
                 entities = listOf(order),
                 columns = OrderColumns.default,
@@ -28,16 +28,14 @@ class GenericHeaderMapperTest {
                 orgHeaders = emptyList(),
             )
 
-        // 컬럼 메타(기본 visible=true, sequence=enum 순서)
-        val keys = response.columns.sortedBy { it.sequence }.map { it.key }
+        val keys = result.columns.sortedBy { it.sequence }.map { it.key }
         assertEquals(
             listOf("id", "buyerId", "buyerName", "receivedDate", "orderCode", "orderNumber"),
             keys,
         )
-        assertEquals(true, response.columns.all { it.visible })
+        assertEquals(true, result.columns.all { it.visible })
 
-        // 행 값
-        val row = response.rows.first()
+        val row = result.rows.first()
         assertEquals(1L, row["id"])
         assertEquals(1L, row["buyerId"])
         assertEquals("거래처", row["buyerName"])
@@ -60,7 +58,7 @@ class GenericHeaderMapperTest {
                 ),
             )
 
-        val response =
+        val result =
             GenericHeaderMapper.mapList(
                 entities = listOf(order),
                 columns = OrderColumns.default,
@@ -68,7 +66,7 @@ class GenericHeaderMapperTest {
                 orgHeaders = orgHeaders,
             )
 
-        val meta = response.columns.first { it.key == "buyerName" }
+        val meta = result.columns.first { it.key == "buyerName" }
         assertEquals(false, meta.visible)
     }
 
@@ -83,7 +81,7 @@ class GenericHeaderMapperTest {
                 OrganizationCustomHeader(10, Tables.ORDERS, "id", sequence = 3, isVisible = true),
             )
 
-        val response =
+        val result =
             GenericHeaderMapper.mapList(
                 entities = listOf(order),
                 columns = OrderColumns.default,
@@ -91,7 +89,7 @@ class GenericHeaderMapperTest {
                 orgHeaders = orgHeaders,
             )
 
-        val orderedKeys = response.columns.sortedBy { it.sequence }.map { it.key }
+        val orderedKeys = result.columns.sortedBy { it.sequence }.map { it.key }
         val idxOrderNumber = orderedKeys.indexOf("orderNumber")
         val idxOrderCode = orderedKeys.indexOf("orderCode")
         val idxId = orderedKeys.indexOf("id")
@@ -107,10 +105,16 @@ class GenericHeaderMapperTest {
         val order = Order(id = Order.OrderId(1), buyerName = "세방")
         val orgHeaders =
             listOf(
-                OrganizationCustomHeader(10, Tables.ORDERS, "buyerName", sequence = 2, isVisible = false),
+                OrganizationCustomHeader(
+                    organizationId = 10,
+                    tableName = Tables.ORDERS,
+                    columnName = "buyerName",
+                    sequence = 2,
+                    isVisible = false,
+                ),
             )
 
-        val response =
+        val result =
             GenericHeaderMapper.mapList(
                 entities = listOf(order),
                 columns = OrderColumns.default,
@@ -119,9 +123,9 @@ class GenericHeaderMapperTest {
                 includeHiddenInRows = false,
             )
 
-        val row = response.rows.first()
-        // meta에는 남아있지만 rows 값은 빠진다
-        assertEquals(false, response.columns.first { it.key == "buyerName" }.visible)
+        val row = result.rows.first()
+
+        assertEquals(false, result.columns.first { it.key == "buyerName" }.visible)
         check(!row.containsKey("buyerName")) { "숨김 컬럼이 rows에 포함되면 안 됨" }
     }
 }
