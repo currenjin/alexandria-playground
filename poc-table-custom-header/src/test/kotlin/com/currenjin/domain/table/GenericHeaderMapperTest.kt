@@ -56,7 +56,7 @@ class GenericHeaderMapperTest {
             GenericHeaderMapper.mapList(
                 entities = listOf(dispatch, dispatch),
                 columns = DispatchColumns.default,
-                tableName = Tables.ORDERS,
+                tableName = Tables.DISPATCHES,
                 organizationCustomHeaderList = emptyList(),
                 userCustomHeaderList = emptyList(),
             )
