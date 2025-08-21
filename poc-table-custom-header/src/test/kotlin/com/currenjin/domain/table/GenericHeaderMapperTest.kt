@@ -17,6 +17,7 @@ class GenericHeaderMapperTest {
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
                 organizationCustomHeaderList = emptyList(),
+                userCustomHeaderList = emptyList(),
             )
 
         val keys = result.columns.sortedBy { it.sequence }.map { it.key }
@@ -55,6 +56,7 @@ class GenericHeaderMapperTest {
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
                 organizationCustomHeaderList = orgHeaders,
+                userCustomHeaderList = emptyList(),
             )
 
         val meta = result.columns.first { it.key == "buyerName" }
@@ -78,6 +80,7 @@ class GenericHeaderMapperTest {
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
                 organizationCustomHeaderList = orgHeaders,
+                userCustomHeaderList = emptyList(),
             )
 
         val orderedKeys = result.columns.sortedBy { it.sequence }.map { it.key }
@@ -111,6 +114,7 @@ class GenericHeaderMapperTest {
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
                 organizationCustomHeaderList = orgHeaders,
+                userCustomHeaderList = emptyList(),
                 includeHiddenInRows = false,
             )
 

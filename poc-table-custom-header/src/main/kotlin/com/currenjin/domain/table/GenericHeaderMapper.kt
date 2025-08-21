@@ -1,6 +1,7 @@
 package com.currenjin.domain.table
 
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
+import com.currenjin.domain.header.user.UserCustomHeader
 import java.time.LocalDate
 
 object GenericHeaderMapper {
@@ -9,11 +10,12 @@ object GenericHeaderMapper {
         columns: List<Column<T>>,
         tableName: String,
         organizationCustomHeaderList: List<OrganizationCustomHeader>,
+        userCustomHeaderList: List<UserCustomHeader>,
         includeHiddenInRows: Boolean = true,
         labelProvider: (String) -> String = { it },
         formatter: (String, Any?) -> Any? = { _, value -> normalize(value) },
     ): TableResult {
-        val policy = buildPolicy(tableName, organizationCustomHeaderList)
+        val policy = buildPolicy(tableName, organizationCustomHeaderList, userCustomHeaderList)
 
         val metas =
             columns
@@ -49,10 +51,19 @@ object GenericHeaderMapper {
     private fun buildPolicy(
         table: String,
         organizationCustomHeaderList: List<OrganizationCustomHeader>,
-    ): Map<String, Pair<Int, Boolean>> =
-        organizationCustomHeaderList
-            .filter { it.tableName == table }
-            .associate { it.columnName to (it.sequence to it.isVisible) }
+        userCustomHeaderList: List<UserCustomHeader>,
+    ): Map<String, Pair<Int, Boolean>> {
+        val associatedUserList =
+            userCustomHeaderList
+                .filter { it.tableName == table }
+                .associate { it.columnName to (it.sequence to it.isVisible) }
+        val associatedOrganizationList =
+            organizationCustomHeaderList
+                .filter { it.tableName == table }
+                .associate { it.columnName to (it.sequence to it.isVisible) }
+
+        return associatedUserList + associatedOrganizationList
+    }
 
     private fun normalize(value: Any?): Any? =
         when (value) {
