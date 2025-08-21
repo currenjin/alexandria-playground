@@ -2,7 +2,9 @@ package com.currenjin.domain.table
 
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
 import com.currenjin.domain.header.user.UserCustomHeader
+import com.currenjin.domain.table.columns.DispatchColumns
 import com.currenjin.domain.table.columns.OrderColumns
+import com.currenjin.support.DispatchFixture
 import com.currenjin.support.OrderFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -44,6 +46,38 @@ class GenericHeaderMapperTest {
         assertEquals(order.receivedDate.toString(), row[OrderColumns.RECEIVED_DATE.key])
         assertEquals(order.orderCode, row[OrderColumns.ORDER_CODE.key])
         assertEquals(order.orderNumber, row[OrderColumns.ORDER_NUMBER.key])
+    }
+
+    @Test
+    fun map_by_dispatch_value() {
+        val dispatch = DispatchFixture.create()
+
+        val result =
+            GenericHeaderMapper.mapList(
+                entities = listOf(dispatch, dispatch),
+                columns = DispatchColumns.default,
+                tableName = Tables.ORDERS,
+                organizationCustomHeaderList = emptyList(),
+                userCustomHeaderList = emptyList(),
+            )
+
+        val keys = result.columns.sortedBy { it.sequence }.map { it.key }
+        assertEquals(
+            listOf(
+                DispatchColumns.ID.key,
+                DispatchColumns.GROUP_ID.key,
+                DispatchColumns.DISPATCH_NUMBER.key,
+                DispatchColumns.NUMBER.key,
+            ),
+            keys,
+        )
+        assertEquals(true, result.columns.all { it.visible })
+
+        val row = result.rows.first()
+        assertEquals(dispatch.id.value, row[DispatchColumns.ID.key])
+        assertEquals(dispatch.groupId.value, row[DispatchColumns.GROUP_ID.key])
+        assertEquals(dispatch.dispatchNumber, row[DispatchColumns.DISPATCH_NUMBER.key])
+        assertEquals(dispatch.number, row[DispatchColumns.NUMBER.key])
     }
 
     @Test
