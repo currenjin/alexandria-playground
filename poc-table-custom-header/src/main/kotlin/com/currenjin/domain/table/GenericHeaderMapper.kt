@@ -5,6 +5,7 @@ import com.currenjin.domain.header.user.UserCustomHeader
 import java.time.LocalDate
 
 object GenericHeaderMapper {
+    /** 헤더와 값 매핑 */
     fun <T> mapList(
         entities: List<T>,
         columns: List<Column<T>>,
@@ -48,6 +49,7 @@ object GenericHeaderMapper {
         )
     }
 
+    /** 정책 우선순위 설정: 유저 보다 조직이 우선. */
     private fun buildPolicy(
         table: String,
         organizationCustomHeaderList: List<OrganizationCustomHeader>,
