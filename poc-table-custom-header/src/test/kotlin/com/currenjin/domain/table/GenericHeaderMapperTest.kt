@@ -1,6 +1,7 @@
 package com.currenjin.domain.table
 
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
+import com.currenjin.domain.header.user.UserCustomHeader
 import com.currenjin.support.OrderFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -121,5 +122,42 @@ class GenericHeaderMapperTest {
 
         assertEquals(false, result.columns.first { it.key == "buyerName" }.visible)
         assertFalse(result.rows.first().containsKey("buyerName"))
+    }
+
+    @Test
+    fun organization_override_user_custom_header() {
+        val order = OrderFixture.create()
+        val orgHeaders =
+            listOf(
+                OrganizationCustomHeader(
+                    organizationId = 10L,
+                    tableName = Tables.ORDERS,
+                    columnName = "buyerName",
+                    sequence = 3,
+                    isVisible = false,
+                ),
+            )
+        val userHeaders =
+            listOf(
+                UserCustomHeader(
+                    userId = 10L,
+                    tableName = Tables.ORDERS,
+                    columnName = "buyerName",
+                    sequence = 3,
+                    isVisible = true,
+                ),
+            )
+
+        val result =
+            GenericHeaderMapper.mapList(
+                entities = listOf(order),
+                columns = OrderColumns.default,
+                tableName = Tables.ORDERS,
+                organizationCustomHeaderList = orgHeaders,
+                userCustomHeaderList = userHeaders,
+            )
+
+        val meta = result.columns.first { it.key == "buyerName" }
+        assertEquals(false, meta.visible)
     }
 }
