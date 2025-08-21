@@ -3,6 +3,7 @@ package com.currenjin.domain.table
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
 import com.currenjin.support.OrderFixture
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
@@ -119,5 +120,6 @@ class GenericHeaderMapperTest {
             )
 
         assertEquals(false, result.columns.first { it.key == "buyerName" }.visible)
+        assertFalse(result.rows.first().containsKey("buyerName"))
     }
 }
