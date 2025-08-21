@@ -15,7 +15,7 @@ class GenericHeaderMapperTest {
 
         val result =
             GenericHeaderMapper.mapList(
-                entities = listOf(order),
+                entities = listOf(order, order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
                 organizationCustomHeaderList = emptyList(),
@@ -24,18 +24,25 @@ class GenericHeaderMapperTest {
 
         val keys = result.columns.sortedBy { it.sequence }.map { it.key }
         assertEquals(
-            listOf("id", "buyerId", "buyerName", "receivedDate", "orderCode", "orderNumber"),
+            listOf(
+                OrderColumns.ID.key,
+                OrderColumns.BUYER_ID.key,
+                OrderColumns.BUYER_NAME.key,
+                OrderColumns.RECEIVED_DATE.key,
+                OrderColumns.ORDER_CODE.key,
+                OrderColumns.ORDER_NUMBER.key,
+            ),
             keys,
         )
         assertEquals(true, result.columns.all { it.visible })
 
         val row = result.rows.first()
-        assertEquals(order.id.value, row["id"])
-        assertEquals(order.buyerId?.value, row["buyerId"])
-        assertEquals(order.buyerName, row["buyerName"])
-        assertEquals(order.receivedDate.toString(), row["receivedDate"])
-        assertEquals(order.orderCode, row["orderCode"])
-        assertEquals(order.orderNumber, row["orderNumber"])
+        assertEquals(order.id.value, row[OrderColumns.ID.key])
+        assertEquals(order.buyerId?.value, row[OrderColumns.BUYER_ID.key])
+        assertEquals(order.buyerName, row[OrderColumns.BUYER_NAME.key])
+        assertEquals(order.receivedDate.toString(), row[OrderColumns.RECEIVED_DATE.key])
+        assertEquals(order.orderCode, row[OrderColumns.ORDER_CODE.key])
+        assertEquals(order.orderNumber, row[OrderColumns.ORDER_NUMBER.key])
     }
 
     @Test
@@ -46,7 +53,7 @@ class GenericHeaderMapperTest {
                 OrganizationCustomHeader(
                     organizationId = 10L,
                     tableName = Tables.ORDERS,
-                    columnName = "buyerName",
+                    columnName = OrderColumns.BUYER_NAME.key,
                     sequence = 3,
                     isVisible = false,
                 ),
@@ -61,7 +68,7 @@ class GenericHeaderMapperTest {
                 userCustomHeaderList = emptyList(),
             )
 
-        val meta = result.columns.first { it.key == "buyerName" }
+        val meta = result.columns.first { it.key == OrderColumns.BUYER_NAME.key }
         assertEquals(false, meta.visible)
     }
 
@@ -71,9 +78,9 @@ class GenericHeaderMapperTest {
 
         val orgHeaders =
             listOf(
-                OrganizationCustomHeader(10, Tables.ORDERS, "orderNumber", sequence = 1, isVisible = true),
-                OrganizationCustomHeader(10, Tables.ORDERS, "orderCode", sequence = 2, isVisible = true),
-                OrganizationCustomHeader(10, Tables.ORDERS, "id", sequence = 3, isVisible = true),
+                OrganizationCustomHeader(10, Tables.ORDERS, OrderColumns.ORDER_NUMBER.key, sequence = 1, isVisible = true),
+                OrganizationCustomHeader(10, Tables.ORDERS, OrderColumns.ORDER_CODE.key, sequence = 2, isVisible = true),
+                OrganizationCustomHeader(10, Tables.ORDERS, OrderColumns.ID.key, sequence = 3, isVisible = true),
             )
 
         val result =
@@ -86,9 +93,9 @@ class GenericHeaderMapperTest {
             )
 
         val orderedKeys = result.columns.sortedBy { it.sequence }.map { it.key }
-        val idxOrderNumber = orderedKeys.indexOf("orderNumber")
-        val idxOrderCode = orderedKeys.indexOf("orderCode")
-        val idxId = orderedKeys.indexOf("id")
+        val idxOrderNumber = orderedKeys.indexOf(OrderColumns.ORDER_NUMBER.key)
+        val idxOrderCode = orderedKeys.indexOf(OrderColumns.ORDER_CODE.key)
+        val idxId = orderedKeys.indexOf(OrderColumns.ID.key)
 
         assertTrue(
             (idxOrderNumber < idxOrderCode) &&
@@ -104,7 +111,7 @@ class GenericHeaderMapperTest {
                 OrganizationCustomHeader(
                     organizationId = 10,
                     tableName = Tables.ORDERS,
-                    columnName = "buyerName",
+                    columnName = OrderColumns.BUYER_NAME.key,
                     sequence = 2,
                     isVisible = false,
                 ),
@@ -120,8 +127,8 @@ class GenericHeaderMapperTest {
                 includeHiddenInRows = false,
             )
 
-        assertEquals(false, result.columns.first { it.key == "buyerName" }.visible)
-        assertFalse(result.rows.first().containsKey("buyerName"))
+        assertEquals(false, result.columns.first { it.key == OrderColumns.BUYER_NAME.key }.visible)
+        assertFalse(result.rows.first().containsKey(OrderColumns.BUYER_NAME.key))
     }
 
     @Test
@@ -132,7 +139,7 @@ class GenericHeaderMapperTest {
                 OrganizationCustomHeader(
                     organizationId = 10L,
                     tableName = Tables.ORDERS,
-                    columnName = "buyerName",
+                    columnName = OrderColumns.BUYER_NAME.key,
                     sequence = 3,
                     isVisible = false,
                 ),
@@ -142,7 +149,7 @@ class GenericHeaderMapperTest {
                 UserCustomHeader(
                     userId = 10L,
                     tableName = Tables.ORDERS,
-                    columnName = "buyerName",
+                    columnName = OrderColumns.BUYER_NAME.key,
                     sequence = 3,
                     isVisible = true,
                 ),
@@ -157,7 +164,7 @@ class GenericHeaderMapperTest {
                 userCustomHeaderList = userHeaders,
             )
 
-        val meta = result.columns.first { it.key == "buyerName" }
+        val meta = result.columns.first { it.key == OrderColumns.BUYER_NAME.key }
         assertEquals(false, meta.visible)
     }
 }
