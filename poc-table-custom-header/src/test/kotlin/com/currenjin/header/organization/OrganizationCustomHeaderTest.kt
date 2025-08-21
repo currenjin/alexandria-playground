@@ -59,4 +59,17 @@ class OrganizationCustomHeaderTest {
             )
         }
     }
+
+    @Test
+    fun create_throwsException_whenZeroOrganizationId() {
+        assertThrows<IllegalArgumentException> {
+            OrganizationCustomHeader(
+                organizationId = 0L,
+                tableName = "오더관리",
+                columnName = "지급운임",
+                sequence = 1,
+                isVisible = true,
+            )
+        }
+    }
 }
