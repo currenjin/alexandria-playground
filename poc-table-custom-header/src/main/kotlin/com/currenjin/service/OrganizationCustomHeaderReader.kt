@@ -3,5 +3,10 @@ package com.currenjin.service
 import com.currenjin.header.organization.OrganizationCustomHeader
 
 interface OrganizationCustomHeaderReader {
-    fun findById(organizationId: Long): List<OrganizationCustomHeader>
+    fun readById(organizationId: Long): List<OrganizationCustomHeader>
+
+    fun readByIdAndTableName(
+        organizationId: Long,
+        tableName: String,
+    ): List<OrganizationCustomHeader>
 }
