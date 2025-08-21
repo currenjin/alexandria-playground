@@ -1,6 +1,6 @@
 package com.currenjin.domain.table
 
-import com.currenjin.order.Order
+import com.currenjin.domain.order.Order
 
 enum class OrderColumns(
     override val key: String,

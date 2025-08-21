@@ -1,4 +1,4 @@
-package com.currenjin.header.template
+package com.currenjin.domain.header.template
 
 data class HeaderTemplate(
     val tableName: String,

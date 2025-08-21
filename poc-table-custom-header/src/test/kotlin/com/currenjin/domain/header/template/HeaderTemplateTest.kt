@@ -1,4 +1,4 @@
-package com.currenjin.header.template
+package com.currenjin.domain.header.template
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

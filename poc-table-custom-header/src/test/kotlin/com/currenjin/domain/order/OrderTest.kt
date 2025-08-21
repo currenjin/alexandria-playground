@@ -1,5 +1,6 @@
 package com.currenjin.order
 
+import com.currenjin.domain.order.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import java.time.LocalDate

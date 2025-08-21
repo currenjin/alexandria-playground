@@ -1,6 +1,6 @@
 package com.currenjin.support
 
-import com.currenjin.order.Order
+import com.currenjin.domain.order.Order
 import java.time.LocalDate
 
 class OrderFixture {

@@ -1,7 +1,7 @@
 package com.currenjin.domain.table
 
-import com.currenjin.header.organization.OrganizationCustomHeader
-import com.currenjin.order.Order
+import com.currenjin.domain.header.organization.OrganizationCustomHeader
+import com.currenjin.domain.order.Order
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

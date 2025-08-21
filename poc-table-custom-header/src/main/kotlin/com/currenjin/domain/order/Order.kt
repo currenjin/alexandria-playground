@@ -1,4 +1,4 @@
-package com.currenjin.order
+package com.currenjin.domain.order
 
 import java.time.LocalDate
 

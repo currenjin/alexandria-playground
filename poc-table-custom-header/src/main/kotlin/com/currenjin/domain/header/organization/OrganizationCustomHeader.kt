@@ -1,4 +1,4 @@
-package com.currenjin.header.organization
+package com.currenjin.domain.header.organization
 
 data class OrganizationCustomHeader(
     val organizationId: Long,

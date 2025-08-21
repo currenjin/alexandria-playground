@@ -1,4 +1,4 @@
-package com.currenjin.header.organization
+package com.currenjin.domain.header.organization
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

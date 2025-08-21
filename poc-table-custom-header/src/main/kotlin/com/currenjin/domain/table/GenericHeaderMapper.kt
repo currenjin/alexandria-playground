@@ -1,6 +1,6 @@
 package com.currenjin.domain.table
 
-import com.currenjin.header.organization.OrganizationCustomHeader
+import com.currenjin.domain.header.organization.OrganizationCustomHeader
 import java.time.LocalDate
 
 object GenericHeaderMapper {
