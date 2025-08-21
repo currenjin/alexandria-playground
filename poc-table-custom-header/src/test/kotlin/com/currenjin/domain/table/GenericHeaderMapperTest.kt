@@ -2,6 +2,7 @@ package com.currenjin.domain.table
 
 import com.currenjin.domain.header.organization.OrganizationCustomHeader
 import com.currenjin.domain.header.user.UserCustomHeader
+import com.currenjin.domain.table.columns.OrderColumns
 import com.currenjin.support.OrderFixture
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
