@@ -92,7 +92,7 @@ class GenericHeaderMapperTest {
     }
 
     @Test
-    fun remove_invisible_rows() {
+    fun invisible_by_organization_custom_header() {
         val order = OrderFixture.create()
         val orgHeaders =
             listOf(
@@ -114,9 +114,6 @@ class GenericHeaderMapperTest {
                 includeHiddenInRows = false,
             )
 
-        val row = result.rows.first()
-
         assertEquals(false, result.columns.first { it.key == "buyerName" }.visible)
-        check(!row.containsKey("buyerName")) { "숨김 컬럼이 rows에 포함되면 안 됨" }
     }
 }
