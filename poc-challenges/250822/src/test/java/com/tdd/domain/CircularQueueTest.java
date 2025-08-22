@@ -49,4 +49,15 @@ public class CircularQueueTest {
 
         assertEquals(1, queue.peek());
     }
+
+    @Test
+    void enqueue_throwsException_whenFull() {
+        CircularQueue queue = new CircularQueue(3);
+
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+
+        assertThrows(IllegalStateException.class, () -> queue.enqueue(4));
+    }
 }

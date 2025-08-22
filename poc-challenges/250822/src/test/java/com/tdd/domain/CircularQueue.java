@@ -4,11 +4,13 @@ import java.util.NoSuchElementException;
 
 public class CircularQueue {
 
-    private int[] data;
+    private final int capacity;
+    private final int[] data;
     private int head = 0, tail = 0, size = 0;
 
     public CircularQueue(int i) {
-        data = new int[i];
+        capacity = i;
+        data = new int[capacity];
     }
 
     public boolean isEmpty() {
@@ -16,6 +18,10 @@ public class CircularQueue {
     }
 
     public void enqueue(int i) {
+        if (size == capacity) {
+            throw new IllegalStateException("Circular Queue is full");
+        }
+
         this.data[head] = i;
         head++;
         size++;
