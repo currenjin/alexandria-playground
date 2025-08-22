@@ -2,8 +2,9 @@ package com.tdd.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.NoSuchElementException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CircularQueueTest {
     @Test
@@ -14,11 +15,18 @@ public class CircularQueueTest {
     }
 
     @Test
-    void enqueue_then_isEmpty_returnFalse() {
+    void enqueue_then_isEmpty_returnsFalse() {
         CircularQueue queue = new CircularQueue(1);
 
         queue.enqueue(1);
 
         assertFalse(queue.isEmpty());
+    }
+
+    @Test
+    void peek_throwsException_whenEmpty() {
+        CircularQueue queue = new CircularQueue(1);
+
+        assertThrows(NoSuchElementException.class, queue::peek);
     }
 }
