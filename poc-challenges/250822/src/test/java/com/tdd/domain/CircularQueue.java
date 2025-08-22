@@ -34,4 +34,8 @@ public class CircularQueue {
 
         return data[tail];
     }
+
+    public boolean isFull() {
+        return false;
+    }
 }

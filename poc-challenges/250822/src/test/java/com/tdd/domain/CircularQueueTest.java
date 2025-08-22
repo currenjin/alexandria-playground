@@ -1,5 +1,6 @@
 package com.tdd.domain;
 
+import com.sun.org.apache.xerces.internal.util.AugmentationsImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -59,5 +60,12 @@ public class CircularQueueTest {
         queue.enqueue(3);
 
         assertThrows(IllegalStateException.class, () -> queue.enqueue(4));
+    }
+
+    @Test
+    void isFull_returnsFalse() {
+        CircularQueue queue = new CircularQueue(3);
+
+        assertFalse(queue.isFull());
     }
 }
