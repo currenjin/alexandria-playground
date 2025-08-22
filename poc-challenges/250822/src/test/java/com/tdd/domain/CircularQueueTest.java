@@ -38,4 +38,15 @@ public class CircularQueueTest {
 
         assertEquals(1, queue.peek());
     }
+
+    @Test
+    void enqueue_multipleValues_then_peek_returnsFirstValue() {
+        CircularQueue queue = new CircularQueue(3);
+
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+
+        assertEquals(1, queue.peek());
+    }
 }
