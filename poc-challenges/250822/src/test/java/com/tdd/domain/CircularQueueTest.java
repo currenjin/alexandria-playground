@@ -1,6 +1,5 @@
 package com.tdd.domain;
 
-import com.sun.org.apache.xerces.internal.util.AugmentationsImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
