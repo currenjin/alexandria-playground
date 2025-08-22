@@ -18,7 +18,11 @@ public class CircularQueue {
         this.data = i;
     }
 
-    public void peek() {
-        throw new NoSuchElementException("Circular Queue is empty");
+    public int peek() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Circular Queue is empty");
+        }
+
+        return data;
     }
 }
