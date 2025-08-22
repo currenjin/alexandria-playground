@@ -18,7 +18,7 @@ public class CircularQueue {
     }
 
     public void enqueue(int i) {
-        if (size == capacity) {
+        if (isFull()) {
             throw new IllegalStateException("Circular Queue is full");
         }
 
@@ -36,6 +36,6 @@ public class CircularQueue {
     }
 
     public boolean isFull() {
-        return false;
+        return size == capacity;
     }
 }
