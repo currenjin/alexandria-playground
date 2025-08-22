@@ -18,9 +18,7 @@ public class CircularQueue {
     }
 
     public void enqueue(int i) {
-        if (isFull()) {
-            throw new IllegalStateException("Circular Queue is full");
-        }
+        validateFullQueue();
 
         this.data[head] = i;
         head = (head + 1) % capacity;
@@ -45,6 +43,12 @@ public class CircularQueue {
         size--;
 
         return value;
+    }
+
+    private void validateFullQueue() {
+        if (isFull()) {
+            throw new IllegalStateException("Circular Queue is full");
+        }
     }
 
     private void validateEmptyQueue() {
