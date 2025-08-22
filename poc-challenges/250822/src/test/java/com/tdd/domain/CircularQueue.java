@@ -28,9 +28,7 @@ public class CircularQueue {
     }
 
     public int peek() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("Circular Queue is empty");
-        }
+        validateEmptyQueue();
 
         return data[tail];
     }
@@ -40,10 +38,14 @@ public class CircularQueue {
     }
 
     public int dequeue() {
+        validateEmptyQueue();
+
+        return data[tail];
+    }
+
+    private void validateEmptyQueue() {
         if (isEmpty()) {
             throw new NoSuchElementException("Circular Queue is empty");
         }
-
-        return data[tail];
     }
 }
