@@ -23,7 +23,7 @@ public class CircularQueue {
         }
 
         this.data[head] = i;
-        head++;
+        head = (head + 1) % capacity;
         size++;
     }
 
