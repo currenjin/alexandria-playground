@@ -13,10 +13,6 @@ public class CircularQueue {
         data = new int[capacity];
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     public void enqueue(int i) {
         validateFullQueue();
 
@@ -31,10 +27,6 @@ public class CircularQueue {
         return data[tail];
     }
 
-    public boolean isFull() {
-        return size == capacity;
-    }
-
     public int dequeue() {
         validateEmptyQueue();
 
@@ -43,6 +35,14 @@ public class CircularQueue {
         size--;
 
         return value;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean isFull() {
+        return size == capacity;
     }
 
     private void validateFullQueue() {
