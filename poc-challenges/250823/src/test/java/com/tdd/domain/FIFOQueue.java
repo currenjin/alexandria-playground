@@ -16,18 +16,20 @@ public class FIFOQueue {
 	}
 
 	public int peek() {
-		if (isEmpty()) {
-			throw new NoSuchElementException("queue is empty");
-		}
+		validateEmptyQueue();
 
 		return data.peek();
 	}
 
 	public int dequeue() {
+		validateEmptyQueue();
+
+		return data.pop();
+	}
+
+	private void validateEmptyQueue() {
 		if (isEmpty()) {
 			throw new NoSuchElementException("queue is empty");
 		}
-
-		return data.pop();
 	}
 }
