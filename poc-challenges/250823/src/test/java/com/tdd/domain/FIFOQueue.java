@@ -2,6 +2,7 @@ package com.tdd.domain;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.NoSuchElementException;
 
 public class FIFOQueue {
 	private Deque<Integer> data = new ArrayDeque<>();
@@ -12,5 +13,9 @@ public class FIFOQueue {
 
 	public void enqueue(int i) {
 		data.add(i);
+	}
+
+	public void peek() {
+		throw new NoSuchElementException("queue is empty");
 	}
 }
