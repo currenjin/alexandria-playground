@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 
 public class FIFOQueue {
-	private Deque<Integer> data = new ArrayDeque<>();
+	private final Deque<Integer> data = new ArrayDeque<>();
 
 	public boolean isEmpty() {
 		return data.isEmpty();
