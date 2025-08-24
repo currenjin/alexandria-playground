@@ -13,17 +13,13 @@ class MinHeap {
     }
 
     fun peek(): Int {
-        if (data.isEmpty()) {
-            throw NoSuchElementException("Heap is empty")
-        }
+        validateEmptyHeap()
 
         return data[0]
     }
 
     fun poll(): Int {
-        if (data.isEmpty()) {
-            throw NoSuchElementException("Heap is empty")
-        }
+        validateEmptyHeap()
 
         if (data.size == 1) {
             return data.removeAt(0)
@@ -35,6 +31,12 @@ class MinHeap {
         shiftDown(0)
 
         return root
+    }
+
+    private fun validateEmptyHeap() {
+        if (data.isEmpty()) {
+            throw NoSuchElementException("Heap is empty")
+        }
     }
 
     private fun shiftDown(i: Int) {
