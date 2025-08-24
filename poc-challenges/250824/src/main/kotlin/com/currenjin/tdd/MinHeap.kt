@@ -11,7 +11,11 @@ class MinHeap {
         data.add(i)
     }
 
-    fun peek() {
-        throw NoSuchElementException("Heap is empty")
+    fun peek(): Int {
+        if (data.isEmpty()) {
+            throw NoSuchElementException("Heap is empty")
+        }
+
+        return data[0]
     }
 }
