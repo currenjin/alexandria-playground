@@ -55,4 +55,14 @@ class MinHeapTest {
 
         assertThrows(NoSuchElementException::class.java, heap::poll)
     }
+
+    @Test
+    fun add_then_poll_returnsValue_then_isEmpty_returnsTrue() {
+        val heap = MinHeap()
+
+        heap.add(1)
+
+        assertEquals(1, heap.poll())
+        assertTrue(heap.isEmpty())
+    }
 }
