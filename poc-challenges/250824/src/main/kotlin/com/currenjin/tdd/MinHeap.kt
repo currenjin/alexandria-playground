@@ -20,6 +20,10 @@ class MinHeap {
         return data[0]
     }
 
+    fun poll(): Int {
+        throw NoSuchElementException("Heap is empty")
+    }
+
     private fun siftUp(lastIndex: Int) {
         var index = lastIndex
 
