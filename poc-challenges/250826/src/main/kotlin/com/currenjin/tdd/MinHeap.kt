@@ -1,3 +1,5 @@
 package com.currenjin.tdd
 
-class MinHeap
+class MinHeap {
+    fun isEmpty() = true
+}
