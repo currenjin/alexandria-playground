@@ -66,4 +66,22 @@ class MinHeapTest {
         assertEquals(1, heap.poll())
         assertTrue(heap.isEmpty())
     }
+
+    @Test
+    fun add_multipleValues_poll_returnsValuesInOrder() {
+        val heap = MinHeap()
+
+        heap.add(3)
+        heap.add(1)
+        heap.add(5)
+        heap.add(4)
+        heap.add(2)
+
+        assertEquals(1, heap.poll())
+        assertEquals(2, heap.poll())
+        assertEquals(3, heap.poll())
+        assertEquals(4, heap.poll())
+        assertEquals(5, heap.poll())
+        assertTrue(heap.isEmpty())
+    }
 }
