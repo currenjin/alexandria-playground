@@ -2,6 +2,7 @@ package com.currenjin.tdd
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -27,5 +28,14 @@ class MinHeapTest {
         val heap = MinHeap()
 
         assertThrows<NoSuchElementException> { heap.peek() }
+    }
+
+    @Test
+    fun add_then_peek_returnsValue() {
+        val heap = MinHeap()
+
+        heap.add(1)
+
+        assertEquals(1, heap.peek())
     }
 }
