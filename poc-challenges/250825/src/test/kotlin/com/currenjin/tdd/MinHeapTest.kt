@@ -38,4 +38,15 @@ class MinHeapTest {
 
         assertEquals(1, heap.peek())
     }
+
+    @Test
+    fun add_multipleValues_then_peek_returnsMinValue() {
+        val heap = MinHeap()
+
+        heap.add(2)
+        heap.add(1)
+        heap.add(3)
+
+        assertEquals(1, heap.peek())
+    }
 }
