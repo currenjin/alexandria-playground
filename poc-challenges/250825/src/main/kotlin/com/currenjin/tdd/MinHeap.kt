@@ -8,4 +8,6 @@ class MinHeap {
     fun add(i: Int) {
         data.add(i)
     }
+
+    fun peek(): Unit = throw NoSuchElementException("Heap is empty")
 }
