@@ -1,0 +1,87 @@
+package com.currenjin.tdd
+
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class MinHeapTest {
+    @Test
+    fun isEmpty_returnsTrue_whenEmpty() {
+        val heap = MinHeap()
+
+        assertTrue(heap.isEmpty())
+    }
+
+    @Test
+    fun add_then_isEmpty_returnsFalse() {
+        val heap = MinHeap()
+
+        heap.add(1)
+
+        assertFalse(heap.isEmpty())
+    }
+
+    @Test
+    fun peek_throwsException_whenEmpty() {
+        val heap = MinHeap()
+
+        assertThrows<NoSuchElementException> { heap.peek() }
+    }
+
+    @Test
+    fun add_then_peek_returnsValue() {
+        val heap = MinHeap()
+
+        heap.add(1)
+
+        assertEquals(1, heap.peek())
+    }
+
+    @Test
+    fun add_multipleValues_then_peek_returnsMinValue() {
+        val heap = MinHeap()
+
+        heap.add(2)
+        heap.add(1)
+        heap.add(3)
+
+        assertEquals(1, heap.peek())
+    }
+
+    @Test
+    fun poll_throwsException_whenEmpty() {
+        val heap = MinHeap()
+
+        assertThrows<NoSuchElementException> { heap.poll() }
+    }
+
+    @Test
+    fun add_then_poll_returnsValue_then_isEmpty_returnsTrue() {
+        val heap = MinHeap()
+
+        heap.add(1)
+
+        assertEquals(1, heap.poll())
+        assertTrue(heap.isEmpty())
+    }
+
+    @Test
+    fun add_multipleValues_poll_returnsValuesInOrder() {
+        val heap = MinHeap()
+
+        heap.add(3)
+        heap.add(1)
+        heap.add(5)
+        heap.add(4)
+        heap.add(2)
+
+        assertEquals(1, heap.poll())
+        assertEquals(2, heap.poll())
+        assertEquals(3, heap.poll())
+        assertEquals(4, heap.poll())
+        assertEquals(5, heap.poll())
+        assertTrue(heap.isEmpty())
+    }
+}
