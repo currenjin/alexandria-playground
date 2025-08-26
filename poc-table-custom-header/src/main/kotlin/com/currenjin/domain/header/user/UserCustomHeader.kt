@@ -1,12 +1,14 @@
 package com.currenjin.domain.header.user
 
+import com.currenjin.domain.table.CustomHeaderPolicy
+
 data class UserCustomHeader(
     val userId: Long,
-    val tableName: String,
-    val columnName: String,
-    val sequence: Int,
-    val isVisible: Boolean,
-) {
+    override val tableName: String,
+    override val columnName: String,
+    override val sequence: Int,
+    override val isVisible: Boolean,
+) : CustomHeaderPolicy {
     init {
         require(tableName.isNotBlank()) { "tableName must not be blank" }
         require(columnName.isNotBlank()) { "columnName must not be blank" }

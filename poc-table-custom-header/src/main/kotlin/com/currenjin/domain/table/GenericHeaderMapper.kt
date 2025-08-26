@@ -1,7 +1,5 @@
 package com.currenjin.domain.table
 
-import com.currenjin.domain.header.organization.OrganizationCustomHeader
-import com.currenjin.domain.header.user.UserCustomHeader
 import java.time.LocalDate
 
 object GenericHeaderMapper {
@@ -10,8 +8,7 @@ object GenericHeaderMapper {
         entities: List<T>,
         columns: List<Column<T>>,
         tableName: String,
-        organizationCustomHeaderList: List<OrganizationCustomHeader>,
-        userCustomHeaderList: List<UserCustomHeader>,
+        customHeaderPolicies: List<CustomHeaderPolicy>,
         includeHiddenInRows: Boolean = true,
         labelProvider: (String) -> String = { it },
         formatter: (String, Any?) -> Any? = { _, value -> normalize(value) },
@@ -22,8 +19,7 @@ object GenericHeaderMapper {
         val policy: Map<String, Pair<Int, Boolean>> =
             buildPolicy(
                 table = tableName,
-                organizationCustomHeaderList = organizationCustomHeaderList,
-                userCustomHeaderList = userCustomHeaderList,
+                customHeaderPolicies = customHeaderPolicies,
             )
 
         val metas: List<ColumnMeta> =
@@ -49,23 +45,14 @@ object GenericHeaderMapper {
         )
     }
 
-    /** 정책 우선순위 설정: 유저 보다 조직이 우선. */
+    /** 정책 설정: 나중에 들어온 정책이 우선순위를 가짐. */
     private fun buildPolicy(
         table: String,
-        organizationCustomHeaderList: List<OrganizationCustomHeader>,
-        userCustomHeaderList: List<UserCustomHeader>,
-    ): Map<String, Pair<Int, Boolean>> {
-        val associatedUserList =
-            userCustomHeaderList
-                .filter { it.tableName == table }
-                .associate { it.columnName to (it.sequence to it.isVisible) }
-        val associatedOrganizationList =
-            organizationCustomHeaderList
-                .filter { it.tableName == table }
-                .associate { it.columnName to (it.sequence to it.isVisible) }
-
-        return associatedUserList + associatedOrganizationList
-    }
+        customHeaderPolicies: List<CustomHeaderPolicy>,
+    ): Map<String, Pair<Int, Boolean>> =
+        customHeaderPolicies
+            .filter { it.tableName == table }
+            .associate { it.columnName to (it.sequence to it.isVisible) }
 
     /** 컬럼 메타 구성: 정책 적용 후 sequence 오름차순 정렬. */
     private fun <T> buildColumnMeta(

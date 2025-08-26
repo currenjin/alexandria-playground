@@ -21,8 +21,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(order, order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
-                organizationCustomHeaderList = emptyList(),
-                userCustomHeaderList = emptyList(),
+                customHeaderPolicies = emptyList(),
             )
 
         val keys = result.columns.sortedBy { it.sequence }.map { it.key }
@@ -57,8 +56,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(dispatch, dispatch),
                 columns = DispatchColumns.default,
                 tableName = Tables.DISPATCHES,
-                organizationCustomHeaderList = emptyList(),
-                userCustomHeaderList = emptyList(),
+                customHeaderPolicies = emptyList(),
             )
 
         val keys = result.columns.sortedBy { it.sequence }.map { it.key }
@@ -99,8 +97,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
-                organizationCustomHeaderList = orgHeaders,
-                userCustomHeaderList = emptyList(),
+                customHeaderPolicies = orgHeaders,
             )
 
         val meta = result.columns.first { it.key == OrderColumns.BUYER_NAME.key }
@@ -123,8 +120,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
-                organizationCustomHeaderList = orgHeaders,
-                userCustomHeaderList = emptyList(),
+                customHeaderPolicies = orgHeaders,
             )
 
         val orderedKeys = result.columns.sortedBy { it.sequence }.map { it.key }
@@ -157,8 +153,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
-                organizationCustomHeaderList = orgHeaders,
-                userCustomHeaderList = emptyList(),
+                customHeaderPolicies = orgHeaders,
                 includeHiddenInRows = false,
             )
 
@@ -195,8 +190,7 @@ class GenericHeaderMapperTest {
                 entities = listOf(order),
                 columns = OrderColumns.default,
                 tableName = Tables.ORDERS,
-                organizationCustomHeaderList = orgHeaders,
-                userCustomHeaderList = userHeaders,
+                customHeaderPolicies = userHeaders + orgHeaders,
             )
 
         val meta = result.columns.first { it.key == OrderColumns.BUYER_NAME.key }
