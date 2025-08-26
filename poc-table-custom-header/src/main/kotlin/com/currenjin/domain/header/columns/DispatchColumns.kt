@@ -1,4 +1,4 @@
-package com.currenjin.domain.table.columns
+package com.currenjin.domain.header.columns
 
 import com.currenjin.domain.dispatch.Dispatch
 import com.currenjin.domain.table.Column

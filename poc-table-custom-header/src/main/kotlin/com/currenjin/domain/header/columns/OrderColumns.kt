@@ -1,4 +1,4 @@
-package com.currenjin.domain.table.columns
+package com.currenjin.domain.header.columns
 
 import com.currenjin.domain.order.Order
 import com.currenjin.domain.table.Column
