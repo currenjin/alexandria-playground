@@ -20,4 +20,9 @@ data class Money private constructor(
         val amount = this.amount - other.amount
         return Money(amount)
     }
+
+    operator fun times(multiplier: Int): Money {
+        val amount = this.amount * multiplier
+        return Money(amount)
+    }
 }

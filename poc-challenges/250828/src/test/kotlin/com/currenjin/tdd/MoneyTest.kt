@@ -27,6 +27,15 @@ class MoneyTest {
     }
 
     @Test
+    fun multiply_money_by_integer() {
+        val five = Money.of(5000)
+
+        val actual = five * 3
+
+        assertEquals(Money.of(15000), actual)
+    }
+
+    @Test
     fun money_cannot_be_negative() {
         assertThrows<IllegalArgumentException> {
             Money.of(-1)
