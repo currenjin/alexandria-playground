@@ -25,4 +25,9 @@ data class Money private constructor(
         val amount = this.amount * multiplier
         return Money(amount)
     }
+
+    operator fun div(divisor: Int): Money {
+        val amount = this.amount / divisor
+        return Money(amount)
+    }
 }
