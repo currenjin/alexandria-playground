@@ -21,4 +21,13 @@ class ShippingFeeTest {
 
         assertEquals(Money.of(0), shipping)
     }
+
+    @Test
+    fun order_at_threshold_is_free_shipping() {
+        val order = Order(totalAmount = Money.of(50000))
+
+        val shipping = ShippingFeePolicy().calculate(order)
+
+        assertEquals(Money.of(0), shipping)
+    }
 }
