@@ -8,7 +8,7 @@ class ShippingFeeTest {
     fun order_under_threshold_pays_shipping_fee() {
         val order = Order(totalAmount = Money.of(30000))
 
-        val shipping = ShippingFeePolicy().calculate(order)
+        val shipping = ShippingFeePolicy().calculate(order.totalAmount)
 
         assertEquals(Money.of(3000), shipping)
     }
@@ -17,7 +17,7 @@ class ShippingFeeTest {
     fun order_above_threshold_is_free_shipping() {
         val order = Order(totalAmount = Money.of(60000))
 
-        val shipping = ShippingFeePolicy().calculate(order)
+        val shipping = ShippingFeePolicy().calculate(order.totalAmount)
 
         assertEquals(Money.of(0), shipping)
     }
@@ -26,8 +26,15 @@ class ShippingFeeTest {
     fun order_at_threshold_is_free_shipping() {
         val order = Order(totalAmount = Money.of(50000))
 
-        val shipping = ShippingFeePolicy().calculate(order)
+        val shipping = ShippingFeePolicy().calculate(order.totalAmount)
 
         assertEquals(Money.of(0), shipping)
+    }
+
+    @Test
+    fun shipping_fee_by_subtotal_value() {
+        val shipping = ShippingFeePolicy().calculate(Money.of(30_000))
+
+        assertEquals(Money.of(3_000), shipping)
     }
 }
