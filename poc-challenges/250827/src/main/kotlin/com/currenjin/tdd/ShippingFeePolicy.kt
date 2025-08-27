@@ -1,11 +1,13 @@
 package com.currenjin.tdd
 
-class ShippingFeePolicy {
-    fun calculate(order: Order): Money {
-        if (order.totalAmount.totalAmount >= 50000) {
-            return Money.of(0)
+class ShippingFeePolicy(
+    private val threshold: Money = Money.of(50_000),
+    private val fee: Money = Money.of(3_000),
+) {
+    fun calculate(order: Order): Money =
+        if (order.totalAmount.totalAmount >= threshold.totalAmount) {
+            Money.of(0)
+        } else {
+            fee
         }
-
-        return Money.of(3000)
-    }
 }
