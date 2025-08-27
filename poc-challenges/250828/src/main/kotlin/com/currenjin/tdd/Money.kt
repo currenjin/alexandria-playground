@@ -8,6 +8,11 @@ data class Money private constructor(
         return Money(amount)
     }
 
+    operator fun minus(other: Money): Money {
+        val amount = this.amount - other.amount
+        return Money(amount)
+    }
+
     companion object {
         fun of(amount: Long) = Money(amount)
     }

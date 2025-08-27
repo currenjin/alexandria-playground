@@ -13,4 +13,14 @@ class MoneyTest {
 
         assertEquals(Money.of(8000), actual)
     }
+
+    @Test
+    fun subtract_two_amounts() {
+        val three = Money.of(3000)
+        val five = Money.of(5000)
+
+        val actual = five - three
+
+        assertEquals(Money.of(2000), actual)
+    }
 }
