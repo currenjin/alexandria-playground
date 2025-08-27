@@ -45,6 +45,20 @@ class MoneyTest {
     }
 
     @Test
+    fun allocate_1000_into_3_parts_distributes_remainder_to_front() {
+        val parts = Money.of(1000).allocate(3)
+
+        assertEquals(
+            listOf(
+                Money.of(334),
+                Money.of(333),
+                Money.of(333),
+            ),
+            parts,
+        )
+    }
+
+    @Test
     fun money_cannot_be_negative() {
         assertThrows<IllegalArgumentException> {
             Money.of(-1)

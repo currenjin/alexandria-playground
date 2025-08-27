@@ -30,4 +30,13 @@ data class Money private constructor(
         val amount = this.amount / divisor
         return Money(amount)
     }
+
+    fun allocate(parts: Int): List<Money> {
+        require(parts > 0)
+        val base = amount / parts
+        val r = amount % parts
+        return (0 until parts).map {
+            Money(base + if (it < r) 1 else 0)
+        }
+    }
 }
