@@ -1,0 +1,53 @@
+## SOLID
+- Single Responsibility Principle
+- Open-Closed Principle
+- Liskov Substitution Principle
+- Interface Segregation Principle
+- Dependency Inversion Principle
+
+### TODO
+- [] Single Responsibility Principle
+  - [] 1-A REGULAR 합계 계산 (형식 포함)
+    - [] RED: REGULAR 주문 총액 "총액: 14,000원" 기대 테스트 1개 
+    - [] GREEN: CheckoutService 하나에 합계+포맷까지 몰아넣어 통과
+  - [] 1-B VIP 10% 할인
+    - [] RED: VIP 주문 "총액: 12,600원" 기대 테스트 1개
+    - [] GREEN: CheckoutService에 if(customerTier=="VIP") 10% 할인 직접 구현
+  - [] 1-C SRP로 책임 분리(첫 리팩터링)
+    - [] TotalPriceCalculator.calc(order)로 합계 계산 분리
+    - [] CurrentDiscountPolicy.apply(total, tier)로 할인 분리 
+    - [] ReceiptPrinter.printTotal(won)로 출력 포맷 분리
+    - [] CheckoutService는 합계→할인→출력 오케스트레이션만 남김
+- [] Open-Closed Principle
+  - [] 2-A 새 할인 규칙 추가(요구사항: STUDENT 20%)
+    - [] RED: STUDENT 주문은 20% 할인 테스트 추가
+    - [] GREEN: 새 클래스 StudentDiscountPolicy 작성
+    - [] REFACTOR: DiscountPolicy 인터페이스 도입
+      - [] CurrentDiscountPolicy(REGULAR/VIP)와 StudentDiscountPolicy가 구현
+    - [] CheckoutService는 List<DiscountPolicy>를 주입받아 합성으로 규칙 선택 (기존 코드 수정 최소화)
+  - [] 2-B OCP 검증
+    - [] RED: 미래에 “BLACK 30%” 같은 규칙이 와도 기존 테스트/코드 거의 수정 없이 붙일 수 있는가? (가짜 정책으로 테스트)
+    - [] GREEN: 정책 추가만으로 통과 확인
+- [] Liskov Substitution Principle
+  - [] 3-A 정책 치환 가능성 테스트
+    - [] RED: DiscountPolicy의 “계약” 테스트(음수 가격 불가, 반올림 규칙 등) 공통 테스트 픽스처로 작성
+    - [] GREEN: NoDiscountPolicy, VipDiscountPolicy, StudentDiscountPolicy 모두 같은 계약 통과 
+    - [] REFACTOR: 정책 클래스에서 “예외/경계값 처리”를 일관화
+- Interface Segregation Principle
+  - [] 4-A 프린터 분리
+    - [] RED: 콘솔 출력, 파일 저장, 이메일 전송 중 콘솔만 필요할 때 나머지 구현 없이 테스트 통과해야 함
+    - [] GREEN: 거대 Printer 대신
+      - [] ReceiptRenderable(문자열 생성)
+      - [] ConsoleRenderer, FileRenderer, EmailRenderer 등으로 작게 분리 
+    - [] REFACTOR: CheckoutService는 ReceiptRenderable만 의존, 렌더러는 외부에서 선택
+- Dependency Inversion Principle
+  - [] 5-A 구현체 직접 생성 제거
+    - [] RED: 테스트에서 가짜 계산기/가짜 할인정책/가짜 렌더러를 주입해 시나리오 제어 가능해야 함
+    - [] GREEN: CheckoutService 생성자에서 모두 인터페이스로 주입받도록 수정 
+    - [] REFACTOR: 팩토리/빌더 도입(선택), 기본 구현은 구성 루트에서 연결
+- Quality
+  - [] 6단계: 마무리/품질 
+    - [] 통화/로케일 포맷 유틸 분리(부동소수 오차 방지, BigDecimal 채택 여부 결정)
+    - [] 경계 테스트: 빈 장바구니, 초대형 수량, 음수/0 가격 입력 시 예외 
+    - [] 회귀 테스트: 초기 1-A/1-B 기대 포맷과 값이 끝까지 유지되는지 
+    - [] 빠른 피드백 유지: 모든 테스트 < 1초, 의존 프레임워크 없음
