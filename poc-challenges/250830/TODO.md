@@ -4,3 +4,6 @@
 - [x] Dollar 부작용(side effect)
 - [] Money 반올림
 - [x] equals, hashCode
+- [x] 5CHF * 2 = 10CHF
+- [] Dollar/Franc 중복
+- [] 공용 times
