@@ -11,4 +11,4 @@ class CheckoutService {
 }
 
 data class Order(val items: List<Item>, val customerTier: String)
-data class Item(val name: String, val price: Double, val qty: Int)
+data class Item(val name: String, val price: Long, val qty: Int)
