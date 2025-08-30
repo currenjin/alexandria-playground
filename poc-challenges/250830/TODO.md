@@ -1,0 +1,9 @@
+- [] $5 + 10CHF = $10(환율이 2:1일 경우)
+- [x] $5 * 2 = $10
+- [x] amount를 private으로
+- [x] Dollar 부작용(side effect)
+- [] Money 반올림
+- [x] equals, hashCode
+- [x] 5CHF * 2 = 10CHF
+- [x] Dollar/Franc 중복
+- [x] 공용 times
