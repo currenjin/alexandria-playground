@@ -12,4 +12,13 @@ class TwoSumTest {
 
         assertEquals(arrayListOf(1, 2), actual)
     }
+
+    @Test
+    fun _2_3_4_targetIs6_returns1And3() {
+        val nums = arrayOf(2, 3, 4)
+
+        val actual = Nums.twoSum(nums, 6)
+
+        assertEquals(arrayListOf(1, 3), actual)
+    }
 }
