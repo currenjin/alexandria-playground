@@ -2,19 +2,20 @@ package com.currenjin
 
 class Nums {
     companion object {
-        fun twoSum(nums: Array<Int>, target: Int): ArrayList<Int> {
-            val result = arrayListOf<Int>()
+        fun twoSum(nums: IntArray, target: Int): IntArray {
+            var length = 0
+            var r = nums.lastIndex
 
-            for (i in nums.indices ) {
-                for (j in nums.indices)
-                if (nums[i] + nums[j] == target && i != j) {
-                    result.add(i + 1)
-                    result.add(j + 1)
-                    return result
+            while (length < r) {
+                val sum = nums[length] + nums[r]
+                when {
+                    sum == target -> return intArrayOf(length + 1, r + 1)
+                    sum < target -> length++
+                    else -> r--
                 }
             }
 
-            return result
+            return intArrayOf()
         }
     }
 
