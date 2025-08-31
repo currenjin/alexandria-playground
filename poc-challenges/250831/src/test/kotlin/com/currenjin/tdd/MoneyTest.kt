@@ -16,6 +16,8 @@ class MoneyTest {
     fun testEquality() {
         assertEquals(Money(5), Money(5))
         assertEquals(Money(10), Money(10))
+        assertEquals(Dollar(5), Dollar(5))
+        assertEquals<Money>(Dollar(5), Franc(5))
     }
 
     @Test
