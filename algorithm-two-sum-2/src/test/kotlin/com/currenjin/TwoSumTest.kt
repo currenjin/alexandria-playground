@@ -21,4 +21,13 @@ class TwoSumTest {
 
         assertEquals(arrayListOf(1, 3), actual)
     }
+
+    @Test
+    fun _minus1_0_targetIsMinus1_returns1And2() {
+        val nums = arrayOf(-1, 0)
+
+        val actual = Nums.twoSum(nums, -1)
+
+        assertEquals(arrayListOf(1, 2), actual)
+    }
 }
