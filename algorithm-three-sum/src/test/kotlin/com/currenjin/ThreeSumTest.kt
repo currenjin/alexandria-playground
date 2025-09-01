@@ -5,11 +5,20 @@ import org.junit.jupiter.api.Test
 
 class ThreeSumTest {
     @Test
-    fun one_triplet_basic() {
+    fun threeZeros_returnsSingleTriplet() {
         val nums = intArrayOf(0, 0, 0)
 
         val actual = ThreeSum().threeSum(nums)
 
         assertEquals(listOf(listOf(0, 0, 0)), actual)
+    }
+
+    @Test
+    fun noTriplet_returnsEmpty() {
+        val nums = intArrayOf(0, 1, 1)
+
+        val actual = ThreeSum().threeSum(nums)
+
+        assertEquals(emptyList<List<Int>>(), actual)
     }
 }
