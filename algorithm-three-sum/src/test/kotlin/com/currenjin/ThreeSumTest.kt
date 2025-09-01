@@ -21,4 +21,13 @@ class ThreeSumTest {
 
         assertEquals(emptyList<List<Int>>(), actual)
     }
+
+    @Test
+    fun arrayWithNegativeOneZeroAndOne_returnsTriplet() {
+        val nums = intArrayOf(-1, 0, 1)
+
+        val actual = ThreeSum().threeSum(nums)
+
+        assertEquals(listOf(listOf(-1, 0, 1)), actual)
+    }
 }
