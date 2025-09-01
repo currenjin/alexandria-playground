@@ -39,4 +39,13 @@ class ThreeSumTest {
 
         assertEquals(listOf(listOf(-1, -1, 2)), actual)
     }
+
+    @Test
+    fun arrayWithDuplicateTriplets_returnsDistinctTriplets() {
+        val nums = intArrayOf(-1, 0, 1, -1)
+
+        val actual = ThreeSum().threeSum(nums)
+
+        assertEquals(listOf(listOf(-1, 0, 1)), actual)
+    }
 }
