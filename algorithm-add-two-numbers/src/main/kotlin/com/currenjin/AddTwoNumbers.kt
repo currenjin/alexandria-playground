@@ -11,8 +11,8 @@ class AddTwoNumbers {
             val list = LinkedList<Int>()
             list.add(node1.element() + node2.element())
 
-            val numberOfNode1 = node1.reversed().joinToString { it.toString() }.toInt()
-            val numberOfNode2 = node2.reversed().joinToString { it.toString() }.toInt()
+            val numberOfNode1 = node1.reversed().joinToString("").toInt()
+            val numberOfNode2 = node2.reversed().joinToString("").toInt()
 
             val result = numberOfNode1 + numberOfNode2
             val splitResult =
