@@ -57,4 +57,26 @@ class AddTwoNumbersTest {
 
         assertEquals(listOf(0), actual)
     }
+
+    @Test
+    fun addsTwoNumbers_bigNumbers() {
+        val node1 = LinkedList<Int>()
+        val node2 = LinkedList<Int>()
+        node1.add(9)
+        node1.add(9)
+        node1.add(9)
+        node1.add(9)
+        node1.add(9)
+        node1.add(9)
+        node1.add(9)
+
+        node2.add(9)
+        node2.add(9)
+        node2.add(9)
+        node2.add(9)
+
+        val actual = AddTwoNumbers.add(node1, node2)
+
+        assertEquals(listOf(8, 9, 9, 9, 0, 0, 0, 1), actual)
+    }
 }
