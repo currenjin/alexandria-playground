@@ -45,4 +45,16 @@ class AddTwoNumbersTest {
 
         assertEquals(listOf(7, 0, 8), actual)
     }
+
+    @Test
+    fun addsTwoNumbers_zero() {
+        val node1 = LinkedList<Int>()
+        val node2 = LinkedList<Int>()
+        node1.add(0)
+        node2.add(0)
+
+        val actual = AddTwoNumbers.add(node1, node2)
+
+        assertEquals(listOf(0), actual)
+    }
 }
