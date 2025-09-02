@@ -6,11 +6,9 @@ import kotlin.test.assertEquals
 
 class AddTwoNumbersTest {
     @Test
-    fun add_one_number() {
-        val node1 = LinkedList<Int>()
-        val node2 = LinkedList<Int>()
-        node1.add(4)
-        node2.add(4)
+    fun addsSingleDigitNumbersWithoutCarry() {
+        val node1 = LinkedList<Int>().apply { add(4) }
+        val node2 = LinkedList<Int>().apply { add(4) }
 
         val actual = AddTwoNumbers.add(node1, node2)
 
@@ -18,11 +16,9 @@ class AddTwoNumbersTest {
     }
 
     @Test
-    fun addOneNumbers_returnsTwoNumbers() {
-        val node1 = LinkedList<Int>()
-        val node2 = LinkedList<Int>()
-        node1.add(4)
-        node2.add(8)
+    fun addsSingleDigitNumbersWithCarry() {
+        val node1 = LinkedList<Int>().apply { add(4) }
+        val node2 = LinkedList<Int>().apply { add(8) }
 
         val actual = AddTwoNumbers.add(node1, node2)
 
@@ -30,16 +26,19 @@ class AddTwoNumbersTest {
     }
 
     @Test
-    fun addsTwoNumbers_sameLength_withIntermediateCarry() {
-        val node1 = LinkedList<Int>()
-        val node2 = LinkedList<Int>()
-        node1.add(2)
-        node1.add(4)
-        node1.add(3)
-
-        node2.add(5)
-        node2.add(6)
-        node2.add(4)
+    fun addsSameLengthNumbersWithIntermediateCarry() {
+        val node1 =
+            LinkedList<Int>().apply {
+                add(2)
+                add(4)
+                add(3)
+            }
+        val node2 =
+            LinkedList<Int>().apply {
+                add(5)
+                add(6)
+                add(4)
+            }
 
         val actual = AddTwoNumbers.add(node1, node2)
 
@@ -47,11 +46,9 @@ class AddTwoNumbersTest {
     }
 
     @Test
-    fun addsTwoNumbers_zero() {
-        val node1 = LinkedList<Int>()
-        val node2 = LinkedList<Int>()
-        node1.add(0)
-        node2.add(0)
+    fun returnsZeroWhenBothInputsAreZero() {
+        val node1 = LinkedList<Int>().apply { add(0) }
+        val node2 = LinkedList<Int>().apply { add(0) }
 
         val actual = AddTwoNumbers.add(node1, node2)
 
@@ -59,21 +56,24 @@ class AddTwoNumbersTest {
     }
 
     @Test
-    fun addsTwoNumbers_bigNumbers() {
-        val node1 = LinkedList<Int>()
-        val node2 = LinkedList<Int>()
-        node1.add(9)
-        node1.add(9)
-        node1.add(9)
-        node1.add(9)
-        node1.add(9)
-        node1.add(9)
-        node1.add(9)
-
-        node2.add(9)
-        node2.add(9)
-        node2.add(9)
-        node2.add(9)
+    fun addsDifferentLengthNumbersWithLongCarryChain() {
+        val node1 =
+            LinkedList<Int>().apply {
+                add(9)
+                add(9)
+                add(9)
+                add(9)
+                add(9)
+                add(9)
+                add(9)
+            }
+        val node2 =
+            LinkedList<Int>().apply {
+                add(9)
+                add(9)
+                add(9)
+                add(9)
+            }
 
         val actual = AddTwoNumbers.add(node1, node2)
 
