@@ -18,4 +18,11 @@ class ValidParenthesesTest {
 
         assertFalse(actual)
     }
+
+    @Test
+    fun single_pair_returnsTrue() {
+        val actual = ValidParentheses.isValid("{}")
+
+        assertTrue(actual)
+    }
 }
