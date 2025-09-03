@@ -1,6 +1,7 @@
 package com.currenjin
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ValidParenthesesTest {
@@ -9,5 +10,12 @@ class ValidParenthesesTest {
         val actual = ValidParentheses.isValid("")
 
         assertTrue(actual)
+    }
+
+    @Test
+    fun single_open_returnsFalse() {
+        val actual = ValidParentheses.isValid("{")
+
+        assertFalse(actual)
     }
 }
