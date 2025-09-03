@@ -50,4 +50,18 @@ class ValidParenthesesTest {
         assertFalse(actual2)
         assertFalse(actual3)
     }
+
+    @Test
+    fun multiple_types_in_sequence_returns_true() {
+        val actual = ValidParentheses.isValid("[](){}")
+
+        assertTrue(actual)
+    }
+
+    @Test
+    fun nested_then_sequence_returns_true() {
+        val actual = ValidParentheses.isValid("[{{<>}}]()")
+
+        assertTrue(actual)
+    }
 }
