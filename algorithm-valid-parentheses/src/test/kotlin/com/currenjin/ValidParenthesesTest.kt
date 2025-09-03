@@ -32,4 +32,22 @@ class ValidParenthesesTest {
 
         assertTrue(actual)
     }
+
+    @Test
+    fun interleaved_returns_true() {
+        val actual = ValidParentheses.isValid("{{<({<<>>})>}}")
+
+        assertTrue(actual)
+    }
+
+    @Test
+    fun interleaved_returns_false() {
+        val actual1 = ValidParentheses.isValid("{{<({<<<}>>})>}}")
+        val actual2 = ValidParentheses.isValid("{{<({<<}>>})>}}")
+        val actual3 = ValidParentheses.isValid("{{<({<<{>>})>}}")
+
+        assertFalse(actual1)
+        assertFalse(actual2)
+        assertFalse(actual3)
+    }
 }

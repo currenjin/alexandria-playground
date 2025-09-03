@@ -24,5 +24,6 @@ private fun Char.toReverseParentheses() =
         '}' -> '{'
         ']' -> '['
         '>' -> '<'
+        ')' -> '('
         else -> ' '
     }
