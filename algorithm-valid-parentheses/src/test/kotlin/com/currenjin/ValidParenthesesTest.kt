@@ -25,4 +25,11 @@ class ValidParenthesesTest {
 
         assertTrue(actual)
     }
+
+    @Test
+    fun nested_returns_true() {
+        val actual = ValidParentheses.isValid("{{}}")
+
+        assertTrue(actual)
+    }
 }
