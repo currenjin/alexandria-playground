@@ -6,36 +6,29 @@ import kotlin.test.assertEquals
 class MergeTwoSortedListsTest {
     @Test
     fun sortedArray_still_returnsIt() {
-        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 2, 3), listOf())
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 2, 3).toListNode(), listOf<Int>().toListNode())
 
-        assertEquals(listOf(1, 2, 3), actual)
-    }
-
-    @Test
-    fun randomNumberList_returnsSortedList() {
-        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(2, 3, 1), listOf())
-
-        assertEquals(listOf(1, 2, 3), actual)
+        assertEquals(listOf(1, 2, 3).toListNode(), actual)
     }
 
     @Test
     fun merge_two_single_nodes() {
-        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(2), listOf(1))
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(2).toListNode(), listOf(1).toListNode())
 
-        assertEquals(listOf(1, 2), actual)
+        assertEquals(listOf(1, 2).toListNode(), actual)
     }
 
     @Test
     fun merge_two_lists_same_length() {
-        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 3, 5), listOf(2, 4, 6))
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 3, 5).toListNode(), listOf(2, 4, 6).toListNode())
 
-        assertEquals(listOf(1, 2, 3, 4, 5, 6), actual)
+        assertEquals(listOf(1, 2, 3, 4, 5, 6).toListNode(), actual)
     }
 
     @Test
     fun merge_two_lists_different_length() {
-        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 2, 4), listOf(1, 3, 4, 5, 6))
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 2, 4).toListNode(), listOf(1, 3, 4, 5, 6).toListNode())
 
-        assertEquals(listOf(1, 1, 2, 3, 4, 4, 5, 6), actual)
+        assertEquals(listOf(1, 1, 2, 3, 4, 4, 5, 6).toListNode(), actual)
     }
 }
