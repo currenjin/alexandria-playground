@@ -24,4 +24,11 @@ class MergeTwoSortedListsTest {
 
         assertEquals(listOf(1, 2), actual)
     }
+
+    @Test
+    fun merge_two_lists_same_length() {
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(1, 3, 5), listOf(2, 4, 6))
+
+        assertEquals(listOf(1, 2, 3, 4, 5, 6), actual)
+    }
 }
