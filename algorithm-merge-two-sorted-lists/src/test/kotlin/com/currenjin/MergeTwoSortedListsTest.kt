@@ -10,4 +10,11 @@ class MergeTwoSortedListsTest {
 
         assertEquals(listOf(1, 2, 3), actual)
     }
+
+    @Test
+    fun randomNumberList_returnsSortedList() {
+        val actual = MergeTwoSortedLists.mergeTwoLists(listOf(2, 3, 1), listOf())
+
+        assertEquals(listOf(1, 2, 3), actual)
+    }
 }
