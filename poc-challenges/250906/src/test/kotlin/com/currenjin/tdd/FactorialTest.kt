@@ -8,5 +8,6 @@ class FactorialTest {
     fun factorial() {
         assertEquals(1, Factorial.fac(1))
         assertEquals(2, Factorial.fac(2))
+        assertEquals(6, Factorial.fac(3))
     }
 }
