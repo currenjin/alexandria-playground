@@ -7,5 +7,6 @@ class FibonacciTest {
     @Test
     fun fibonacci() {
         assertEquals(0, Fibonacci.fibonacci(0))
+        assertEquals(1, Fibonacci.fibonacci(1))
     }
 }
