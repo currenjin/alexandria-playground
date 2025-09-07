@@ -72,13 +72,12 @@ class HashMapTest {
     }
 
     @Test
-    fun put_same_key_overwrites_value_without_changing_size() {
+    fun put_two_distinct_keys_makes_size_2() {
         val map = MyHashMap<String, Int?>()
 
         map.put("a", 1)
-        map.put("a", 7)
+        map.put("b", 2)
 
-        assertEquals(1, map.size)
-        assertEquals(7, map.get("a"))
+        assertEquals(2, map.size)
     }
 }
