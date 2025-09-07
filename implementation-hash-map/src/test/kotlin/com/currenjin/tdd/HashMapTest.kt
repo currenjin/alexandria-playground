@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import kotlin.test.assertNull
 
 class HashMapTest {
     @Test
@@ -25,5 +26,12 @@ class HashMapTest {
         val map = MyHashMap<String, Int?>()
 
         assertFalse(map.containsKey("a"))
+    }
+
+    @Test
+    fun new_map_get_returns_null() {
+        val map = MyHashMap<String, Int?>()
+
+        assertNull(map.get("a"))
     }
 }
