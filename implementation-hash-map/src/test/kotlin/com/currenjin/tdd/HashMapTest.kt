@@ -61,4 +61,13 @@ class HashMapTest {
 
         assertTrue(map.containsKey("a"))
     }
+
+    @Test
+    fun put_then_get_returns_value() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+
+        assertEquals(1, map.get("a"))
+    }
 }

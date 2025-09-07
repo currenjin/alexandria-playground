@@ -4,6 +4,7 @@ class MyHashMap<K: Any, V> {
     var size: Int = 0
 
     private var lastKey: K? = null
+    private var lastValue: V? = null
 
     fun isEmpty(): Boolean {
         return size == 0
@@ -14,11 +15,12 @@ class MyHashMap<K: Any, V> {
     }
 
     fun get(key: K): V? {
-        return null
+        return lastValue
     }
 
     fun put(key: K, value: V) {
         if (size == 0) size = 1
         lastKey = key
+        lastValue = value
     }
 }
