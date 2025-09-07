@@ -52,4 +52,13 @@ class HashMapTest {
 
         assertFalse(map.isEmpty())
     }
+
+    @Test
+    fun put_sets_containsKey_true_for_that_key() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+
+        assertTrue(map.containsKey("a"))
+    }
 }
