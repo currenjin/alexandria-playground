@@ -1,6 +1,8 @@
 package com.currenjin.tdd
 
 class MyHashMap<K: Any, V> {
+    var size: Int = 0
+
     fun isEmpty(): Boolean {
         return true
     }
@@ -9,9 +11,11 @@ class MyHashMap<K: Any, V> {
         return false
     }
 
-    fun get(string: K): V? {
+    fun get(key: K): V? {
         return null
     }
 
-    val size: Int = 0
+    fun put(key: K, value: V) {
+        if (size == 0) size = 1
+    }
 }

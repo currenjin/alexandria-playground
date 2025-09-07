@@ -34,4 +34,13 @@ class HashMapTest {
 
         assertNull(map.get("a"))
     }
+
+    @Test
+    fun put_once_makes_size_1() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+
+        assertEquals(1, map.size)
+    }
 }
