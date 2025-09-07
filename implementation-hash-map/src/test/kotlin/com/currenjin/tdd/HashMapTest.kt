@@ -80,4 +80,15 @@ class HashMapTest {
 
         assertEquals(2, map.size)
     }
+
+    @Test
+    fun containsKey_is_true_for_each_inserted_key() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+        map.put("b", 2)
+
+        assertTrue(map.containsKey("a"))
+        assertTrue(map.containsKey("b"))
+    }
 }
