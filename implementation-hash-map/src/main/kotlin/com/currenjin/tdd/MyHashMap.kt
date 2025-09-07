@@ -5,5 +5,9 @@ class MyHashMap<K: Any, V> {
         return true
     }
 
+    fun containsKey(key: String): Boolean {
+        return false
+    }
+
     val size: Int = 0
 }

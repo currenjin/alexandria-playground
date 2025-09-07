@@ -1,6 +1,7 @@
 package com.currenjin.tdd
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -17,5 +18,12 @@ class HashMapTest {
         val map = MyHashMap<String, Int?>()
 
         assertTrue(map.isEmpty())
+    }
+
+    @Test
+    fun new_map_containsKey_returns_false() {
+        val map = MyHashMap<String, Int?>()
+
+        assertFalse(map.containsKey("a"))
     }
 }
