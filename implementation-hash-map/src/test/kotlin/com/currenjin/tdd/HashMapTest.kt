@@ -70,4 +70,15 @@ class HashMapTest {
 
         assertEquals(1, map.get("a"))
     }
+
+    @Test
+    fun put_same_key_overwrites_value_without_changing_size() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+        map.put("a", 7)
+
+        assertEquals(1, map.size)
+        assertEquals(7, map.get("a"))
+    }
 }
