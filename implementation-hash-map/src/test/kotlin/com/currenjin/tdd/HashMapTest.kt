@@ -2,9 +2,9 @@ package com.currenjin.tdd
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNull
 
 class HashMapTest {
     @Test
@@ -42,5 +42,14 @@ class HashMapTest {
         map.put("a", 1)
 
         assertEquals(1, map.size)
+    }
+
+    @Test
+    fun put_once_makes_isEmpty_false() {
+        val map = MyHashMap<String, Int?>()
+
+        map.put("a", 1)
+
+        assertFalse(map.isEmpty())
     }
 }
