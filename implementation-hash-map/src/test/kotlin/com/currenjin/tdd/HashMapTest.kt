@@ -177,6 +177,21 @@ class HashMapTest {
 
         assertEquals(4, map.size)
     }
+
+    @Test
+    fun collision_entries_are_retrievable_after_resize() {
+        val map = MyHashMap<BadHashKey, Int?>()
+
+        val k1 = BadHashKey("k1"); map.put(k1, 1)
+        val k2 = BadHashKey("k2"); map.put(k2, 2)
+        val k3 = BadHashKey("k3"); map.put(k3, 3)
+        val k4 = BadHashKey("k4"); map.put(k4, 4)
+
+        assertEquals(1, map.get(k1))
+        assertEquals(2, map.get(k2))
+        assertEquals(3, map.get(k3))
+        assertEquals(4, map.get(k4))
+    }
 }
 
 private data class BadHashKey(val key: String) {
