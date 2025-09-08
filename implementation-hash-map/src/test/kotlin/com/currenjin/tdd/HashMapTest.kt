@@ -102,4 +102,100 @@ class HashMapTest {
         assertEquals(1, map.get("a"))
         assertEquals(2, map.get("b"))
     }
+
+    @Test
+    fun handles_collision_by_chaining() {
+        val map = MyHashMap<BadHashKey, Int?>()
+        val k1 = BadHashKey("a")
+        val k2 = BadHashKey("b")
+
+        map.put(k1, 1)
+        map.put(k2, 2)
+
+        assertEquals(1, map.get(k1))
+        assertEquals(2, map.get(k2))
+    }
+
+    @Test
+    fun remove_existing_key_decrements_size() {
+        val map = MyHashMap<String, Int?>()
+        map.put("a", 1)
+        map.put("b", 2)
+        assertEquals(2, map.size)
+
+        map.remove("a")
+
+        assertEquals(1, map.size)
+    }
+
+    @Test
+    fun remove_non_existing_key_does_nothing() {
+        val map = MyHashMap<String, Int?>()
+        map.put("a", 1)
+        map.put("b", 2)
+        assertEquals(2, map.size)
+
+        map.remove("zzz")
+
+        assertEquals(2, map.size)
+    }
+
+    @Test
+    fun auto_resizes_and_preserves_entries() {
+        val map = MyHashMap<String, Int?>()
+
+        for (i in 1..5) map.put("k$i", i)
+
+        assertEquals(5, map.size)
+        for (i in 1..5) assertEquals(i, map.get("k$i"))
+    }
+
+    @Test
+    fun overwrite_still_keeps_size_after_resize() {
+        val map = MyHashMap<String, Int?>()
+
+        for (i in 1..4) map.put("k$i", i)
+
+        map.put("k3", 300)
+        assertEquals(4, map.size)
+    }
+
+    @Test
+    fun remove_still_works_after_resize() {
+        val map = MyHashMap<String, Int?>()
+        for (i in 1..4) map.put("k$i", i)
+
+        map.remove("k2")
+        assertEquals(3, map.size)
+    }
+
+    @Test
+    fun collision_chain_survives_after_resize() {
+        val map = MyHashMap<BadHashKey, Int?>()
+
+        for (i in 1..4) map.put(BadHashKey("k$i"), i)
+
+        assertEquals(4, map.size)
+    }
+
+    @Test
+    fun collision_entries_are_retrievable_after_resize() {
+        val map = MyHashMap<BadHashKey, Int?>()
+
+        val k1 = BadHashKey("k1"); map.put(k1, 1)
+        val k2 = BadHashKey("k2"); map.put(k2, 2)
+        val k3 = BadHashKey("k3"); map.put(k3, 3)
+        val k4 = BadHashKey("k4"); map.put(k4, 4)
+
+        assertEquals(1, map.get(k1))
+        assertEquals(2, map.get(k2))
+        assertEquals(3, map.get(k3))
+        assertEquals(4, map.get(k4))
+    }
+}
+
+private data class BadHashKey(val key: String) {
+    override fun equals(other: Any?): Boolean = other is BadHashKey && other.key == key
+
+    override fun hashCode(): Int = 42
 }
