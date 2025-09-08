@@ -127,6 +127,18 @@ class HashMapTest {
 
         assertEquals(1, map.size)
     }
+
+    @Test
+    fun remove_non_existing_key_does_nothing() {
+        val map = MyHashMap<String, Int?>()
+        map.put("a", 1)
+        map.put("b", 2)
+        assertEquals(2, map.size)
+
+        map.remove("zzz")
+
+        assertEquals(2, map.size)
+    }
 }
 
 private data class BadHashKey(val key: String) {
