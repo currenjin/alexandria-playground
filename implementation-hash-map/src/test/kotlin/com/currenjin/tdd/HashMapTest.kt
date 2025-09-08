@@ -149,6 +149,16 @@ class HashMapTest {
         assertEquals(5, map.size)
         for (i in 1..5) assertEquals(i, map.get("k$i"))
     }
+
+    @Test
+    fun overwrite_still_keeps_size_after_resize() {
+        val map = MyHashMap<String, Int?>()
+
+        for (i in 1..4) map.put("k$i", i)
+
+        map.put("k3", 300)
+        assertEquals(4, map.size)
+    }
 }
 
 private data class BadHashKey(val key: String) {
