@@ -115,6 +115,18 @@ class HashMapTest {
         assertEquals(1, map.get(k1))
         assertEquals(2, map.get(k2))
     }
+
+    @Test
+    fun remove_existing_key_decrements_size() {
+        val map = MyHashMap<String, Int?>()
+        map.put("a", 1)
+        map.put("b", 2)
+        assertEquals(2, map.size)
+
+        map.remove("a")
+
+        assertEquals(1, map.size)
+    }
 }
 
 private data class BadHashKey(val key: String) {

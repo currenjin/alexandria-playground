@@ -20,4 +20,10 @@ class MyHashMap<K: Any, V> {
         val matchedBucket = bucket.firstOrNull { it.key == key }
         if (matchedBucket != null) matchedBucket.value = value else bucket.add(Entry(key, value))
     }
+
+    fun remove(key: K) {
+        val bucket = bucket(key)
+        val index = bucket.indexOfFirst { it.key == key }
+        if (index >= 0) bucket.removeAt(index)
+    }
 }
