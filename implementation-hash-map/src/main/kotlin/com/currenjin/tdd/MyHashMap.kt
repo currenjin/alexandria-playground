@@ -3,24 +3,21 @@ package com.currenjin.tdd
 class MyHashMap<K: Any, V> {
     private data class Entry<K, V>(val key: K, var value: V)
 
-    private val entries = mutableListOf<Entry<K, V>>()
-    val size: Int get() = entries.size
-    fun isEmpty(): Boolean = entries.isEmpty()
+    private var buckets: Array<MutableList<Entry<K, V>>> = Array(4) { mutableListOf() }
 
-    fun containsKey(key: K): Boolean {
-        return entries.any { it.key == key }
-    }
+    val size: Int get() = buckets.sumOf { it.size }
+    fun isEmpty(): Boolean = size == 0
 
-    fun get(key: K): V? {
-        return entries.firstOrNull { it.key == key }?.value
-    }
+    private fun index(key: K): Int = (key.hashCode() and 0x7ffffff) % buckets.size
+    private fun bucket(key: K) = buckets[index(key)]
+
+    fun containsKey(key: K): Boolean = bucket(key).any { it.key == key }
+
+    fun get(key: K): V? = bucket(key).firstOrNull { it.key == key }?.value
 
     fun put(key: K, value: V) {
-        val found = entries.firstOrNull { it.key == key }
-        if (found != null) {
-            found.value = value
-        } else {
-            entries.add(Entry(key, value))
-        }
+        val bucket = bucket(key)
+        val matchedBucket = bucket.firstOrNull { it.key == key }
+        if (matchedBucket != null) matchedBucket.value = value else bucket.add(Entry(key, value))
     }
 }
