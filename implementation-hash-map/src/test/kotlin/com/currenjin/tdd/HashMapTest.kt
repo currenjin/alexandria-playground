@@ -168,6 +168,15 @@ class HashMapTest {
         map.remove("k2")
         assertEquals(3, map.size)
     }
+
+    @Test
+    fun collision_chain_survives_after_resize() {
+        val map = MyHashMap<BadHashKey, Int?>()
+
+        for (i in 1..4) map.put(BadHashKey("k$i"), i)
+
+        assertEquals(4, map.size)
+    }
 }
 
 private data class BadHashKey(val key: String) {
