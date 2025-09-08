@@ -102,4 +102,23 @@ class HashMapTest {
         assertEquals(1, map.get("a"))
         assertEquals(2, map.get("b"))
     }
+
+    @Test
+    fun handles_collision_by_chaining() {
+        val map = MyHashMap<BadHashKey, Int?>()
+        val k1 = BadHashKey("a")
+        val k2 = BadHashKey("b")
+
+        map.put(k1, 1)
+        map.put(k2, 2)
+
+        assertEquals(1, map.get(k1))
+        assertEquals(2, map.get(k2))
+    }
+}
+
+private data class BadHashKey(val key: String) {
+    override fun equals(other: Any?): Boolean = other is BadHashKey && other.key == key
+
+    override fun hashCode(): Int = 42
 }
