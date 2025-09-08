@@ -159,6 +159,15 @@ class HashMapTest {
         map.put("k3", 300)
         assertEquals(4, map.size)
     }
+
+    @Test
+    fun remove_still_works_after_resize() {
+        val map = MyHashMap<String, Int?>()
+        for (i in 1..4) map.put("k$i", i)
+
+        map.remove("k2")
+        assertEquals(3, map.size)
+    }
 }
 
 private data class BadHashKey(val key: String) {
