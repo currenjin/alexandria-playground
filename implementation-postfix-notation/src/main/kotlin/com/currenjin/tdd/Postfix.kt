@@ -1,15 +1,20 @@
 package com.currenjin.tdd
 
-import java.util.*
+import java.util.Stack
 
 class Postfix {
     companion object {
         fun calculate(postfix: String): Int {
-            if (postfix.isBlank()) {
+            val operands = postfix.split(" ")
+
+            if (postfix.isEmpty()) {
                 throw IllegalArgumentException("postfix must not be blank")
             }
 
-            val operands = postfix.split(" ")
+            if (operands.size <= 2) {
+                throw IllegalArgumentException("operands must have at least 2 operands")
+            }
+
             val stack = Stack<Int>()
 
             for (operand in operands) {

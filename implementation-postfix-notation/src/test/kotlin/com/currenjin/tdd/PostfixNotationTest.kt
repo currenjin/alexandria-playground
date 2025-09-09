@@ -27,4 +27,9 @@ class PostfixNotationTest {
     fun throwsException_stringIsBlank() {
         assertThrows<IllegalArgumentException> { Postfix.calculate(" ") }
     }
+
+    @Test
+    fun throwsException_atLeastTwoPostfix() {
+        assertThrows<IllegalArgumentException> { Postfix.calculate("1+") }
+    }
 }
