@@ -12,6 +12,7 @@ class PostfixNotationTest {
         "10, 6 4 +",
         "15, 10 5 +",
         "15, 5 3 *",
+        "11, 5 3 2 * +",
     )
     fun postfixTest(
         expected: Int,
