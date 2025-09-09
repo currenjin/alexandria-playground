@@ -6,8 +6,15 @@ import org.junit.jupiter.params.provider.CsvSource
 
 class PostfixNotationTest {
     @ParameterizedTest
-    @CsvSource("10, 6 4 +", "15, 10 5 +")
-    fun postfixTest(expected: Int, postfix: String) {
+    @CsvSource(
+        "10, 6 4 +",
+        "15, 10 5 +",
+        "15, 5 3 *",
+    )
+    fun postfixTest(
+        expected: Int,
+        postfix: String,
+    ) {
         val actual = Postfix.calculate(postfix)
 
         assertEquals(expected, actual)
