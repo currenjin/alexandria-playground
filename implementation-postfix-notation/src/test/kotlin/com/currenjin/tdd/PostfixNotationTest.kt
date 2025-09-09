@@ -32,4 +32,9 @@ class PostfixNotationTest {
     fun throwsException_atLeastTwoPostfix() {
         assertThrows<IllegalArgumentException> { Postfix.calculate("1+") }
     }
+
+    @Test
+    fun throwsException_invalidString() {
+        assertThrows<IllegalArgumentException> { Postfix.calculate("d d sad") }
+    }
 }

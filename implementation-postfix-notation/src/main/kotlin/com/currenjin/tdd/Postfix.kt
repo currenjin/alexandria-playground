@@ -18,8 +18,11 @@ class Postfix {
             val stack = Stack<Int>()
 
             for (operand in operands) {
-                val number = operand.toIntOrNull()
-                if (number != null) {
+                if (!OperationSymbol.isOperationSymbol(operand)) {
+                    val number =
+                        operand.toIntOrNull()
+                            ?: throw IllegalArgumentException("operands must have numeric or operation")
+
                     stack.push(number)
                 } else {
                     val operand2 = stack.pop()
@@ -27,11 +30,11 @@ class Postfix {
 
                     val result =
                         when (operand) {
-                            "+" -> operand1 + operand2
-                            "-" -> operand1 - operand2
-                            "*" -> operand1 * operand2
-                            "/" -> operand1 / operand2
-                            else -> operands.last().toInt()
+                            OperationSymbol.ADDITION_SYMBOL.operator -> operand1 + operand2
+                            OperationSymbol.SUBTRACTION_SYMBOL.operator -> operand1 - operand2
+                            OperationSymbol.MULTIPLICATION_SYMBOL.operator -> operand1 * operand2
+                            OperationSymbol.DIVISION_SYMBOL.operator -> operand1 / operand2
+                            else -> throw IllegalArgumentException("operator must have an operational symbol")
                         }
 
                     stack.push(result)
