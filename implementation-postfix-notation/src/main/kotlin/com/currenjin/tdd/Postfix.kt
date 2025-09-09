@@ -1,9 +1,10 @@
 package com.currenjin.tdd
 
-class Postfix() {
+class Postfix {
     companion object {
         fun calculate(postfix: String): Int {
-            return 10
+            val list = postfix.split(" ")
+            return list[0].toInt() + list[1].toInt()
         }
     }
 
