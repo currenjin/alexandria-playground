@@ -1,6 +1,8 @@
 package com.currenjin.tdd
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
@@ -18,5 +20,10 @@ class PostfixNotationTest {
         val actual = Postfix.calculate(postfix)
 
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun throwsException_stringIsBlank() {
+        assertThrows<IllegalArgumentException> { Postfix.calculate(" ") }
     }
 }
