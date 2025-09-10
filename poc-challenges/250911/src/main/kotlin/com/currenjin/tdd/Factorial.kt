@@ -4,7 +4,7 @@ class Factorial() {
     companion object {
         fun fac(n: Int): Int {
             if (n <= 2) return n
-            return 3 * 2
+            return 3 * fac(n - 1)
         }
     }
 
