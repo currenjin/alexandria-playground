@@ -7,5 +7,6 @@ class FactorialTest {
     @Test
     fun fac() {
         assertEquals(1, Factorial.cal(1))
+        assertEquals(2, Factorial.cal(2))
     }
 }
