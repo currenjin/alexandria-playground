@@ -1,12 +1,13 @@
 package com.currenjin.tdd
 
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.assertEquals
 
 class FactorialTest {
-    @Test
-    fun fac() {
-        assertEquals(1, Factorial.cal(1))
-        assertEquals(2, Factorial.cal(2))
+    @ParameterizedTest
+    @CsvSource("1,1", "2,2")
+    fun fac(input: Int, expected: Int) {
+        assertEquals(expected, Factorial.cal(input))
     }
 }
