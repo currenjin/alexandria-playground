@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource
 
 class FactorialTest {
     @ParameterizedTest
-    @CsvSource("1, 1")
+    @CsvSource("1, 1", "2, 2")
     fun factorial(expected: Int, input: Int) {
         assertEquals(expected, Factorial.fac(input))
     }
