@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 
 @SpringBootTest
@@ -39,5 +40,27 @@ class AccountTest(
 
         t1.join()
         t2.join()
+    }
+
+    @Test
+    fun non_repeatable_read_occurs_at_read_committed() {
+        val id = accountRepository.save(Account(100)).id!!
+        val l1 = CountDownLatch(1)
+        val l2 = CountDownLatch(1)
+        val first = AtomicLong()
+        val second = AtomicLong()
+
+        val t1 = thread { accountService.readTwiceInOneTx(id, l1, l2, first, second) }
+        val t2 =
+            thread {
+                l1.await()
+                accountService.updateAndCommit(id, 200)
+                l2.countDown()
+            }
+
+        t1.join()
+        t2.join()
+
+        assertEquals(first.get(), second.get(), "non-repeatable read observed")
     }
 }
