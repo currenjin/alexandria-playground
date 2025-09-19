@@ -1,4 +1,4 @@
-package com.currenjin.domain
+package com.currenjin.account.domain
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
