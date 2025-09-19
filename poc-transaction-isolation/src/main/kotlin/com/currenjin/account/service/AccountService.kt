@@ -27,20 +27,25 @@ class AccountService(
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     fun readBalance(id: Long): Long = accountRepository.findById(id).orElseThrow().balance
 
-    fun updateAndCommit(
-        id: Long,
-        i: Int,
-    ) {
-        TODO("Not yet implemented")
-    }
-
     fun readTwiceInOneTx(
         id: Long,
         l1: CountDownLatch,
         l2: CountDownLatch,
-        first: AtomicLong,
-        second: AtomicLong,
+        a1: AtomicLong,
+        a2: AtomicLong,
     ) {
-        TODO("Not yet implemented")
+        a1.set(accountRepository.findById(id).orElseThrow().balance)
+        l1.countDown()
+
+        l2.await()
+        a2.set(accountRepository.findById(id).orElseThrow().balance)
+    }
+
+    fun updateAndCommit(
+        id: Long,
+        v: Long,
+    ) {
+        val account = accountRepository.findById(id).orElseThrow()
+        account.balance = v
     }
 }
