@@ -1,4 +1,4 @@
-package org.gonza.kotlinplayground
+package com.currenjin
 
 import org.junit.jupiter.api.Test
 

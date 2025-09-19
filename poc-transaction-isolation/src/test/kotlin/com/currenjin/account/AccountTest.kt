@@ -3,15 +3,15 @@ package com.currenjin.account
 import com.currenjin.account.domain.Account
 import com.currenjin.account.repository.AccountRepository
 import com.currenjin.account.service.AccountService
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
-import kotlin.test.assertEquals
 
 @SpringBootTest
-class DirtyReadTest(
+class AccountTest(
     @Autowired private val accountRepository: AccountRepository,
     @Autowired private val accountService: AccountService,
 ) {

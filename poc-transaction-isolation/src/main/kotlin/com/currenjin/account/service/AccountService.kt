@@ -2,6 +2,7 @@ package com.currenjin.account.service
 
 import com.currenjin.account.repository.AccountRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.CountDownLatch
 
@@ -22,6 +23,6 @@ class AccountService(
         latch2.await()
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     fun readBalance(id: Long): Long = accountRepository.findById(id).orElseThrow().balance
 }

@@ -1,10 +1,8 @@
 package com.currenjin.account.repository
 
 import com.currenjin.account.domain.Account
-import java.util.Optional
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
-interface AccountRepository {
-    fun findById(id: Long): Optional<Account>
-
-    fun save(account: Account): Account
-}
+@Repository
+interface AccountRepository : JpaRepository<Account, Long>
