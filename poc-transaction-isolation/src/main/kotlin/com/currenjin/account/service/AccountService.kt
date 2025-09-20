@@ -1,6 +1,8 @@
 package com.currenjin.account.service
 
 import com.currenjin.account.repository.AccountRepository
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
@@ -10,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong
 @Service
 class AccountService(
     private val accountRepository: AccountRepository,
+    @PersistenceContext private val entityManager: EntityManager,
 ) {
     @Transactional
     fun updateWithoutCommit(
@@ -27,6 +30,7 @@ class AccountService(
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     fun readBalance(id: Long): Long = accountRepository.findById(id).orElseThrow().balance
 
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED, readOnly = true)
     fun readTwiceInOneTx(
         id: Long,
         l1: CountDownLatch,
@@ -34,11 +38,27 @@ class AccountService(
         a1: AtomicLong,
         a2: AtomicLong,
     ) {
-        a1.set(accountRepository.findById(id).orElseThrow().balance)
-        l1.countDown()
+        val result1 =
+            entityManager
+                .createQuery(
+                    "select a.balance from Account a where a.id = :id",
+                    java.lang.Long::class.java,
+                ).setParameter("id", id)
+                .singleResult
 
+        a1.set(result1.toLong())
+        l1.countDown()
         l2.await()
-        a2.set(accountRepository.findById(id).orElseThrow().balance)
+
+        entityManager.clear()
+        val result2 =
+            entityManager
+                .createQuery(
+                    "select a.balance from Account a where a.id = :id",
+                    java.lang.Long::class.java,
+                ).setParameter("id", id)
+                .singleResult
+        a2.set(result2.toLong())
     }
 
     fun updateAndCommit(
