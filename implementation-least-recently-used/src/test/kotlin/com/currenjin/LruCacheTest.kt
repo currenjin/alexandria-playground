@@ -83,4 +83,9 @@ class LruCacheTest {
     fun zero_capacity_throws_exception() {
         assertThrows<IllegalArgumentException> { LruCache<Int, String>(capacity = 0) }
     }
+
+    @Test
+    fun negative_capacity_throws_exception() {
+        assertThrows<IllegalArgumentException> { LruCache<Int, String>(capacity = -1) }
+    }
 }
