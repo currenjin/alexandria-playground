@@ -124,4 +124,16 @@ class LruCacheTest {
         assertNull(cache.get(1))
         assertEquals(1, cache.size())
     }
+
+    @Test
+    fun remove_non_existing_key_does_nothing() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+
+        cache.remove(2)
+
+        assertEquals(1, cache.size())
+        assertEquals("A", cache.get(1))
+    }
 }
