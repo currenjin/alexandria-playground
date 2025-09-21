@@ -1,13 +1,26 @@
 package com.currenjin
 
-class LruCache<K, V>(
-    private val capacity: Int = 1,
-) {
-    private val store = LinkedHashMap<K, V>(16, 0.75f, true)
-
-    init {
-        require(capacity > 0) { "Capacity must be greater than 0" }
+class LruCache<K, V> : Iterable<K> {
+    companion object {
+        private const val DEFAULT_CAPACITY = 1
     }
+
+    constructor(capacity: Int = DEFAULT_CAPACITY) {
+        validateCapacity(capacity)
+
+        this.capacity = capacity
+    }
+
+    var capacity: Int = DEFAULT_CAPACITY
+        set(value) {
+            validateCapacity(value)
+            field = value
+            while (store.size > field) {
+                removeOldest()
+            }
+        }
+
+    private val store = LinkedHashMap<K, V>(16, 0.75f, true)
 
     fun get(key: K): V? = store[key]
 
@@ -16,24 +29,32 @@ class LruCache<K, V>(
         value: V,
     ) {
         store[key] = value
-        evictIfNeeded()
+        if (store.size > capacity) removeOldest()
     }
 
-    private fun evictIfNeeded() {
+    fun size(): Int = store.size
+
+    fun clear() = store.clear()
+
+    fun remove(key: K) = store.remove(key)
+
+    fun contains(key: K): Boolean = store.containsKey(key)
+
+    override fun iterator(): Iterator<K> = store.keys.iterator()
+
+    private fun validateCapacity(value: Int) {
+        require(value > 0) { "Capacity must be greater than 0" }
+    }
+
+    private fun removeOldest() {
         if (store.size > capacity) {
-            val eldestKey =
+            val oldestKey =
                 store.entries
                     .iterator()
                     .next()
                     .key
 
-            store.remove(eldestKey)
+            store.remove(oldestKey)
         }
-    }
-
-    fun size(): Int = store.size
-
-    fun clear() {
-        store.clear()
     }
 }

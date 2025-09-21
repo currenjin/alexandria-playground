@@ -1,7 +1,9 @@
 package com.currenjin
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -110,5 +112,78 @@ class LruCacheTest {
         cache.clear()
 
         assertEquals(0, cache.size())
+    }
+
+    @Test
+    fun remove_existing_key_deletes_it() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+
+        cache.remove(1)
+
+        assertNull(cache.get(1))
+        assertEquals(1, cache.size())
+    }
+
+    @Test
+    fun remove_non_existing_key_does_nothing() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+
+        cache.remove(2)
+
+        assertEquals(1, cache.size())
+        assertEquals("A", cache.get(1))
+    }
+
+    @Test
+    fun contains_existing_key_returns_true() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+
+        assertTrue(cache.contains(1))
+    }
+
+    @Test
+    fun contains_non_existing_key_returns_false() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        assertFalse(cache.contains(1))
+    }
+
+    @Test
+    fun change_capacity_smaller_capacity_removes_oldest() {
+        val cache = LruCache<Int, String>(capacity = 5)
+        cache.put(1, "A")
+        cache.put(2, "B")
+        cache.put(3, "C")
+        cache.put(4, "D")
+        cache.put(5, "E")
+
+        cache.capacity = 2
+
+        assertEquals(2, cache.size())
+        assertNull(cache.get(1))
+        assertEquals("D", cache.get(4))
+        assertEquals("E", cache.get(5))
+    }
+
+    @Test
+    fun iterator_returns_keys_in_access_order() {
+        val cache = LruCache<Int, String>(capacity = 3)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+        cache.put(3, "C")
+
+        cache.get(1)
+
+        val keys = cache.iterator().asSequence().toList()
+
+        assertEquals(listOf(2, 3, 1), keys)
     }
 }
