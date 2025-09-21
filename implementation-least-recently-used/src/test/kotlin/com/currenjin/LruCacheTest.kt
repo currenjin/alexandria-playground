@@ -111,4 +111,17 @@ class LruCacheTest {
 
         assertEquals(0, cache.size())
     }
+
+    @Test
+    fun remove_existing_key_deletes_it() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+
+        cache.remove(1)
+
+        assertNull(cache.get(1))
+        assertEquals(1, cache.size())
+    }
 }

@@ -36,4 +36,8 @@ class LruCache<K, V>(
     fun clear() {
         store.clear()
     }
+
+    fun remove(key: K) {
+        store.remove(key)
+    }
 }
