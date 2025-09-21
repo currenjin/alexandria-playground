@@ -3,6 +3,7 @@ package com.currenjin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class LruCacheTest {
     @Test
@@ -76,5 +77,10 @@ class LruCacheTest {
         cache.put(100L, "foo")
 
         assertEquals("foo", cache.get(100L))
+    }
+
+    @Test
+    fun zero_capacity_throws_exception() {
+        assertThrows<IllegalArgumentException> { LruCache<Int, String>(capacity = 0) }
     }
 }
