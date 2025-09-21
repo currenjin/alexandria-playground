@@ -40,4 +40,6 @@ class LruCache<K, V>(
     fun remove(key: K) {
         store.remove(key)
     }
+
+    fun contains(key: K): Boolean = store.containsKey(key)
 }
