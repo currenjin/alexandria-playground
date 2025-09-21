@@ -30,4 +30,15 @@ class LruCacheTest {
 
         assertEquals("B", cache.get(1))
     }
+
+    @Test
+    fun capacity1_put_two_evicts_first() {
+        val cache = LruCache()
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+
+        assertNull(cache.get(1))
+        assertEquals("B", cache.get(2))
+    }
 }
