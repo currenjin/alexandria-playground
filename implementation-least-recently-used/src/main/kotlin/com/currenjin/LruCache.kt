@@ -1,19 +1,19 @@
 package com.currenjin
 
-class LruCache(
+class LruCache<K, V>(
     private val capacity: Int = 1,
 ) {
-    private val store = LinkedHashMap<Int, String>(16, 0.75f, true)
+    private val store = LinkedHashMap<K, V>(16, 0.75f, true)
 
     init {
         require(capacity > 0) { "Capacity must be greater than 0" }
     }
 
-    fun get(key: Int): String? = store[key]
+    fun get(key: K): V? = store[key]
 
     fun put(
-        key: Int,
-        value: String,
+        key: K,
+        value: V,
     ) {
         store[key] = value
         evictIfNeeded()
