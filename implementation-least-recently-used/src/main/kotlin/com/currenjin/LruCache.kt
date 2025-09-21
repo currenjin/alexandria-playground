@@ -16,6 +16,10 @@ class LruCache(
         value: String,
     ) {
         store[key] = value
+        evictIfNeeded()
+    }
+
+    private fun evictIfNeeded() {
         if (store.size > capacity) {
             val eldestKey =
                 store.entries

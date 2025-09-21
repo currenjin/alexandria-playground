@@ -52,4 +52,20 @@ class LruCacheTest {
         assertEquals("A", cache.get(1))
         assertEquals("B", cache.get(2))
     }
+
+    @Test
+    fun get_updates_recency_evicts_least_recent() {
+        val cache = LruCache(capacity = 2)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+
+        cache.get(1)
+
+        cache.put(3, "C")
+
+        assertNull(cache.get(2))
+        assertEquals("A", cache.get(1))
+        assertEquals("C", cache.get(3))
+    }
 }
