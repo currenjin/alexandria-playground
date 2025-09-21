@@ -14,7 +14,7 @@ class LruCache<K, V> {
     var capacity: Int = INITIAL_CAPACITY
         set(value) {
             field = value
-            evictIfNeeded()
+            removeOldest()
         }
 
     private val store = LinkedHashMap<K, V>(16, 0.75f, true)
@@ -26,7 +26,7 @@ class LruCache<K, V> {
         value: V,
     ) {
         store[key] = value
-        evictIfNeeded()
+        removeOldest()
     }
 
     fun size(): Int = store.size
@@ -43,15 +43,15 @@ class LruCache<K, V> {
 
     fun iterator(): Iterator<K> = store.keys.iterator()
 
-    private fun evictIfNeeded() {
+    private fun removeOldest() {
         if (store.size > capacity) {
-            val eldestKey =
+            val oldestKey =
                 store.entries
                     .iterator()
                     .next()
                     .key
 
-            store.remove(eldestKey)
+            store.remove(oldestKey)
         }
     }
 }
