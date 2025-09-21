@@ -29,7 +29,7 @@ class LruCache<K, V> : Iterable<K> {
         value: V,
     ) {
         store[key] = value
-        removeOldest()
+        if (store.size > capacity) removeOldest()
     }
 
     fun size(): Int = store.size
