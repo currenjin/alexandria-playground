@@ -32,4 +32,8 @@ class LruCache<K, V>(
     }
 
     fun size(): Int = store.size
+
+    fun clear() {
+        store.clear()
+    }
 }

@@ -100,4 +100,15 @@ class LruCacheTest {
         cache.put(2, "B")
         assertEquals(2, cache.size())
     }
+
+    @Test
+    fun clear_removes_all_entries() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+        cache.clear()
+
+        assertEquals(0, cache.size())
+    }
 }
