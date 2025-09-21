@@ -154,4 +154,19 @@ class LruCacheTest {
 
         assertFalse(cache.contains(1))
     }
+
+    @Test
+    fun change_capacity_smaller_capacity_removes_oldest() {
+        val cache = LruCache<Int, String>(capacity = 3)
+        cache.put(1, "A")
+        cache.put(2, "B")
+        cache.put(3, "C")
+
+        cache.capacity = 2
+
+        assertEquals(2, cache.size())
+        assertNull(cache.get(1))
+        assertEquals("B", cache.get(2))
+        assertEquals("C", cache.get(3))
+    }
 }

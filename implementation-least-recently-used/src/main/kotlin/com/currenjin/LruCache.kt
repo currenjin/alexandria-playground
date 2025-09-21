@@ -1,13 +1,23 @@
 package com.currenjin
 
-class LruCache<K, V>(
-    private val capacity: Int = 1,
-) {
-    private val store = LinkedHashMap<K, V>(16, 0.75f, true)
-
-    init {
-        require(capacity > 0) { "Capacity must be greater than 0" }
+class LruCache<K, V> {
+    companion object {
+        private const val INITIAL_CAPACITY = 1
     }
+
+    constructor(capacity: Int = INITIAL_CAPACITY) {
+        require(capacity > 0) { "Capacity must be greater than 0" }
+
+        this.capacity = capacity
+    }
+
+    var capacity: Int = INITIAL_CAPACITY
+        set(value) {
+            field = value
+            evictIfNeeded()
+        }
+
+    private val store = LinkedHashMap<K, V>(16, 0.75f, true)
 
     fun get(key: K): V? = store[key]
 
@@ -17,18 +27,6 @@ class LruCache<K, V>(
     ) {
         store[key] = value
         evictIfNeeded()
-    }
-
-    private fun evictIfNeeded() {
-        if (store.size > capacity) {
-            val eldestKey =
-                store.entries
-                    .iterator()
-                    .next()
-                    .key
-
-            store.remove(eldestKey)
-        }
     }
 
     fun size(): Int = store.size
@@ -42,4 +40,16 @@ class LruCache<K, V>(
     }
 
     fun contains(key: K): Boolean = store.containsKey(key)
+
+    private fun evictIfNeeded() {
+        if (store.size > capacity) {
+            val eldestKey =
+                store.entries
+                    .iterator()
+                    .next()
+                    .key
+
+            store.remove(eldestKey)
+        }
+    }
 }
