@@ -30,4 +30,6 @@ class LruCache<K, V>(
             store.remove(eldestKey)
         }
     }
+
+    fun size(): Int = store.size
 }

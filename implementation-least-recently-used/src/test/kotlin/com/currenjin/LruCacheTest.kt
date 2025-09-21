@@ -88,4 +88,16 @@ class LruCacheTest {
     fun negative_capacity_throws_exception() {
         assertThrows<IllegalArgumentException> { LruCache<Int, String>(capacity = -1) }
     }
+
+    @Test
+    fun size_reflects_number_of_entries() {
+        val cache = LruCache<Int, String>(capacity = 2)
+        assertEquals(0, cache.size())
+
+        cache.put(1, "A")
+        assertEquals(1, cache.size())
+
+        cache.put(2, "B")
+        assertEquals(2, cache.size())
+    }
 }
