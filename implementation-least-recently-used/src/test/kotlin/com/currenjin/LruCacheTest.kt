@@ -1,6 +1,7 @@
 package com.currenjin
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -145,5 +146,12 @@ class LruCacheTest {
         cache.put(1, "A")
 
         assertTrue(cache.contains(1))
+    }
+
+    @Test
+    fun contains_non_existing_key_returns_false() {
+        val cache = LruCache<Int, String>(capacity = 2)
+
+        assertFalse(cache.contains(1))
     }
 }
