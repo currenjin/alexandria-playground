@@ -41,4 +41,15 @@ class LruCacheTest {
         assertNull(cache.get(1))
         assertEquals("B", cache.get(2))
     }
+
+    @Test
+    fun capacity2_put_two_both_exist() {
+        val cache = LruCache(capacity = 2)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+
+        assertEquals("A", cache.get(1))
+        assertEquals("B", cache.get(2))
+    }
 }
