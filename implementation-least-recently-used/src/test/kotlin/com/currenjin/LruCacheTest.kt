@@ -20,4 +20,14 @@ class LruCacheTest {
 
         assertEquals("A", cache.get(1))
     }
+
+    @Test
+    fun put_same_key_overwrites_value() {
+        val cache = LruCache()
+
+        cache.put(1, "A")
+        cache.put(1, "B")
+
+        assertEquals("B", cache.get(1))
+    }
 }
