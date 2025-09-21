@@ -31,13 +31,9 @@ class LruCache<K, V> {
 
     fun size(): Int = store.size
 
-    fun clear() {
-        store.clear()
-    }
+    fun clear() = store.clear()
 
-    fun remove(key: K) {
-        store.remove(key)
-    }
+    fun remove(key: K) = store.remove(key)
 
     fun contains(key: K): Boolean = store.containsKey(key)
 
