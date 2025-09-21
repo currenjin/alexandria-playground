@@ -41,6 +41,8 @@ class LruCache<K, V> {
 
     fun contains(key: K): Boolean = store.containsKey(key)
 
+    fun iterator(): Iterator<K> = store.keys.iterator()
+
     private fun evictIfNeeded() {
         if (store.size > capacity) {
             val eldestKey =

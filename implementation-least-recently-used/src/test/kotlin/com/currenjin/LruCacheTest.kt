@@ -169,4 +169,19 @@ class LruCacheTest {
         assertEquals("B", cache.get(2))
         assertEquals("C", cache.get(3))
     }
+
+    @Test
+    fun iterator_returns_keys_in_access_order() {
+        val cache = LruCache<Int, String>(capacity = 3)
+
+        cache.put(1, "A")
+        cache.put(2, "B")
+        cache.put(3, "C")
+
+        cache.get(1)
+
+        val keys = cache.iterator().asSequence().toList()
+
+        assertEquals(listOf(2, 3, 1), keys)
+    }
 }
