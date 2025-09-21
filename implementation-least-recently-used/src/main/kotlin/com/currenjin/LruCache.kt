@@ -1,20 +1,23 @@
 package com.currenjin
 
-class LruCache<K, V> {
+class LruCache<K, V> : Iterable<K> {
     companion object {
-        private const val INITIAL_CAPACITY = 1
+        private const val DEFAULT_CAPACITY = 1
     }
 
-    constructor(capacity: Int = INITIAL_CAPACITY) {
-        require(capacity > 0) { "Capacity must be greater than 0" }
+    constructor(capacity: Int = DEFAULT_CAPACITY) {
+        validateCapacity(capacity)
 
         this.capacity = capacity
     }
 
-    var capacity: Int = INITIAL_CAPACITY
+    var capacity: Int = DEFAULT_CAPACITY
         set(value) {
+            validateCapacity(value)
             field = value
-            removeOldest()
+            while (store.size > field) {
+                removeOldest()
+            }
         }
 
     private val store = LinkedHashMap<K, V>(16, 0.75f, true)
@@ -37,7 +40,11 @@ class LruCache<K, V> {
 
     fun contains(key: K): Boolean = store.containsKey(key)
 
-    fun iterator(): Iterator<K> = store.keys.iterator()
+    override fun iterator(): Iterator<K> = store.keys.iterator()
+
+    private fun validateCapacity(value: Int) {
+        require(value > 0) { "Capacity must be greater than 0" }
+    }
 
     private fun removeOldest() {
         if (store.size > capacity) {
