@@ -58,4 +58,9 @@ class EuclideanTest {
     fun gcd_of_minus4_and_minus2_is_2() {
         assertEquals(2, Euclidean.gcd(-4, -2))
     }
+
+    @Test
+    fun gcd_large_numbers() {
+        assertEquals(10_000L, Euclidean.gcd(100_000L, 10_000L))
+    }
 }
