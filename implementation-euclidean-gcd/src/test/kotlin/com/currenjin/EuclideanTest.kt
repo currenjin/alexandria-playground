@@ -2,6 +2,7 @@ package com.currenjin
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.math.BigInteger
 
 class EuclideanTest {
     @Test
@@ -62,5 +63,13 @@ class EuclideanTest {
     @Test
     fun gcd_large_numbers() {
         assertEquals(10_000L, Euclidean.gcd(100_000L, 10_000L))
+    }
+
+    @Test
+    fun gcd_big_integers() {
+        val n1 = BigInteger("123456789123456789123456789")
+        val n2 = BigInteger("987654321")
+
+        assertEquals(BigInteger("9"), Euclidean.gcd(n1, n2))
     }
 }
