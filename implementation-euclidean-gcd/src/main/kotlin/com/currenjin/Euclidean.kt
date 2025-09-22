@@ -5,6 +5,11 @@ import kotlin.math.abs
 class Euclidean {
     companion object {
         fun gcd(
+            n1: Int,
+            n2: Int,
+        ): Int = gcd(n1.toLong(), n2.toLong()).toInt()
+
+        fun gcd(
             n1: Long,
             n2: Long,
         ): Long {
