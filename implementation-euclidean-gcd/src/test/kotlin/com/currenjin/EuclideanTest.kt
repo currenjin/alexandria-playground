@@ -43,4 +43,9 @@ class EuclideanTest {
     fun gcd_of_0_and_5_is_5() {
         assertEquals(5, Euclidean.gcd(0, 5))
     }
+
+    @Test
+    fun gcd_of_7_and_0_is_7() {
+        assertEquals(7, Euclidean.gcd(7, 0))
+    }
 }
