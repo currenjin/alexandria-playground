@@ -33,4 +33,9 @@ class EuclideanTest {
     fun gcd_of_9_and_6_is_3() {
         assertEquals(3, Euclidean.gcd(9, 6))
     }
+
+    @Test
+    fun gcd_of_12_and_18_is_6() {
+        assertEquals(6, Euclidean.gcd(12, 18))
+    }
 }
