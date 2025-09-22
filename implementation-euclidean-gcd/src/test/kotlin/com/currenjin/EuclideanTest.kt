@@ -13,4 +13,9 @@ class EuclideanTest {
     fun gcd_of_2_and_1_is_1() {
         assertEquals(1, Euclidean.gcd(2, 1))
     }
+
+    @Test
+    fun gcd_of_2_and_2_is_2() {
+        assertEquals(2, Euclidean.gcd(2, 2))
+    }
 }
