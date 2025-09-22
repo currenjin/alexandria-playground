@@ -53,4 +53,9 @@ class EuclideanTest {
     fun gcd_of_minus3_and_2_is_1() {
         assertEquals(1, Euclidean.gcd(-3, 2))
     }
+
+    @Test
+    fun gcd_of_minus4_and_minus2_is_2() {
+        assertEquals(2, Euclidean.gcd(-4, -2))
+    }
 }
