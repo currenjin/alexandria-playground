@@ -3,9 +3,12 @@ package com.currenjin
 class BinarySearch {
     companion object {
         fun search(array: Array<Int>, target: Int): Int {
+            if (array.isEmpty()) return -1
+
+            val mid = array.size / 2
             return when {
-                array.isEmpty() && array[0] == target -> 0
-                array.size > 1 && array[1] == target -> 1
+                array[mid] == target -> mid
+                target < array[mid] && array[0] == target -> 0
                 else -> -1
             }
         }
