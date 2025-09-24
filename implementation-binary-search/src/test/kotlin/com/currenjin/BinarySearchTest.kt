@@ -10,4 +10,11 @@ class BinarySearchTest {
 
         assertEquals(0, actual)
     }
+
+    @Test
+    fun two_elements_array_returns_index_0_when_left_element_found() {
+        val actual = BinarySearch.search(arrayOf(10, 20), 10)
+
+        assertEquals(0, actual)
+    }
 }
