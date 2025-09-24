@@ -24,4 +24,11 @@ class BinarySearchTest {
 
         assertEquals(1, actual)
     }
+
+    @Test
+    fun returns_minus1_when_target_not_in_array() {
+        val actual = BinarySearch.search(arrayOf(10, 20), 30)
+
+        assertEquals(-1, actual)
+    }
 }
