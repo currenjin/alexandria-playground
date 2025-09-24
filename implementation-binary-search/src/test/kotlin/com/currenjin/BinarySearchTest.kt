@@ -66,4 +66,11 @@ class BinarySearchTest {
 
         assertEquals(-1, actual)
     }
+
+    @Test
+    fun returns_first_index_when_array_has_duplicates() {
+        val actual = BinarySearch.search(arrayOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 1)
+
+        assertEquals(0, actual)
+    }
 }
