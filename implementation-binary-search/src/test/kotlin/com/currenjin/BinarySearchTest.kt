@@ -47,6 +47,13 @@ class BinarySearchTest {
     }
 
     @Test
+    fun three_elements_array_returns_index_minus1_when_target_not_found() {
+        val actual = BinarySearch.search(arrayOf(10, 20, 30), 25)
+
+        assertEquals(-1, actual)
+    }
+
+    @Test
     fun returns_minus1_when_target_not_in_array() {
         val actual = BinarySearch.search(arrayOf(10, 20), 30)
 
