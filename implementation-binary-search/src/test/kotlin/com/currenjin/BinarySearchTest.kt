@@ -33,6 +33,13 @@ class BinarySearchTest {
     }
 
     @Test
+    fun three_elements_array_returns_index_2_when_middle_element_found() {
+        val actual = BinarySearch.search(arrayOf(10, 20, 30), 30)
+
+        assertEquals(2, actual)
+    }
+
+    @Test
     fun returns_minus1_when_target_not_in_array() {
         val actual = BinarySearch.search(arrayOf(10, 20), 30)
 

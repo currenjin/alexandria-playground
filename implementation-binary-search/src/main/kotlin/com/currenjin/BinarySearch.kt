@@ -9,6 +9,7 @@ class BinarySearch {
             return when {
                 array[mid] == target -> mid
                 target < array[mid] && array[0] == target -> 0
+                target > array[mid] && array[array.size - 1] == target -> array.size - 1
                 else -> -1
             }
         }
