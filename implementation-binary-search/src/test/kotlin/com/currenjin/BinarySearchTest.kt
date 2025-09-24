@@ -47,6 +47,13 @@ class BinarySearchTest {
     }
 
     @Test
+    fun five_elements_array_returns_index_3_when_element_found() {
+        val actual = BinarySearch.search(arrayOf(10, 20, 30, 40, 50), 40)
+
+        assertEquals(3, actual)
+    }
+
+    @Test
     fun three_elements_array_returns_index_minus1_when_target_not_found() {
         val actual = BinarySearch.search(arrayOf(10, 20, 30), 25)
 

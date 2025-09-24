@@ -3,15 +3,19 @@ package com.currenjin
 class BinarySearch {
     companion object {
         fun search(array: Array<Int>, target: Int): Int {
-            if (array.isEmpty()) return -1
+            var left = 0
+            var right = array.size - 1
 
-            val mid = array.size / 2
-            return when {
-                array[mid] == target -> mid
-                target < array[mid] && array[0] == target -> 0
-                target > array[mid] && array[array.size - 1] == target -> array.size - 1
-                else -> -1
+            while (left <= right) {
+                val mid = (left + right) / 2
+                when {
+                    array[mid] == target -> return mid
+                    target < array[mid] -> right = mid - 1
+                    else -> left = mid + 1
+                }
             }
+
+            return -1
         }
     }
 }
