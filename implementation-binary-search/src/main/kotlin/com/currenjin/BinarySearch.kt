@@ -4,23 +4,36 @@ private const val NOT_FOUND = -1
 
 class BinarySearch {
     companion object {
-        fun search(array: Array<Int>, target: Int): Int {
+        fun search(array: Array<Int>, target: Int): Int =
+            searchInternal(array, target, moveLeftOnMatch = true)
+
+        fun searchLast(array: Array<Int>, target: Int): Int =
+            searchInternal(array, target, moveLeftOnMatch = false)
+
+        private fun searchInternal(
+            array: Array<Int>,
+            target: Int,
+            moveLeftOnMatch: Boolean
+        ): Int {
             var left = 0
             var right = array.size - 1
             var result = NOT_FOUND
 
             while (left <= right) {
-                val mid = (left + right) / 2
+                val mid = left + (right - left) / 2
                 when {
                     array[mid] == target -> {
                         result = mid
-                        right = mid - 1
+                        if (moveLeftOnMatch) {
+                            right = mid - 1
+                        } else {
+                            left = mid + 1
+                        }
                     }
                     target < array[mid] -> right = mid - 1
                     else -> left = mid + 1
                 }
             }
-
             return result
         }
     }
