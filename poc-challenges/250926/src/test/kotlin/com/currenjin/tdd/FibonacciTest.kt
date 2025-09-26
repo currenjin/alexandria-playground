@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource
 
 class FibonacciTest {
     @ParameterizedTest
-    @CsvSource("0,0")
+    @CsvSource("0,0", "1,1")
     fun fibonacci(input: Int, expected: Int) {
         assertEquals(input, Fibonacci.fib(expected))
     }
