@@ -3,11 +3,12 @@ package com.currenjin.tdd
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import kotlin.math.exp
 
 class FibonacciTest {
     @ParameterizedTest
-    @CsvSource("0,0", "1,1")
+    @CsvSource("0,0", "1,1", "2,1")
     fun fibonacci(input: Int, expected: Int) {
-        assertEquals(input, Fibonacci.fib(expected))
+        assertEquals(expected, Fibonacci.fib(input))
     }
 }
