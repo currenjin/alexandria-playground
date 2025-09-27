@@ -80,4 +80,18 @@ class BinarySearchTest {
 
         assertEquals(9, actual)
     }
+
+    @Test
+    fun string_array_returns_index_when_found() {
+        val actual = BinarySearch.search(arrayOf("a", "b", "c"), "b")
+
+        assertEquals(1, actual)
+    }
+
+    @Test
+    fun long_array_returns_index_when_found() {
+        val actual = BinarySearch.search(arrayOf(1L, 2L, 3L), 2L)
+
+        assertEquals(1, actual)
+    }
 }
