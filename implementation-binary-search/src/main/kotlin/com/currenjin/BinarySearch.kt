@@ -4,15 +4,15 @@ private const val NOT_FOUND = -1
 
 class BinarySearch {
     companion object {
-        fun search(array: Array<Int>, target: Int): Int =
+        fun <T : Comparable<T>>search(array: Array<T>, target: T): Int =
             searchInternal(array, target, moveLeftOnMatch = true)
 
-        fun searchLast(array: Array<Int>, target: Int): Int =
+        fun <T : Comparable<T>>searchLast(array: Array<T>, target: T): Int =
             searchInternal(array, target, moveLeftOnMatch = false)
 
-        private fun searchInternal(
-            array: Array<Int>,
-            target: Int,
+        private fun <T : Comparable<T>>searchInternal(
+            array: Array<T>,
+            target: T,
             moveLeftOnMatch: Boolean
         ): Int {
             var left = 0
