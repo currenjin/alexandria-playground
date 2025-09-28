@@ -49,4 +49,13 @@ class SegmentTreeTest {
 
         assertEquals(18, actual)
     }
+
+    @Test
+    fun multiple_elements_array_queries() {
+        val tree = SegmentTree(arrayOf(10, 20, 30, 40, 50))
+
+        assertEquals(30, tree.query(0, 1))
+        assertEquals(90, tree.query(1, 3))
+        assertEquals(150, tree.query(0, 4))
+    }
 }
