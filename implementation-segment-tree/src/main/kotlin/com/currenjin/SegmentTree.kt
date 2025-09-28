@@ -12,4 +12,8 @@ class SegmentTree(
 
         return sum
     }
+
+    fun update(index: Int, value: Int) {
+        data[index] = value
+    }
 }

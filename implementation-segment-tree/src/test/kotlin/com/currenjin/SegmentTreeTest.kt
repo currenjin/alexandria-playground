@@ -39,4 +39,14 @@ class SegmentTreeTest {
 
         assertEquals(15, actual)
     }
+
+    @Test
+    fun update_changes_the_sum() {
+        val tree = SegmentTree(arrayOf(5, 7, 3))
+
+        tree.update(1, 10)
+        val actual = tree.query(0, 2)
+
+        assertEquals(18, actual)
+    }
 }
