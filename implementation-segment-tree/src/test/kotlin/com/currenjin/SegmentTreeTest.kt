@@ -30,4 +30,13 @@ class SegmentTreeTest {
 
         assertEquals(7, actual)
     }
+
+    @Test
+    fun three_elements_array_returns_total_sum() {
+        val tree = SegmentTree(arrayOf(5, 7, 3))
+
+        val actual = tree.query(0, 2)
+
+        assertEquals(15, actual)
+    }
 }
