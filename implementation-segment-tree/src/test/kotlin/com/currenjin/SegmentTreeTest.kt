@@ -12,4 +12,13 @@ class SegmentTreeTest {
 
         assertEquals(5, actual)
     }
+
+    @Test
+    fun two_elements_array_returns_sum_of_both() {
+        val tree = SegmentTree(arrayOf(5, 7))
+
+        val actual = tree.query(0, 1)
+
+        assertEquals(12, actual)
+    }
 }
