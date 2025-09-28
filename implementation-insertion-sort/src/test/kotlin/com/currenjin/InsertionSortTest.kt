@@ -18,4 +18,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(1), actual)
     }
+
+    @Test
+    fun two_elements_array_returns_sorted_order() {
+        val actual = InsertionSort.sort(arrayOf(2, 1))
+
+        assertContentEquals(arrayOf(1, 2), actual)
+    }
 }
