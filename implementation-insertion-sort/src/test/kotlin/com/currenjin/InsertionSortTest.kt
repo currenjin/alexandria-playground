@@ -32,4 +32,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(1, 2, 3), actual)
     }
+
+    @Test
+    fun three_elements_array_already_sorted_stays_sorted() {
+        val actual = InsertionSort.sort(arrayOf(10, 20, 30))
+
+        assertContentEquals(arrayOf(10, 20, 30), actual)
+    }
 }
