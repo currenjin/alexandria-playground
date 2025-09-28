@@ -60,4 +60,10 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(1, 2, 2, 3, 3), actual)
     }
+
+    @Test
+    fun array_with_negative_numbers_becomes_sorted() {
+        val actual = InsertionSort.sort(arrayOf(-1, 3, 0, -2))
+        assertContentEquals(arrayOf(-2, -1, 0, 3), actual)
+    }
 }
