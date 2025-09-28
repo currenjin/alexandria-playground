@@ -1,5 +1,9 @@
 package com.currenjin
 
-object SegmentTree {
-
+class SegmentTree(
+    private val data: Array<Int>
+) {
+    fun query(left: Int, right: Int): Int {
+        return data[left]
+    }
 }
