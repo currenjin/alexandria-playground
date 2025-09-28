@@ -11,4 +11,11 @@ class InsertionSortTest {
 
         assertContentEquals(emptyArray(), actual)
     }
+
+    @Test
+    fun single_element_array_returns_itself() {
+        val actual = InsertionSort.sort(arrayOf(1))
+
+        assertContentEquals(arrayOf(1), actual)
+    }
 }
