@@ -53,4 +53,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(1, 2, 3, 4, 5), actual)
     }
+
+    @Test
+    fun array_with_duplicates_becomes_sorted() {
+        val actual = InsertionSort.sort(arrayOf(3, 1, 2, 3, 2))
+
+        assertContentEquals(arrayOf(1, 2, 2, 3, 3), actual)
+    }
 }
