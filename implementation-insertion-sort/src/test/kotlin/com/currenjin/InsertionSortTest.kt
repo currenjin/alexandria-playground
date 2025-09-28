@@ -39,4 +39,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(10, 20, 30), actual)
     }
+
+    @Test
+    fun three_elements_array_reverse_sorted_becomes_ascending() {
+        val actual = InsertionSort.sort(arrayOf(30, 20, 10))
+
+        assertContentEquals(arrayOf(10, 20, 30), actual)
+    }
 }
