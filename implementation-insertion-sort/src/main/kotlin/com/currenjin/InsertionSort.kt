@@ -2,10 +2,14 @@ package com.currenjin
 
 object InsertionSort {
     fun sort(array: Array<Int>): Array<Int> {
-        if (array.size == 2 && array[0] > array[1]) {
-            val temp = array[0]
-            array[0] = array[1]
-            array[1] = temp
+        for (i in 1 until array.size) {
+            var j = i
+            while (j > 0 && array[j - 1] > array[j]) {
+                val temp = array[j]
+                array[j] = array[j - 1]
+                array[j - 1] = temp
+                j--
+            }
         }
         return array
     }

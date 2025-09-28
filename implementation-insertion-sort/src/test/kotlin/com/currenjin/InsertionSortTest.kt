@@ -25,4 +25,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(1, 2), actual)
     }
+
+    @Test
+    fun three_elements_array_sorts_middle_order() {
+        val actual = InsertionSort.sort(arrayOf(3, 1, 2))
+
+        assertContentEquals(arrayOf(1, 2, 3), actual)
+    }
 }
