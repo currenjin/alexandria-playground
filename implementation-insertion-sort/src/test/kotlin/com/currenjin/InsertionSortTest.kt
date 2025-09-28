@@ -46,4 +46,11 @@ class InsertionSortTest {
 
         assertContentEquals(arrayOf(10, 20, 30), actual)
     }
+
+    @Test
+    fun five_elements_array_mixed_order_becomes_sorted() {
+        val actual = InsertionSort.sort(arrayOf(5, 3, 4, 1, 2))
+
+        assertContentEquals(arrayOf(1, 2, 3, 4, 5), actual)
+    }
 }
