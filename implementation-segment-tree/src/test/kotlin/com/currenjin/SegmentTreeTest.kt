@@ -21,4 +21,13 @@ class SegmentTreeTest {
 
         assertEquals(12, actual)
     }
+
+    @Test
+    fun three_elements_array_returns_middle_element() {
+        val tree = SegmentTree(arrayOf(5, 7, 3))
+
+        val actual = tree.query(1, 1)
+
+        assertEquals(7, actual)
+    }
 }
