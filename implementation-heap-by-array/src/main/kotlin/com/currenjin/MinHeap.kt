@@ -12,4 +12,11 @@ class MinHeap {
     }
 
     fun peek(): Int = top!!
+
+    fun poll(): Int {
+        val result = top!!
+        count -= 1
+        if (count == 0) top = null
+        return result
+    }
 }
