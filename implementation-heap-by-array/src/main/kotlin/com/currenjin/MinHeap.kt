@@ -1,7 +1,11 @@
 package com.currenjin
 
 class MinHeap {
-    fun isEmpty(): Boolean {
-        return true
+    private var count: Int = 0
+
+    fun isEmpty(): Boolean = count == 0
+
+    fun add(value: Int) {
+        count += 1
     }
 }
