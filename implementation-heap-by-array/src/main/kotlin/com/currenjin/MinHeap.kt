@@ -8,7 +8,7 @@ class MinHeap {
 
     fun add(value: Int) {
         count += 1
-        top = value
+        top = if (top == null || value < top!!) value else top
     }
 
     fun peek(): Int = top!!
