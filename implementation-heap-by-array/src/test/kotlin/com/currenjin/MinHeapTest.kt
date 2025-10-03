@@ -51,4 +51,16 @@ class MinHeapTest {
         assertEquals(1, polled)
         assertTrue(heap.isEmpty())
     }
+
+    @Test
+    fun after_poll_peek_returns_remaining_element() {
+        val heap = MinHeap()
+
+        heap.add(2)
+        heap.add(1)
+
+        val first = heap.poll()
+        assertEquals(1, first)
+        assertEquals(2, heap.peek())
+    }
 }

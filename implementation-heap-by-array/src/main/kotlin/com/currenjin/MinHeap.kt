@@ -1,22 +1,19 @@
 package com.currenjin
 
 class MinHeap {
-    private var top: Int? = null
-    private var count: Int = 0
+    private val data = mutableListOf<Int>()
 
-    fun isEmpty(): Boolean = count == 0
+    fun isEmpty(): Boolean = data.isEmpty()
 
     fun add(value: Int) {
-        count += 1
-        top = if (top == null || value < top!!) value else top
+        data += value
     }
 
-    fun peek(): Int = top!!
+    fun peek(): Int = data.minOrNull()!!
 
     fun poll(): Int {
-        val result = top!!
-        count -= 1
-        if (count == 0) top = null
-        return result
+        val min = peek()
+        data.remove(min)
+        return min
     }
 }
