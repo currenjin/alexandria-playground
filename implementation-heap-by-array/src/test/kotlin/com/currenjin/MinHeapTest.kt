@@ -2,6 +2,7 @@ package com.currenjin
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -76,5 +77,12 @@ class MinHeapTest {
         assertEquals(2, heap.poll())
         assertEquals(3, heap.poll())
         assertTrue(heap.isEmpty())
+    }
+
+    @Test
+    fun peek_on_empty_throws() {
+        val heap = MinHeap()
+
+        assertThrows(NoSuchElementException::class.java) { heap.peek() }
     }
 }
