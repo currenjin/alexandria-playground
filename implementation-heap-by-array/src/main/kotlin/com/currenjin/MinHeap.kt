@@ -9,9 +9,11 @@ class MinHeap {
         data += value
     }
 
-    fun peek(): Int = data.minOrNull()!!
+    fun peek(): Int = data.minOrNull() ?: throw NoSuchElementException("empty heap")
 
     fun poll(): Int {
+        if (data.isEmpty()) throw NoSuchElementException("empty heap")
+
         val min = peek()
         data.remove(min)
         return min
