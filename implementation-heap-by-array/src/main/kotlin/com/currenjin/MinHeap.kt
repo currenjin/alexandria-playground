@@ -29,7 +29,7 @@ class MinHeap {
         while (i > 0) {
             val parent = (i - 1) / 2
             if (data[i] < data[parent]) {
-                data[i] = data[parent].also { data[parent] = data[i] }
+                swap(i, parent)
                 i = parent
             } else {
                 break
@@ -47,11 +47,20 @@ class MinHeap {
             if (left <= last && data[left] < data[smallest]) smallest = left
             if (right <= last && data[right] < data[smallest]) smallest = right
             if (smallest != i) {
-                data[i] = data[smallest].also { data[smallest] = data[i] }
+                swap(i, smallest)
                 i = smallest
             } else {
                 break
             }
         }
+    }
+
+    private fun swap(
+        i: Int,
+        j: Int,
+    ) {
+        val tmp = data[i]
+        data[i] = data[j]
+        data[j] = tmp
     }
 }
