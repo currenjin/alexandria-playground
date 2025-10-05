@@ -151,4 +151,17 @@ class MinHeapTest {
         assertEquals("banana", heap.poll())
         assertEquals("pear", heap.poll())
     }
+
+    @Test
+    fun custom_comparator_creates_max_heap() {
+        val maxHeap = MinHeap(comparator = compareByDescending<Int> { it })
+
+        maxHeap.add(1)
+        maxHeap.add(3)
+        maxHeap.add(2)
+
+        assertEquals(3, maxHeap.poll())
+        assertEquals(2, maxHeap.poll())
+        assertEquals(1, maxHeap.poll())
+    }
 }

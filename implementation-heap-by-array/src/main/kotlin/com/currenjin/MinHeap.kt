@@ -1,6 +1,8 @@
 package com.currenjin
 
-class MinHeap<T : Comparable<T>> {
+class MinHeap<T : Comparable<T>>(
+    private val comparator: Comparator<T> = Comparator.naturalOrder(),
+) {
     private val data = mutableListOf<T>()
 
     fun size(): Int = data.size
@@ -12,7 +14,7 @@ class MinHeap<T : Comparable<T>> {
         siftUp(data.lastIndex)
     }
 
-    fun peek(): T = data.minOrNull() ?: throw NoSuchElementException("empty heap")
+    fun peek(): T = data.firstOrNull() ?: throw NoSuchElementException("empty heap")
 
     fun poll(): T {
         if (data.isEmpty()) throw NoSuchElementException("empty heap")
@@ -30,7 +32,7 @@ class MinHeap<T : Comparable<T>> {
         var i = index
         while (i > 0) {
             val parent = (i - 1) / 2
-            if (data[i] < data[parent]) {
+            if (comparator.compare(data[i], data[parent]) < 0) {
                 swap(i, parent)
                 i = parent
             } else {
@@ -46,8 +48,8 @@ class MinHeap<T : Comparable<T>> {
             val left = 2 * i + 1
             val right = 2 * i + 2
             var smallest = i
-            if (left <= last && data[left] < data[smallest]) smallest = left
-            if (right <= last && data[right] < data[smallest]) smallest = right
+            if (left <= last && comparator.compare(data[left], data[smallest]) < 0) smallest = left
+            if (right <= last && comparator.compare(data[right], data[smallest]) < 0) smallest = right
             if (smallest != i) {
                 swap(i, smallest)
                 i = smallest
