@@ -1,20 +1,20 @@
 package com.currenjin
 
-class MinHeap {
-    private val data = mutableListOf<Int>()
+class MinHeap<T : Comparable<T>> {
+    private val data = mutableListOf<T>()
 
     fun size(): Int = data.size
 
     fun isEmpty(): Boolean = data.isEmpty()
 
-    fun add(value: Int) {
+    fun add(value: T) {
         data.add(value)
         siftUp(data.lastIndex)
     }
 
-    fun peek(): Int = data.minOrNull() ?: throw NoSuchElementException("empty heap")
+    fun peek(): T = data.minOrNull() ?: throw NoSuchElementException("empty heap")
 
-    fun poll(): Int {
+    fun poll(): T {
         if (data.isEmpty()) throw NoSuchElementException("empty heap")
 
         val result = data.first()
