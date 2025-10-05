@@ -6,7 +6,8 @@ class MinHeap {
     fun isEmpty(): Boolean = data.isEmpty()
 
     fun add(value: Int) {
-        data += value
+        data.add(value)
+        siftUp(data.lastIndex)
     }
 
     fun peek(): Int = data.minOrNull() ?: throw NoSuchElementException("empty heap")
@@ -14,8 +15,43 @@ class MinHeap {
     fun poll(): Int {
         if (data.isEmpty()) throw NoSuchElementException("empty heap")
 
-        val min = peek()
-        data.remove(min)
-        return min
+        val result = data.first()
+        val last = data.removeLast()
+        if (data.isNotEmpty()) {
+            data[0] = last
+            siftDown(0)
+        }
+        return result
+    }
+
+    private fun siftUp(index: Int) {
+        var i = index
+        while (i > 0) {
+            val parent = (i - 1) / 2
+            if (data[i] < data[parent]) {
+                data[i] = data[parent].also { data[parent] = data[i] }
+                i = parent
+            } else {
+                break
+            }
+        }
+    }
+
+    private fun siftDown(index: Int) {
+        var i = index
+        val last = data.lastIndex
+        while (true) {
+            val left = 2 * i + 1
+            val right = 2 * i + 2
+            var smallest = i
+            if (left <= last && data[left] < data[smallest]) smallest = left
+            if (right <= last && data[right] < data[smallest]) smallest = right
+            if (smallest != i) {
+                data[i] = data[smallest].also { data[smallest] = data[i] }
+                i = smallest
+            } else {
+                break
+            }
+        }
     }
 }
