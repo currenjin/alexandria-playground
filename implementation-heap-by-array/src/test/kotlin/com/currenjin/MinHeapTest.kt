@@ -106,4 +106,20 @@ class MinHeapTest {
         assertEquals(3, heap.poll())
         assertTrue(heap.isEmpty())
     }
+
+    @Test
+    fun size_reflects_number_of_elements() {
+        val heap = MinHeap()
+
+        assertEquals(0, heap.size())
+
+        heap.add(1)
+        heap.add(2)
+
+        assertEquals(2, heap.size())
+
+        heap.poll()
+
+        assertEquals(1, heap.size())
+    }
 }

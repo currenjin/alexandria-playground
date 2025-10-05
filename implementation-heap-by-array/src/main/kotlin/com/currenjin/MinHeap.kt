@@ -3,6 +3,8 @@ package com.currenjin
 class MinHeap {
     private val data = mutableListOf<Int>()
 
+    fun size(): Int = data.size
+
     fun isEmpty(): Boolean = data.isEmpty()
 
     fun add(value: Int) {
