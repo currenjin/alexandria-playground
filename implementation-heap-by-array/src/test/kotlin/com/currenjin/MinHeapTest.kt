@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class MinHeapTest {
     @Test
@@ -121,5 +122,20 @@ class MinHeapTest {
         heap.poll()
 
         assertEquals(1, heap.size())
+    }
+
+    @Test
+    fun heap_handles_many_random_inserts() {
+        val heap = MinHeap()
+        val numbers = List(1000) { Random.nextInt(0, 10_000) }
+
+        numbers.forEach { heap.add(it) }
+
+        val result = mutableListOf<Int>()
+        while (!heap.isEmpty()) {
+            result += heap.poll()
+        }
+
+        assertEquals(numbers.sorted(), result)
     }
 }
