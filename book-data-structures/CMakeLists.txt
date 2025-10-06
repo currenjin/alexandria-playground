@@ -7,4 +7,5 @@ add_executable(template_project_clang
         main.c
         array/array.c
         stack/stack.c
+        queue/queue.c
 )
