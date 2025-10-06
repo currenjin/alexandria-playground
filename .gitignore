@@ -25,6 +25,9 @@ dist/
 nbdist/
 .nb-gradle/
 
+### CLion ###
+cmake-build-*/
+
 ### ETC ###
 .DS_Store
 **/out
