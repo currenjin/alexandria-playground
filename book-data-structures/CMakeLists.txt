@@ -8,4 +8,5 @@ add_executable(template_project_clang
         array/array.c
         stack/stack.c
         queue/queue.c
+        linked-list/linkedList.c
 )
