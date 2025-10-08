@@ -10,4 +10,5 @@ add_executable(template_project_clang
         queue/queue.c
         linked-list/linkedList.c
         tree/tree.c
+        heap/heap.c
 )
