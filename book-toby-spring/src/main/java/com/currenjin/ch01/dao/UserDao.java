@@ -28,6 +28,7 @@ public class UserDao {
         Connection c = DriverManager.getConnection("jdbc:mysql://localhost/springboot", "spring", "book");
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
+		ps.setString(1, id);
 
         ResultSet rs = ps.executeQuery();
         rs.next();
