@@ -6,4 +6,16 @@ public class DaoFactory {
 		UserDao userDao = new DUserDao(connectionMaker);
 		return userDao;
 	}
+
+	public AccountDao accountDao() {
+		ConnectionMaker connectionMaker = new DConnectionMaker();
+		AccountDao accountDao = new AccountDao(connectionMaker);
+		return accountDao;
+	}
+
+	public MessageDao messageDao() {
+		ConnectionMaker connectionMaker = new DConnectionMaker();
+		MessageDao messageDao = new MessageDao(connectionMaker);
+		return messageDao;
+	}
 }
