@@ -4,17 +4,14 @@ import java.sql.SQLException;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.currenjin.ch01.dao.ConnectionMaker;
-import com.currenjin.ch01.dao.DConnectionMaker;
-import com.currenjin.ch01.dao.DUserDao;
+import com.currenjin.ch01.dao.DaoFactory;
 import com.currenjin.ch01.dao.UserDao;
 import com.currenjin.ch01.domain.User;
 
 @SpringBootApplication
 public class Ch01Application {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		ConnectionMaker connectionMaker = new DConnectionMaker();
-		UserDao userDao = new DUserDao(connectionMaker);
+		UserDao userDao = new DaoFactory().userDao();
 
 		User user = new User();
 		user.setId("currenjin");
