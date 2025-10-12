@@ -7,10 +7,10 @@ import java.sql.SQLException;
 
 import com.currenjin.ch01.domain.User;
 
-public abstract class UserDao {
+public class MessageDao {
 	private ConnectionMaker connectionMaker;
 
-	public UserDao(ConnectionMaker connectionMaker) {
+	public MessageDao(ConnectionMaker connectionMaker) {
 		this.connectionMaker = connectionMaker;
 	}
 
