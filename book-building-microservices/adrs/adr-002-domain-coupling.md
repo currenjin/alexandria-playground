@@ -25,7 +25,7 @@
 
 ## Decision
 - 상태 변경 로직은 domain model에 응집한다.
-  - Servive layer에서 값을 직접 입력하는 것이 아니라, domain model 메소드에 요청하도록 한다.
+  - Service layer에서 값을 직접 입력하는 것이 아니라, domain model 메소드에 요청하도록 한다.
   - 상태 변경 관련 비즈니스 규칙은 domain model만 확인하면 된다.
 - 분산된 상태 변경 관련 service 및 api를 응집한다.
   - 처음부터 합치지 않고, api endpoint를 만들어서 client가 모두 해당 endpoint를 호출할 수 있도록 유도한다.
