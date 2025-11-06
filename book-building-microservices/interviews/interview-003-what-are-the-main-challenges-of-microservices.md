@@ -27,7 +27,7 @@ From my study and experience, I'd highlight four main challenges - remember them
 
 ## Important
 - Don't just list problems
-- Always mention solutions and show you've thought the challenges 
+- Always mention solutions and show I've thought the challenges 
 
 ## Connection to experience
 - Operational complexity was key factor in decision
