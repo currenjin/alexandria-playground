@@ -1,4 +1,4 @@
-# INTERVIEW-005. What's the difference between microservices and SOA?
+# INTERVIEW-006. At what team size should you adopt microservices?
 - createdDate: 2025-11-07
 - updatedDate: 2025-11-07
 
