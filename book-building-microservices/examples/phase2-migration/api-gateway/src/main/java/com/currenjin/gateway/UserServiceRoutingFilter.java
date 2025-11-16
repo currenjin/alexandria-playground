@@ -6,12 +6,20 @@ import org.springframework.web.server.ServerWebExchange;
 
 import reactor.core.publisher.Mono;
 
-public class UserServiceRoutingFilter implements GatewayFilter {
-	public UserServiceRoutingFilter(boolean userServiceEnabled, String monolithUrl, String userServiceUrl) {
-	}
+public record UserServiceRoutingFilter(
+	boolean userServiceEnabled,
+	String monolithUrl,
+	String userServiceUrl
+) implements GatewayFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		String targetUrl = userServiceEnabled ? userServiceUrl : monolithUrl;
+		return routeToTarget(exchange, targetUrl);
+	}
+
+	// TODO: Not Yet Implemented
+	private Mono<Void> routeToTarget(ServerWebExchange exchange, String targetUrl) {
 		return null;
 	}
 }
