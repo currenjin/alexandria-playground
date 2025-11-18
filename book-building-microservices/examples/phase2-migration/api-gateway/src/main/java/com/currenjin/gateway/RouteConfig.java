@@ -18,14 +18,15 @@ public class RouteConfig {
 	private String userServiceUrl;
 
 	@Bean
-	public RouteLocator customRoute(RouteLocatorBuilder builder) {
+	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+		String userApiTarget = userServiceEnabled ? userServiceUrl : monolithUrl;
+
 		return builder.routes()
-			.route("users", r -> r.path("/api/users/**")
-				.filters(f -> f.filter(new UserServiceRoutingFilter(
-					userServiceEnabled, monolithUrl, userServiceUrl)))
-				.uri("no://op"))
-			.route("others", r -> r.path("/**")
-				.uri(monolithUrl))
-			.build();
+				.route("user-api", route -> route.path("/api/users/**")
+						.filters(f -> f.addRequestHeader("X-Routed-By", "API-Gateway"))
+						.uri(userApiTarget))
+				.route("others", route -> route.path("/**")
+						.uri(monolithUrl))
+				.build();
 	}
 }
