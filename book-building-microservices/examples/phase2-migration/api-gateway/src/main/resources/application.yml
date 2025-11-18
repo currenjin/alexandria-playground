@@ -18,7 +18,7 @@ spring:
 
 feature:
   toggle:
-    user-service-enabled: false
+    user-service-enabled: true
 
 target:
   monolith:
