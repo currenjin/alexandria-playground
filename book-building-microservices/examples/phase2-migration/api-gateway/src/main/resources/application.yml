@@ -8,13 +8,11 @@ spring:
     gateway:
       routes:
         - id: user-service-route
-          uri: ${services.user-service.url}
+          uri: ${target.user-service.url}
           predicates:
             - Path=/api/users/**
-          filters:
-            - name: RequestLogger
         - id: monolith-route
-          uri: ${services.monolith.url}
+          uri: ${target.monolith.url}
           predicates:
             - Path=/**
 
@@ -22,7 +20,7 @@ feature:
   toggle:
     user-service-enabled: false
 
-services:
+target:
   monolith:
     url: http://localhost:8080
   user-service:
