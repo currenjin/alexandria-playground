@@ -5,12 +5,12 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/musicdb
-    username: music
-    password: music123
+    url: jdbc:postgresql://localhost:5433/userdb
+    username: user
+    password: user123
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
