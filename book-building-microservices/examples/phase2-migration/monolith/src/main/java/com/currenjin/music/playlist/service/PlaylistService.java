@@ -56,7 +56,6 @@ public class PlaylistService {
     public Playlist create(Long userId, String name) {
         log.info("Creating playlist: userId={}, name={}", userId, name);
 
-        // User 존재 확인 (모놀리스: 직접 접근)
         userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
