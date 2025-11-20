@@ -14,3 +14,7 @@ spring:
       ddl-auto: create
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+
+target:
+  user-service:
+    url: http://localhost:8081
