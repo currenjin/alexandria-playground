@@ -1,4 +1,6 @@
 package com.currenjin.music.client.user.dto;
 
-public class UserDto {
+import java.time.LocalDateTime;
+
+public record UserDto(Long id, String email, String username, LocalDateTime createdAt) {
 }
