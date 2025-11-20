@@ -1,8 +1,3 @@
--- Users
-INSERT INTO users (id, email, username, created_at) VALUES (1, 'alice@music.com', 'alice', CURRENT_TIMESTAMP);
-INSERT INTO users (id, email, username, created_at) VALUES (2, 'bob@music.com', 'bob', CURRENT_TIMESTAMP);
-INSERT INTO users (id, email, username, created_at) VALUES (3, 'charlie@music.com', 'charlie', CURRENT_TIMESTAMP);
-
 -- Songs
 INSERT INTO song (id, title, artist, duration_seconds, genre) VALUES (1, 'Bohemian Rhapsody', 'Queen', 354, 'Rock');
 INSERT INTO song (id, title, artist, duration_seconds, genre) VALUES (2, 'Imagine', 'John Lennon', 183, 'Pop');
