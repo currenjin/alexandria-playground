@@ -1,10 +1,10 @@
 package com.currenjin.music.streaming.service;
 
+import com.currenjin.music.client.user.UserClient;
 import com.currenjin.music.song.domain.Song;
 import com.currenjin.music.song.domain.SongRepository;
 import com.currenjin.music.streaming.domain.PlayHistory;
 import com.currenjin.music.streaming.domain.PlayHistoryRepository;
-import com.currenjin.music.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 public class StreamingService {
 
     private final PlayHistoryRepository playHistoryRepository;
-    private final UserRepository userRepository;
     private final SongRepository songRepository;
+
+    private final UserClient userClient;
 
     public List<PlayHistory> findByUserId(Long userId) {
         log.debug("Finding play history by userId: {}", userId);
@@ -66,8 +67,9 @@ public class StreamingService {
     public PlayHistory recordPlay(Long userId, Long songId) {
         log.info("Recording play: userId={}, songId={}", userId, songId);
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        if (!userClient.userExists(userId)) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
 
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new IllegalArgumentException("Song not found: " + songId));
