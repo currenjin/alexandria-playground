@@ -1,12 +1,12 @@
 package com.currenjin.music.playlist.service;
 
+import com.currenjin.music.client.user.UserClient;
 import com.currenjin.music.playlist.domain.Playlist;
 import com.currenjin.music.playlist.domain.PlaylistRepository;
 import com.currenjin.music.playlist.domain.PlaylistSong;
 import com.currenjin.music.playlist.domain.PlaylistSongRepository;
 import com.currenjin.music.song.domain.Song;
 import com.currenjin.music.song.domain.SongRepository;
-import com.currenjin.music.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,9 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistSongRepository playlistSongRepository;
-    private final UserRepository userRepository;
     private final SongRepository songRepository;
+
+    private final UserClient userClient;
 
     public List<Playlist> findAll() {
         log.debug("Finding all playlists");
@@ -56,8 +57,9 @@ public class PlaylistService {
     public Playlist create(Long userId, String name) {
         log.info("Creating playlist: userId={}, name={}", userId, name);
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        if (!userClient.userExists(userId)) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
 
         Playlist playlist = new Playlist(userId, name);
         return playlistRepository.save(playlist);
