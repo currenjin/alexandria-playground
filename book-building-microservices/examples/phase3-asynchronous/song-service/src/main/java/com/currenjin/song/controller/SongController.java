@@ -26,11 +26,14 @@ public class SongController {
 
     @GetMapping
     public ResponseEntity<List<Song>> getAllSongs(
+            @RequestParam(required = false) List<Long> ids,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String artist) {
 
         List<Song> songs;
-        if (genre != null) {
+		if (ids != null) {
+			songs = songService.findByIds(ids);
+		} else if (genre != null) {
             songs = songService.findByGenre(genre);
         } else if (artist != null) {
             songs = songService.findByArtist(artist);
