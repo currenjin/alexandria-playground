@@ -1,12 +1,12 @@
-package com.currenjin.user;
+package com.currenjin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class UserMonolithApplication {
+public class UserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserMonolithApplication.class, args);
+        SpringApplication.run(UserApplication.class, args);
     }
 }
