@@ -1,7 +1,7 @@
-package com.currenjin.user.user.service;
+package com.currenjin.user.service;
 
-import com.currenjin.user.user.domain.User;
-import com.currenjin.user.user.domain.UserRepository;
+import com.currenjin.user.domain.User;
+import com.currenjin.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

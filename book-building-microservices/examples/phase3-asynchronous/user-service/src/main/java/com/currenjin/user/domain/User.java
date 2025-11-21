@@ -1,4 +1,4 @@
-package com.currenjin.user.user.domain;
+package com.currenjin.user.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

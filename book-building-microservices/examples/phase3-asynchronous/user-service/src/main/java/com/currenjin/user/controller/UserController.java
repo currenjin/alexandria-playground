@@ -1,7 +1,7 @@
-package com.currenjin.user.user.controller;
+package com.currenjin.user.controller;
 
-import com.currenjin.user.user.domain.User;
-import com.currenjin.user.user.service.UserService;
+import com.currenjin.user.domain.User;
+import com.currenjin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
