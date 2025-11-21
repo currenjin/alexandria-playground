@@ -1,18 +1,20 @@
 package com.currenjin.music.playlist.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.currenjin.music.client.song.SongClient;
+import com.currenjin.music.client.song.dto.SongDto;
 import com.currenjin.music.client.user.UserClient;
 import com.currenjin.music.playlist.domain.Playlist;
 import com.currenjin.music.playlist.domain.PlaylistRepository;
 import com.currenjin.music.playlist.domain.PlaylistSong;
 import com.currenjin.music.playlist.domain.PlaylistSongRepository;
-import com.currenjin.music.song.domain.Song;
-import com.currenjin.music.song.domain.SongRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,9 +24,9 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistSongRepository playlistSongRepository;
-    private final SongRepository songRepository;
 
     private final UserClient userClient;
+    private final SongClient songClient;
 
     public List<Playlist> findAll() {
         log.debug("Finding all playlists");
@@ -42,7 +44,7 @@ public class PlaylistService {
         return playlistRepository.findByUserId(userId);
     }
 
-    public List<Song> findSongsInPlaylist(Long playlistId) {
+    public List<SongDto> findSongsInPlaylist(Long playlistId) {
         log.debug("Finding songs in playlist: {}", playlistId);
 
         playlistRepository.findById(playlistId)
@@ -50,7 +52,7 @@ public class PlaylistService {
 
         List<Long> songIds = playlistSongRepository.findSongIdsByPlaylistId(playlistId);
 
-        return songRepository.findAllById(songIds);
+        return songClient.findAllBySongIds(songIds);
     }
 
     @Transactional
@@ -72,8 +74,9 @@ public class PlaylistService {
         playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found: " + playlistId));
 
-        songRepository.findById(songId)
-                .orElseThrow(() -> new IllegalArgumentException("Song not found: " + songId));
+		if (!songClient.songExists(songId)) {
+			throw new IllegalArgumentException("Song not found: " + songId);
+		}
 
         PlaylistSong.PlaylistSongId id = new PlaylistSong.PlaylistSongId(playlistId, songId);
         if (playlistSongRepository.existsById(id)) {

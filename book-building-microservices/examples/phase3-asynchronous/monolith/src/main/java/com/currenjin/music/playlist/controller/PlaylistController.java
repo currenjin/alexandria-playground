@@ -1,14 +1,23 @@
 package com.currenjin.music.playlist.controller;
 
-import com.currenjin.music.playlist.domain.Playlist;
-import com.currenjin.music.playlist.service.PlaylistService;
-import com.currenjin.music.song.domain.Song;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.currenjin.music.client.song.dto.SongDto;
+import com.currenjin.music.playlist.domain.Playlist;
+import com.currenjin.music.playlist.service.PlaylistService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/playlists")
@@ -32,8 +41,8 @@ public class PlaylistController {
     }
 
     @GetMapping("/{id}/songs")
-    public ResponseEntity<List<Song>> getPlaylistSongs(@PathVariable Long id) {
-        List<Song> songs = playlistService.findSongsInPlaylist(id);
+    public ResponseEntity<List<SongDto>> getPlaylistSongs(@PathVariable Long id) {
+        List<SongDto> songs = playlistService.findSongsInPlaylist(id);
         return ResponseEntity.ok(songs);
     }
 
