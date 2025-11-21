@@ -5,7 +5,7 @@ spring:
   application:
     name: song-service
   datasource:
-    url: jdbc:postgresql://localhost:5433/songdb
+    url: jdbc:postgresql://localhost:5434/songdb
     username: song
     password: song123
     driver-class-name: org.postgresql.Driver
