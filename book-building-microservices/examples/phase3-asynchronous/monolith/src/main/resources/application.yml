@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: music-monolith
+  datasource:
+    url: jdbc:postgresql://localhost:5432/musicdb
+    username: music
+    password: music123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+target:
+  user-service:
+    url: http://localhost:8081
