@@ -18,3 +18,5 @@ spring:
 target:
   user-service:
     url: http://localhost:8081
+  song-service:
+    url: http://localhost:8082

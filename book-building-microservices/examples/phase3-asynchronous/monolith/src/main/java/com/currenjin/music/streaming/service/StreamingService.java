@@ -1,19 +1,21 @@
 package com.currenjin.music.streaming.service;
 
-import com.currenjin.music.client.user.UserClient;
-import com.currenjin.music.song.domain.Song;
-import com.currenjin.music.song.domain.SongRepository;
-import com.currenjin.music.streaming.domain.PlayHistory;
-import com.currenjin.music.streaming.domain.PlayHistoryRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.currenjin.music.client.song.SongClient;
+import com.currenjin.music.client.song.dto.SongDto;
+import com.currenjin.music.client.user.UserClient;
+import com.currenjin.music.streaming.domain.PlayHistory;
+import com.currenjin.music.streaming.domain.PlayHistoryRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,9 +24,9 @@ import java.util.stream.Collectors;
 public class StreamingService {
 
     private final PlayHistoryRepository playHistoryRepository;
-    private final SongRepository songRepository;
 
     private final UserClient userClient;
+    private final SongClient songClient;
 
     public List<PlayHistory> findByUserId(Long userId) {
         log.debug("Finding play history by userId: {}", userId);
@@ -71,10 +73,10 @@ public class StreamingService {
             throw new IllegalArgumentException("User not found: " + userId);
         }
 
-        Song song = songRepository.findById(songId)
+        SongDto song = songClient.findById(songId)
                 .orElseThrow(() -> new IllegalArgumentException("Song not found: " + songId));
 
-        PlayHistory playHistory = new PlayHistory(userId, songId, song.getDurationSeconds());
+        PlayHistory playHistory = new PlayHistory(userId, songId, song.durationSeconds());
         return playHistoryRepository.save(playHistory);
     }
 }
