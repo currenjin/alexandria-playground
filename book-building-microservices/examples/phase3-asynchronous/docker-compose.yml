@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: music-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: musicdb
+      POSTGRES_USER: music
+      POSTGRES_PASSWORD: music123
+    volumes:
+      - postgres_music_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U music"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-user:
+    image: postgres:15-alpine
+    container_name: user-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user123
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-song:
+    image: postgres:15-alpine
+    container_name: song-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: songdb
+      POSTGRES_USER: song
+      POSTGRES_PASSWORD: song123
+    volumes:
+      - postgres_song_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U song"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_music_data:
+  postgres_user_data:
+  postgres_song_data:

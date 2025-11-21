@@ -11,10 +11,6 @@ spring:
           uri: ${target.user-service.url}
           predicates:
             - Path=/api/users/**
-        - id: song-service-route
-          uri: ${target.song-service.url}
-          predicates:
-            - Path=/api/songs/**
         - id: monolith-route
           uri: ${target.monolith.url}
           predicates:
@@ -23,15 +19,12 @@ spring:
 feature:
   toggle:
     user-service-enabled: true
-    song-service-enabled: true
 
 target:
   monolith:
     url: http://localhost:8080
   user-service:
     url: http://localhost:8081
-  song-service:
-    url: http://localhost:8082
 
 logging:
   level:
