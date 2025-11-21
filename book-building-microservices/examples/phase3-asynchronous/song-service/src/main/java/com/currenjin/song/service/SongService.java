@@ -30,6 +30,11 @@ public class SongService {
                 .orElseThrow(() -> new IllegalArgumentException("Song not found: " + id));
     }
 
+	public List<Song> findByIds(List<Long> ids) {
+		log.debug("Finding songs by ids: {}", ids);
+		return songRepository.findAllById(ids);
+	}
+
     public List<Song> findByGenre(String genre) {
         log.debug("Finding songs by genre: {}", genre);
         return songRepository.findByGenre(genre);

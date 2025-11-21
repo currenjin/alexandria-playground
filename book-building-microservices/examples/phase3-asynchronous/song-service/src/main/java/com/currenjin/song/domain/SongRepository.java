@@ -11,4 +11,6 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     List<Song> findByGenre(String genre);
 
     List<Song> findByArtist(String artist);
+
+	Iterable<Long> id(Long id);
 }
