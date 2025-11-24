@@ -8,7 +8,6 @@ import lombok.Value;
 
 @Value
 public class SongCreatedEvent implements DomainEvent {
-	String topic;
 	String type;
 	LocalDateTime occurredAt;
 
@@ -18,14 +17,13 @@ public class SongCreatedEvent implements DomainEvent {
 	Integer durationSeconds;
 	String genre;
 
-	public SongCreatedEvent(Song song, String type) {
+	public SongCreatedEvent(Song song) {
 		this.id = song.getId();
 		this.title = song.getTitle();
 		this.artist = song.getArtist();
 		this.durationSeconds = song.getDurationSeconds();
 		this.genre = song.getGenre();
-		this.topic = this.getClass().getSimpleName();
-		this.type = type;
+		this.type = this.getClass().getSimpleName();
 		this.occurredAt = LocalDateTime.now();
 	}
 }

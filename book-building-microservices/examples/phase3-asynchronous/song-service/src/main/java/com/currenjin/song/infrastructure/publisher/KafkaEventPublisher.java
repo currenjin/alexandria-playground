@@ -16,6 +16,6 @@ public class KafkaEventPublisher implements EventPublisher {
 
 	@Override
 	public void publish(DomainEvent event) {
-		kafkaTemplate.send(event.getTopic(), event);
+		kafkaTemplate.send(event.getType(), event);
 	}
 }
