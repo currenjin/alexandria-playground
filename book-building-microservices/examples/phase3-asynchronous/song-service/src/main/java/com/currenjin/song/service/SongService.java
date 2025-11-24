@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.currenjin.song.domain.Song;
 import com.currenjin.song.domain.SongRepository;
+import com.currenjin.song.domain.event.SongCreatedEvent;
+import com.currenjin.song.service.publisher.EventPublisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SongService {
 
     private final SongRepository songRepository;
+	private final EventPublisher eventPublisher;
 
     public List<Song> findAll() {
         log.debug("Finding all songs");
@@ -51,6 +54,10 @@ public class SongService {
                 title, artist, durationSeconds, genre);
 
         Song song = new Song(title, artist, durationSeconds, genre);
+
+		SongCreatedEvent event = new SongCreatedEvent(song);
+		eventPublisher.publish(event);
+
         return songRepository.save(song);
     }
 }
