@@ -1,10 +1,10 @@
-package com.currenjin.song.domain.event;
-
-import java.time.LocalDateTime;
+package com.currenjin.song.share.song;
 
 import com.currenjin.song.domain.Song;
-
+import com.currenjin.song.share.DomainEvent;
 import lombok.Value;
+
+import java.time.LocalDateTime;
 
 @Value
 public class SongCreatedEvent implements DomainEvent {

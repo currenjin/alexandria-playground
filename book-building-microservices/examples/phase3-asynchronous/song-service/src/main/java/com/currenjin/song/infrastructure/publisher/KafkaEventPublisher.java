@@ -1,12 +1,10 @@
 package com.currenjin.song.infrastructure.publisher;
 
+import com.currenjin.song.service.publisher.EventPublisher;
+import com.currenjin.song.share.DomainEvent;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import com.currenjin.song.domain.event.DomainEvent;
-import com.currenjin.song.service.publisher.EventPublisher;
-
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

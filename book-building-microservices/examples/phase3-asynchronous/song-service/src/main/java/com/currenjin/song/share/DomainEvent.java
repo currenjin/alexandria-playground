@@ -1,4 +1,4 @@
-package com.currenjin.song.domain.event;
+package com.currenjin.song.share;
 
 import java.time.LocalDateTime;
 

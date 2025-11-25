@@ -1,17 +1,15 @@
 package com.currenjin.song.service;
 
-import java.util.List;
-
+import com.currenjin.song.domain.Song;
+import com.currenjin.song.domain.SongRepository;
+import com.currenjin.song.service.publisher.EventPublisher;
+import com.currenjin.song.share.song.SongCreatedEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.currenjin.song.domain.Song;
-import com.currenjin.song.domain.SongRepository;
-import com.currenjin.song.domain.event.SongCreatedEvent;
-import com.currenjin.song.service.publisher.EventPublisher;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
