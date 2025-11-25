@@ -1,6 +1,5 @@
 package com.currenjin.song.share.song;
 
-import com.currenjin.song.domain.Song;
 import com.currenjin.song.share.DomainEvent;
 import lombok.Value;
 
@@ -17,12 +16,12 @@ public class SongCreatedEvent implements DomainEvent {
 	Integer durationSeconds;
 	String genre;
 
-	public SongCreatedEvent(Song song) {
-		this.id = song.getId();
-		this.title = song.getTitle();
-		this.artist = song.getArtist();
-		this.durationSeconds = song.getDurationSeconds();
-		this.genre = song.getGenre();
+	public SongCreatedEvent(Long id, String title, String artist, Integer durationSeconds, String genre) {
+		this.id = id;
+		this.title = title;
+		this.artist = artist;
+		this.durationSeconds = durationSeconds;
+		this.genre = genre;
 		this.type = this.getClass().getSimpleName();
 		this.occurredAt = LocalDateTime.now();
 	}
