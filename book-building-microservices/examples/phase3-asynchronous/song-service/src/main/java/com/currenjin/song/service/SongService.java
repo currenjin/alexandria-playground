@@ -53,7 +53,13 @@ public class SongService {
 
         Song song = new Song(title, artist, durationSeconds, genre);
 
-		SongCreatedEvent event = new SongCreatedEvent(song);
+		SongCreatedEvent event = new SongCreatedEvent(
+                song.getId(),
+                song.getTitle(),
+                song.getArtist(),
+                song.getDurationSeconds(),
+                song.getGenre()
+        );
 		eventPublisher.publish(event);
 
         return songRepository.save(song);
