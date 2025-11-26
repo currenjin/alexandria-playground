@@ -7,16 +7,16 @@ import java.time.LocalDateTime;
 
 @Value
 public class SongCreatedEvent implements DomainEvent {
-	String type;
+	java.lang.String type;
 	LocalDateTime occurredAt;
 
 	Long id;
-	String title;
-	String artist;
+	java.lang.String title;
+	java.lang.String artist;
 	Integer durationSeconds;
-	String genre;
+	java.lang.String genre;
 
-	public SongCreatedEvent(Long id, String title, String artist, Integer durationSeconds, String genre) {
+	public SongCreatedEvent(Long id, java.lang.String title, java.lang.String artist, Integer durationSeconds, java.lang.String genre) {
 		this.id = id;
 		this.title = title;
 		this.artist = artist;
