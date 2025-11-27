@@ -2,6 +2,9 @@ package com.currenjin.user.service;
 
 import com.currenjin.user.domain.User;
 import com.currenjin.user.domain.UserRepository;
+import com.currenjin.user.service.publisher.EventPublisher;
+import com.currenjin.user.share.DomainEvent;
+import com.currenjin.user.share.user.UserCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EventPublisher eventPublisher;
 
     public List<User> findAll() {
         log.debug("Finding all users");
@@ -43,6 +47,16 @@ public class UserService {
         }
 
         User user = new User(email, username);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        DomainEvent event = new UserCreatedEvent(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getUsername(),
+                savedUser.getCreatedAt()
+        );
+        eventPublisher.publish(event);
+
+        return savedUser;
     }
 }
