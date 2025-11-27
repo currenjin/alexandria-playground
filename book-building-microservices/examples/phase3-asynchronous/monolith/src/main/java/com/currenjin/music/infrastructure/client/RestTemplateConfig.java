@@ -1,4 +1,4 @@
-package com.currenjin.music.client;
+package com.currenjin.music.infrastructure.client;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

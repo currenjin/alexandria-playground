@@ -1,4 +1,4 @@
-package com.currenjin.music.client.song.dto;
+package com.currenjin.music.infrastructure.client.song.dto;
 
 public record SongDto(
 	Long id,
