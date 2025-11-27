@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class SongClientImpl implements SongClient {
     private String baseUrl;
 
 	@Override
+	@Cacheable(cacheNames = "songCache", key = "#songId")
     public Boolean songExists(Long songId) {
         try {
             ResponseEntity<SongDto> response = restTemplate.getForEntity(
@@ -40,6 +42,10 @@ public class SongClientImpl implements SongClient {
     }
 
 	@Override
+	@Cacheable(
+		cacheNames = "songCache",
+		key = "#songIds.stream().sorted().map(T(String).valueOf).collect(T(java.util.stream.Collectors).joining(','))"
+	)
 	public List<SongDto> findAllBySongIds(List<Long> songIds) {
 		String url = baseUrl + "/api/songs?ids=" + songIds.stream()
 			.map(String::valueOf)
