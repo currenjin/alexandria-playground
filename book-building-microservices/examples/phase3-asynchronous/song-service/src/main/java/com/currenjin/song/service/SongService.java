@@ -52,16 +52,17 @@ public class SongService {
                 title, artist, durationSeconds, genre);
 
         Song song = new Song(title, artist, durationSeconds, genre);
+        Song savedSong = songRepository.save(song);
 
 		SongCreatedEvent event = new SongCreatedEvent(
-                song.getId(),
-                song.getTitle(),
-                song.getArtist(),
-                song.getDurationSeconds(),
-                song.getGenre()
+                savedSong.getId(),
+                savedSong.getTitle(),
+                savedSong.getArtist(),
+                savedSong.getDurationSeconds(),
+                savedSong.getGenre()
         );
 		eventPublisher.publish(event);
 
-        return songRepository.save(song);
+        return savedSong;
     }
 }
