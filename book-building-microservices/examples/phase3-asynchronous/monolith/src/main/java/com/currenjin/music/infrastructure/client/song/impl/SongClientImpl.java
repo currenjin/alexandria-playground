@@ -1,4 +1,4 @@
-package com.currenjin.music.client.song.impl;
+package com.currenjin.music.infrastructure.client.song.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.currenjin.music.client.song.SongClient;
-import com.currenjin.music.client.song.dto.SongDto;
+import com.currenjin.music.infrastructure.client.song.SongClient;
+import com.currenjin.music.infrastructure.client.song.dto.SongDto;
 
 @Component
 public class SongClientImpl implements SongClient {

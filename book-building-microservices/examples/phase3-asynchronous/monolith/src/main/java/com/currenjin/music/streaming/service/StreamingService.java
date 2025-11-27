@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.currenjin.music.client.song.SongClient;
-import com.currenjin.music.client.song.dto.SongDto;
-import com.currenjin.music.client.user.UserClient;
+import com.currenjin.music.infrastructure.client.song.SongClient;
+import com.currenjin.music.infrastructure.client.song.dto.SongDto;
+import com.currenjin.music.infrastructure.client.user.UserClient;
 import com.currenjin.music.streaming.domain.PlayHistory;
 import com.currenjin.music.streaming.domain.PlayHistoryRepository;
 

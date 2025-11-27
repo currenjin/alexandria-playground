@@ -1,4 +1,4 @@
-package com.currenjin.music.client.user;
+package com.currenjin.music.infrastructure.client.user;
 
 public interface UserClient {
     Boolean userExists(Long userId);

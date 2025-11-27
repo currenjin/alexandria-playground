@@ -1,4 +1,4 @@
-package com.currenjin.music.client.user.dto;
+package com.currenjin.music.infrastructure.client.user.dto;
 
 import java.time.LocalDateTime;
 

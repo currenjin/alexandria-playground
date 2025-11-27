@@ -1,4 +1,4 @@
-package com.currenjin.music.client.user.impl;
+package com.currenjin.music.infrastructure.client.user.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.currenjin.music.client.user.UserClient;
-import com.currenjin.music.client.user.dto.UserDto;
+import com.currenjin.music.infrastructure.client.user.UserClient;
+import com.currenjin.music.infrastructure.client.user.dto.UserDto;
 
 @Component
 public class UserClientImpl implements UserClient {
