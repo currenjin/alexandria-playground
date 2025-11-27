@@ -1,6 +1,7 @@
 package com.currenjin.music.infrastructure.client.user.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,6 +22,7 @@ public class UserClientImpl implements UserClient {
     private String baseUrl;
 
 	@Override
+    @Cacheable(cacheNames = "userCache", key = "#userId")
     public Boolean userExists(Long userId) {
         try {
             ResponseEntity<UserDto> response = restTemplate.getForEntity(
