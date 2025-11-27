@@ -15,7 +15,9 @@ class CacheConfig {
     @Bean
     CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(List.of(new ConcurrentMapCache("songCache")));
+        cacheManager.setCaches(List.of(
+                new ConcurrentMapCache("songCache"),
+                new ConcurrentMapCache("userCache")));
         return cacheManager;
     }
 }
