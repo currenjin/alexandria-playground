@@ -3,8 +3,10 @@ package com.currenjin.mafia.service.game
 import com.currenjin.mafia.domain.game.Game
 import com.currenjin.mafia.domain.game.GameError
 import com.currenjin.mafia.domain.game.GamePhase
+import com.currenjin.mafia.domain.game.Turn
 import com.currenjin.mafia.infrastructure.game.GameRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -101,6 +103,48 @@ class GameServiceTest {
         }
         assertEquals("Game not found", ex.message)
     }
+
+    @Test
+    fun `vote - 서비스 레벨에서 투표를 위임하고 저장한다`() {
+        val game = gameService.createGame(maxPlayers = 3)
+        gameService.joinGame(game.id, "p1", "player1")
+        gameService.joinGame(game.id, "p2", "player2")
+        gameService.joinGame(game.id, "p3", "player3")
+        gameService.startGame(game.id)
+
+        val afterVote = gameService.vote(
+            gameId = game.id,
+            voterId = "p1",
+            targetId = "p2",
+        )
+
+        assertEquals("p2", afterVote.votes["p1"])
+        val reloaded = gameRepository.findById(game.id)
+        assertEquals("p2", reloaded!!.votes["p1"])
+    }
+
+    @Test
+    fun `nextTurn - 서비스 레벨에서 턴 전환과 결과 반영을 처리한다`() {
+        val game = gameService.createGame(maxPlayers = 3)
+        gameService.joinGame(game.id, "p1", "player1")
+        gameService.joinGame(game.id, "p2", "player2")
+        gameService.joinGame(game.id, "p3", "player3")
+        gameService.startGame(game.id)
+
+        gameService.vote(game.id, "p1", "p2")
+        gameService.vote(game.id, "p3", "p2")
+
+        val afterTurn = gameService.nextTurn(game.id)
+
+        assertEquals(Turn.NIGHT, afterTurn.turn)
+        val target = afterTurn.players.first { it.id == "p2" }
+        assertFalse(target.alive)
+
+        val reloaded = gameRepository.findById(game.id)!!
+        assertEquals(Turn.NIGHT, reloaded.turn)
+        assertTrue(reloaded.votes.isEmpty())
+    }
+
 }
 
 /**

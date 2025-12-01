@@ -35,4 +35,24 @@ class GameService(
         val started = game.start()
         return gameRepository.save(started)
     }
+
+    @Transactional
+    fun vote(gameId: String, voterId: String, targetId: String): Game {
+        val game =
+            gameRepository.findById(gameId)
+                ?: throw IllegalArgumentException("Game not found")
+
+        val updated = game.vote(voterId, targetId)
+        return gameRepository.save(updated)
+    }
+
+    @Transactional
+    fun nextTurn(gameId: String): Game {
+        val game =
+            gameRepository.findById(gameId)
+                ?: throw IllegalArgumentException("Game not found")
+
+        val updated = game.nextTurn()
+        return gameRepository.save(updated)
+    }
 }
