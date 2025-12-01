@@ -20,7 +20,7 @@ class GameController(
     @PostMapping
     fun createGame(@RequestBody request: CreateGameRequest): ResponseEntity<GameResponse> {
         val game = gameService.createGame(request.maxPlayers)
-        return ResponseEntity.ok(GameResponse.Companion.from(game))
+        return ResponseEntity.ok(GameResponse.from(game))
     }
 
     @PostMapping("/{gameId}/join")
@@ -29,7 +29,7 @@ class GameController(
         @RequestBody request: JoinGameRequest,
     ): ResponseEntity<GameResponse> {
         val game = gameService.joinGame(gameId, request.playerId, request.nickname)
-        return ResponseEntity.ok(GameResponse.Companion.from(game))
+        return ResponseEntity.ok(GameResponse.from(game))
     }
 
     @PostMapping("/{gameId}/start")
@@ -37,6 +37,6 @@ class GameController(
         @PathVariable gameId: String,
     ): ResponseEntity<GameResponse> {
         val game = gameService.startGame(gameId)
-        return ResponseEntity.ok(GameResponse.Companion.from(game))
+        return ResponseEntity.ok(GameResponse.from(game))
     }
 }
