@@ -11,4 +11,12 @@ sealed class GameError(message: String) : RuntimeException(message) {
     class NotEnoughPlayers : GameError("플레이어 수가 부족합니다.")
 
     class InvalidPhase(message: String) : GameError(message)
+
+    class InvalidTurn(message: String) : GameError(message)
+
+    class UnknownPlayer : GameError("게임에 존재하지 않는 플레이어입니다.")
+
+    class DeadPlayer(message: String) : GameError(message)
+
+    class InvalidTarget(message: String) : GameError(message)
 }
