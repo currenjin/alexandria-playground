@@ -17,18 +17,22 @@ fun main() {
 
     try {
         val bootstrap = ServerBootstrap()
-        bootstrap.group(bossGroup, workerGroup)
+        bootstrap
+            .group(bossGroup, workerGroup)
             .channel(NioServerSocketChannel::class.java)
             .childOption(ChannelOption.SO_KEEPALIVE, true)
-            .childHandler(object : ChannelInitializer<SocketChannel>() {
-                override fun initChannel(ch: SocketChannel) {
-                    ch.pipeline()
-                        .addLast(LineBasedFrameDecoder(1024))
-                        .addLast(StringDecoder(Charsets.UTF_8))
-                        .addLast(StringEncoder(Charsets.UTF_8))
-                        .addLast(EchoServerHandler())
-                }
-            })
+            .childHandler(
+                object : ChannelInitializer<SocketChannel>() {
+                    override fun initChannel(ch: SocketChannel) {
+                        ch
+                            .pipeline()
+                            .addLast(LineBasedFrameDecoder(1024))
+                            .addLast(StringDecoder(Charsets.UTF_8))
+                            .addLast(StringEncoder(Charsets.UTF_8))
+                            .addLast(EchoServerHandler())
+                    }
+                },
+            )
 
         val channel = bootstrap.bind(9000).sync().channel()
         println("Echo serverv started on port 9000")
