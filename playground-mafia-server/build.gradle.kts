@@ -20,5 +20,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.data:spring-data-jpa")
 
+    implementation("io.netty:netty-all")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
