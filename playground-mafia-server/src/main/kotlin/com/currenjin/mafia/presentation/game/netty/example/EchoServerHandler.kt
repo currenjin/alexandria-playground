@@ -1,4 +1,4 @@
-package com.currenjin.mafia.presentation.game.netty
+package com.currenjin.mafia.presentation.game.netty.example
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
