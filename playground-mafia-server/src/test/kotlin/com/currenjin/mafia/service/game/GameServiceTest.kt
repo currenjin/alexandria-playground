@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GameServiceTest {
-
     private lateinit var gameRepository: FakeGameRepository
     private lateinit var gameService: GameService
 
@@ -41,11 +40,12 @@ class GameServiceTest {
     fun `joinGame - 존재하는 게임에 플레이어를 추가한다`() {
         val game = gameService.createGame(maxPlayers = 2)
 
-        val updated = gameService.joinGame(
-            gameId = game.id,
-            playerId = "p1",
-            nickname = "player1",
-        )
+        val updated =
+            gameService.joinGame(
+                gameId = game.id,
+                playerId = "p1",
+                nickname = "player1",
+            )
 
         assertEquals(1, updated.players.size)
         assertTrue(updated.players.any { it.id == "p1" && it.nickname == "player1" })
@@ -56,13 +56,14 @@ class GameServiceTest {
 
     @Test
     fun `joinGame - 존재하지 않는 게임이면 예외를 던진다`() {
-        val ex = assertThrows(IllegalArgumentException::class.java) {
-            gameService.joinGame(
-                gameId = "not-exist",
-                playerId = "p1",
-                nickname = "player1",
-            )
-        }
+        val ex =
+            assertThrows(IllegalArgumentException::class.java) {
+                gameService.joinGame(
+                    gameId = "not-exist",
+                    playerId = "p1",
+                    nickname = "player1",
+                )
+            }
         assertEquals("Game not found", ex.message)
     }
 
@@ -98,9 +99,10 @@ class GameServiceTest {
 
     @Test
     fun `startGame - 존재하지 않는 게임이면 예외를 던진다`() {
-        val ex = assertThrows(IllegalArgumentException::class.java) {
-            gameService.startGame("not-exist")
-        }
+        val ex =
+            assertThrows(IllegalArgumentException::class.java) {
+                gameService.startGame("not-exist")
+            }
         assertEquals("Game not found", ex.message)
     }
 
@@ -112,11 +114,12 @@ class GameServiceTest {
         gameService.joinGame(game.id, "p3", "player3")
         gameService.startGame(game.id)
 
-        val afterVote = gameService.vote(
-            gameId = game.id,
-            voterId = "p1",
-            targetId = "p2",
-        )
+        val afterVote =
+            gameService.vote(
+                gameId = game.id,
+                voterId = "p1",
+                targetId = "p2",
+            )
 
         assertEquals("p2", afterVote.votes["p1"])
         val reloaded = gameRepository.findById(game.id)
@@ -145,6 +148,21 @@ class GameServiceTest {
         assertTrue(reloaded.votes.isEmpty())
     }
 
+    @Test
+    fun `getGame - 게임을 조회한다`() {
+        val game = gameService.createGame(maxPlayers = 3)
+
+        val target = gameService.getGame(game.id)
+
+        assertEquals(game.id, target.id)
+    }
+
+    @Test
+    fun `getGame - 게임이 존재하지 않으면 예외를 전파한다`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            gameService.getGame(gameId = "nothing")
+        }
+    }
 }
 
 /**
@@ -153,7 +171,6 @@ class GameServiceTest {
  * 테스트 안에서 로직을 완전히 통제하기 위해 별도 Fake를 사용.
  */
 private class FakeGameRepository : GameRepository {
-
     private val storage = mutableMapOf<String, Game>()
 
     override fun save(game: Game): Game {
