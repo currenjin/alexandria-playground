@@ -56,4 +56,11 @@ class GameService(
         val updated = game.nextTurn()
         return gameRepository.save(updated)
     }
+
+    fun getGame(gameId: String): Game {
+        val game =
+            gameRepository.findById(gameId)
+                ?: throw IllegalArgumentException("Game not found")
+        return game
+    }
 }
