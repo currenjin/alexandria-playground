@@ -18,18 +18,14 @@ class GameService(
         playerId: String,
         nickname: String,
     ): Game {
-        val game =
-            gameRepository.findById(gameId)
-                ?: throw IllegalArgumentException("Game not found")
+        val game = getGame(gameId = gameId)
 
         val updated = game.join(playerId, nickname)
         return gameRepository.save(updated)
     }
 
     fun startGame(gameId: String): Game {
-        val game =
-            gameRepository.findById(gameId)
-                ?: throw IllegalArgumentException("Game not found")
+        val game = getGame(gameId = gameId)
 
         val started = game.start()
         return gameRepository.save(started)
@@ -40,18 +36,14 @@ class GameService(
         voterId: String,
         targetId: String,
     ): Game {
-        val game =
-            gameRepository.findById(gameId)
-                ?: throw IllegalArgumentException("Game not found")
+        val game = getGame(gameId = gameId)
 
         val updated = game.vote(voterId, targetId)
         return gameRepository.save(updated)
     }
 
     fun nextTurn(gameId: String): Game {
-        val game =
-            gameRepository.findById(gameId)
-                ?: throw IllegalArgumentException("Game not found")
+        val game = getGame(gameId = gameId)
 
         val updated = game.nextTurn()
         return gameRepository.save(updated)
