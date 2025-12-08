@@ -1,6 +1,7 @@
 package com.currenjin.music.infrastructure.listener.user;
 
 import com.currenjin.music.infrastructure.listener.EventListener;
+import com.currenjin.music.share.user.CachedUser;
 import com.currenjin.music.share.user.UserCreatedEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +28,9 @@ public class KafkaUserCreatedEventListener implements EventListener {
             UserCreatedEvent createdEvent = objectMapper.readValue(event, UserCreatedEvent.class);
             log.info("onEvent: {}, occurredAt: {}", createdEvent.getType(), createdEvent.getOccurredAt());
 
+            CachedUser cachedUser = new CachedUser(createdEvent.getId(), createdEvent.getEmail(), createdEvent.getUsername(), createdEvent.getCreatedAt());
             Cache cache = cacheManager.getCache("userCache");
-            if (cache != null) { cache.put(createdEvent.getId(), createdEvent); }
+            if (cache != null) { cache.put(cachedUser.id(), cachedUser); }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize DomainEvent", e);
         }
