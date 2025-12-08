@@ -28,7 +28,12 @@ public class KafkaUserCreatedEventListener implements EventListener {
             UserCreatedEvent createdEvent = objectMapper.readValue(event, UserCreatedEvent.class);
             log.info("onEvent: {}, occurredAt: {}", createdEvent.getType(), createdEvent.getOccurredAt());
 
-            CachedUser cachedUser = new CachedUser(createdEvent.getId(), createdEvent.getEmail(), createdEvent.getUsername(), createdEvent.getCreatedAt());
+            CachedUser cachedUser = new CachedUser(
+                    createdEvent.getId(),
+                    createdEvent.getEmail(),
+                    createdEvent.getUsername(),
+                    createdEvent.getCreatedAt()
+            );
             Cache cache = cacheManager.getCache("userCache");
             if (cache != null) { cache.put(cachedUser.id(), cachedUser); }
         } catch (JsonProcessingException e) {
