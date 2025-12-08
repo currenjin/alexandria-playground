@@ -1,7 +1,6 @@
 package com.currenjin.music.infrastructure.listener.song;
 
 import com.currenjin.music.infrastructure.listener.EventListener;
-import com.currenjin.music.share.DomainEvent;
 import com.currenjin.music.share.song.SongCreatedEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
