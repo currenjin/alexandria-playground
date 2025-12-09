@@ -36,7 +36,9 @@ public class KafkaSongCreatedEventListener implements EventListener {
                     createdEvent.getGenre()
             );
             Cache cache = cacheManager.getCache("songCache");
+            Cache existsCache = cacheManager.getCache("songExistsCache");
             if (cache != null) { cache.put(cachedSong.id(), cachedSong); }
+            if (existsCache != null) { existsCache.put(cachedSong.id(), true); }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize DomainEvent", e);
         }
