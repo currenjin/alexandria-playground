@@ -28,7 +28,7 @@ public class SongClientImpl implements SongClient {
     private String baseUrl;
 
 	@Override
-	@Cacheable(cacheNames = "songCache", key = "#songId")
+	@Cacheable(cacheNames = "songExistsCache", key = "#songId")
     public Boolean songExists(Long songId) {
         try {
             ResponseEntity<SongDto> response = restTemplate.getForEntity(
