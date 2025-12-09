@@ -22,7 +22,7 @@ public class UserClientImpl implements UserClient {
     private String baseUrl;
 
 	@Override
-    @Cacheable(cacheNames = "userCache", key = "#userId")
+    @Cacheable(cacheNames = "userExistsCache", key = "#userId")
     public Boolean userExists(Long userId) {
         try {
             ResponseEntity<UserDto> response = restTemplate.getForEntity(
