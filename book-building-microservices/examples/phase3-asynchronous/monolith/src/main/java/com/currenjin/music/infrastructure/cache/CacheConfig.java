@@ -18,6 +18,7 @@ class CacheConfig {
         cacheManager.setCaches(List.of(
                 new ConcurrentMapCache("songCache"),
                 new ConcurrentMapCache("userCache"),
+                new ConcurrentMapCache("songExistsCache"),
                 new ConcurrentMapCache("userExistsCache"))
         );
         return cacheManager;
