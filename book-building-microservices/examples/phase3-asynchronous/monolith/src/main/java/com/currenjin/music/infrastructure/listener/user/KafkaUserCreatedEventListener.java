@@ -34,8 +34,10 @@ public class KafkaUserCreatedEventListener implements EventListener {
                     createdEvent.getUsername(),
                     createdEvent.getCreatedAt()
             );
-            Cache cache = cacheManager.getCache("userCache");
-            if (cache != null) { cache.put(cachedUser.id(), cachedUser); }
+            Cache userCache = cacheManager.getCache("userCache");
+            Cache userExistsCache = cacheManager.getCache("userExistsCache");
+            if (userCache != null) { userCache.put(cachedUser.id(), cachedUser); }
+            if (userExistsCache != null) { userExistsCache.put(cachedUser.id(), true); }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize DomainEvent", e);
         }
