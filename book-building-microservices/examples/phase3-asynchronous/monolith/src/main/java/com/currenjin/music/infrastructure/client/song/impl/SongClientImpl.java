@@ -1,9 +1,8 @@
 package com.currenjin.music.infrastructure.client.song.impl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.currenjin.music.infrastructure.client.song.SongClient;
+import com.currenjin.music.infrastructure.client.song.dto.SongDto;
+import com.currenjin.music.share.song.CachedSong;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,8 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.currenjin.music.infrastructure.client.song.SongClient;
-import com.currenjin.music.infrastructure.client.song.dto.SongDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class SongClientImpl implements SongClient {
@@ -46,7 +46,7 @@ public class SongClientImpl implements SongClient {
 		cacheNames = "songCache",
 		key = "#songIds.stream().sorted().map(T(String).valueOf).collect(T(java.util.stream.Collectors).joining(','))"
 	)
-	public List<SongDto> findAllBySongIds(List<Long> songIds) {
+	public List<CachedSong> findAllBySongIds(List<Long> songIds) {
 		String url = baseUrl + "/api/songs?ids=" + songIds.stream()
 			.map(String::valueOf)
 			.collect(Collectors.joining(","));
@@ -58,18 +58,34 @@ public class SongClientImpl implements SongClient {
 			new ParameterizedTypeReference<>() {
 			}
 		);
+		List<SongDto> body = response.getBody();
 
-		return response.getBody();
+        return body.stream().map(song ->
+                new CachedSong(
+                    song.id(),
+                    song.title(),
+                    song.artist(),
+                    song.durationSeconds(),
+                    song.genre()
+                )
+        ).toList();
 	}
 
 	@Override
-	public Optional<SongDto> findById(Long songId) {
+	public Optional<CachedSong> findById(Long songId) {
 		try {
 			ResponseEntity<SongDto> response = restTemplate.getForEntity(
 				baseUrl + "/api/songs/" + songId,
 				SongDto.class);
+			SongDto song = response.getBody();
 
-			return Optional.ofNullable(response.getBody());
+			return Optional.of(new CachedSong(
+					song.id(),
+					song.title(),
+					song.artist(),
+					song.durationSeconds(),
+					song.genre()
+			));
 		} catch (HttpClientErrorException.NotFound e) {
 			return Optional.empty();
 		}
