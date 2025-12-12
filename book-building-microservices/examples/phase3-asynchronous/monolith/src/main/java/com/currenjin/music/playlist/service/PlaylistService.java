@@ -7,6 +7,7 @@ import com.currenjin.music.playlist.domain.Playlist;
 import com.currenjin.music.playlist.domain.PlaylistRepository;
 import com.currenjin.music.playlist.domain.PlaylistSong;
 import com.currenjin.music.playlist.domain.PlaylistSongRepository;
+import com.currenjin.music.share.song.CachedSong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +44,7 @@ public class PlaylistService {
         return playlistRepository.findByUserId(userId);
     }
 
-    public List<SongDto> findSongsInPlaylist(Long playlistId) {
+    public List<CachedSong> findSongsInPlaylist(Long playlistId) {
         log.debug("Finding songs in playlist: {}", playlistId);
 
         playlistRepository.findById(playlistId)

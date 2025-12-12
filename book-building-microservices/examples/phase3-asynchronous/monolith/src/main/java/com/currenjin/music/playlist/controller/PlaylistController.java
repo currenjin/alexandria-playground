@@ -3,6 +3,7 @@ package com.currenjin.music.playlist.controller;
 import com.currenjin.music.infrastructure.client.song.dto.SongDto;
 import com.currenjin.music.playlist.domain.Playlist;
 import com.currenjin.music.playlist.service.PlaylistService;
+import com.currenjin.music.share.song.CachedSong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,8 @@ public class PlaylistController {
     }
 
     @GetMapping("/{id}/songs")
-    public ResponseEntity<List<SongDto>> getPlaylistSongs(@PathVariable Long id) {
-        List<SongDto> songs = playlistService.findSongsInPlaylist(id);
+    public ResponseEntity<List<CachedSong>> getPlaylistSongs(@PathVariable Long id) {
+        List<CachedSong> songs = playlistService.findSongsInPlaylist(id);
         return ResponseEntity.ok(songs);
     }
 
