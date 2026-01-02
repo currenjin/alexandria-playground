@@ -5,7 +5,7 @@ class Fibonacci {
         fun fib(i: Int): Int {
             if (i <= 2) return 1
 
-            return 2
+            return i - 1
         }
     }
 }
