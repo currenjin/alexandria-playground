@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 
 class FactorialTest {
     @ParameterizedTest
-    @CsvSource(value = ["1,1", "2,2", "3,6", "4,24"])
+    @CsvSource(value = ["1,1", "2,2", "3,6", "4,24", "5,120"])
     fun factorial_test(input: Int, expected: Int) {
         assertEquals(expected, Factorial.fac(input))
     }
