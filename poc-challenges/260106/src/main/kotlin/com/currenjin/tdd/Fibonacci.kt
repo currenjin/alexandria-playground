@@ -4,7 +4,7 @@ class Fibonacci {
     companion object {
         fun fib(n: Int): Int {
             if (n <= 2) return 1
-            return 2
+            return 1 + 1
         }
     }
 }
