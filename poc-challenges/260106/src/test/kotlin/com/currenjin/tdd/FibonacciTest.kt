@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 
 class FibonacciTest {
     @ParameterizedTest
-    @CsvSource(value = ["1,1", "2,1", "3,2", "4,3"])
+    @CsvSource(value = ["1,1", "2,1", "3,2", "4,3", "5,5"])
     fun fibonacci(input: Int, expected: Int) {
         assertEquals(expected, Fibonacci.fib(input))
     }
