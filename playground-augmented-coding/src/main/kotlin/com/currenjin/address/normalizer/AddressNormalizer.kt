@@ -6,6 +6,7 @@ class AddressNormalizer {
             .trim()
             .replace(Regex("\\s+"), " ")
             .replace("서울시", "서울특별시")
+            .replace("부산시", "부산광역시")
     }
 
     @Suppress("UNUSED_PARAMETER")

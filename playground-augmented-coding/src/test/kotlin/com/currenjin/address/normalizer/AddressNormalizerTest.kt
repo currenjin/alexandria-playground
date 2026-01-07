@@ -57,4 +57,13 @@ class AddressNormalizerTest {
 
         assertThat(result).isEqualTo("서울특별시 강남구")
     }
+
+    @Test
+    fun shouldNormalizeBusanCityToBusanMetropolitanCity() {
+        val normalizer = AddressNormalizer()
+
+        val result = normalizer.normalize("부산시 해운대구")
+
+        assertThat(result).isEqualTo("부산광역시 해운대구")
+    }
 }
