@@ -75,4 +75,14 @@ class AddressNormalizerTest {
 
         assertThat(result).isEqualTo("서울특별시 강남구")
     }
+
+    @Test
+    fun shouldBeIdempotent() {
+        val normalizer = AddressNormalizer()
+
+        val once = normalizer.normalize("  서울시  강남구 ")
+        val twice = normalizer.normalize(once)
+
+        assertThat(twice).isEqualTo(once)
+    }
 }
