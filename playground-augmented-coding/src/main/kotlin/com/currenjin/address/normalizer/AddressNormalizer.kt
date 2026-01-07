@@ -5,6 +5,7 @@ class AddressNormalizer {
         return raw
             .trim()
             .replace(Regex("\\s+"), " ")
+            .replace("서울시", "서울특별시")
     }
 
     fun validate(raw: String) {
