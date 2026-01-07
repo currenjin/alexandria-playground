@@ -1,6 +1,7 @@
 package com.currenjin.address.normalizer
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class AddressNormalizerTest {
@@ -68,5 +69,11 @@ class AddressNormalizerTest {
         val twice = normalizer.normalize(once)
 
         assertThat(twice).isEqualTo(once)
+    }
+
+    @Test
+    fun shouldRejectBlankInputWithValidationError() {
+        assertThatThrownBy { normalizer.validate("   ") }
+            .isInstanceOf(ValidationError::class.java)
     }
 }
