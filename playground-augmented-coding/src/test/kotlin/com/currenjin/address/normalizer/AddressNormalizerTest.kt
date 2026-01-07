@@ -12,4 +12,13 @@ class AddressNormalizerTest {
 
         assertThat(result).isEqualTo("서울특별시 강남구")
     }
+
+    @Test
+    fun shouldCollapseMultipleInternalSpacesToSingleSpace() {
+        val normalizer = AddressNormalizer()
+
+        val result = normalizer.normalize("서울특별시  강남구   역삼동")
+
+        assertThat(result).isEqualTo("서울특별시 강남구 역삼동")
+    }
 }
