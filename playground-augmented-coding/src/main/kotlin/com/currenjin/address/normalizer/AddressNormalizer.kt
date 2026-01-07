@@ -14,5 +14,8 @@ class AddressNormalizer {
         if (raw.isBlank()) {
             throw ValidationError(raw)
         }
+        if (raw.length > 200) {
+            throw ValidationError(raw)
+        }
     }
 }

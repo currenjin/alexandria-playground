@@ -78,4 +78,12 @@ class AddressNormalizerTest {
                 assertThat(error.input).isEqualTo("   ")
             }
     }
+
+    @Test
+    fun shouldRejectInputLongerThan200CharactersWithValidationError() {
+        val longInput = "a".repeat(201)
+
+        assertThatThrownBy { normalizer.validate(longInput) }
+            .isInstanceOf(ValidationError::class.java)
+    }
 }
