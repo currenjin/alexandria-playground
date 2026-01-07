@@ -2,7 +2,7 @@ package com.currenjin.address.normalizer
 
 class AddressNormalizer {
     fun normalize(raw: String): String {
-        TODO("Not yet Implemented")
+        return raw.trim()
     }
 
     fun validate(raw: String) {
