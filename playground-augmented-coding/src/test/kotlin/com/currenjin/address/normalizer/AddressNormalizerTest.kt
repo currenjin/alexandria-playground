@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class AddressNormalizerTest {
+    private val normalizer = AddressNormalizer()
+
     @Test
     fun shouldTrimLeadingAndTrailingWhitespace() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("  서울특별시 강남구  ")
 
         assertThat(result).isEqualTo("서울특별시 강남구")
@@ -15,8 +15,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldCollapseMultipleInternalSpacesToSingleSpace() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울특별시  강남구   역삼동")
 
         assertThat(result).isEqualTo("서울특별시 강남구 역삼동")
@@ -24,8 +22,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldConvertTabsAndNewlinesToSingleSpaces() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울특별시\t강남구\n역삼동")
 
         assertThat(result).isEqualTo("서울특별시 강남구 역삼동")
@@ -33,8 +29,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldKeepKoreanCharactersAndDigitsUnchanged() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울특별시 123 강남구 7길")
 
         assertThat(result).isEqualTo("서울특별시 123 강남구 7길")
@@ -42,8 +36,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldPreserveHyphenatedLotNumbers() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울특별시 강남구 123-4")
 
         assertThat(result).isEqualTo("서울특별시 강남구 123-4")
@@ -51,8 +43,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldNormalizeSeoulCityToSeoulMetropolitanCity() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울시 강남구")
 
         assertThat(result).isEqualTo("서울특별시 강남구")
@@ -60,8 +50,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldNormalizeBusanCityToBusanMetropolitanCity() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("부산시 해운대구")
 
         assertThat(result).isEqualTo("부산광역시 해운대구")
@@ -69,8 +57,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
-        val normalizer = AddressNormalizer()
-
         val result = normalizer.normalize("서울특별시 강남구")
 
         assertThat(result).isEqualTo("서울특별시 강남구")
@@ -78,8 +64,6 @@ class AddressNormalizerTest {
 
     @Test
     fun shouldBeIdempotent() {
-        val normalizer = AddressNormalizer()
-
         val once = normalizer.normalize("  서울시  강남구 ")
         val twice = normalizer.normalize(once)
 
