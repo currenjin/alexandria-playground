@@ -74,6 +74,8 @@ class AddressNormalizerTest {
     @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
-            .isInstanceOf(ValidationError::class.java)
+            .isInstanceOfSatisfying(ValidationError::class.java) { error ->
+                assertThat(error.input).isEqualTo("   ")
+            }
     }
 }
