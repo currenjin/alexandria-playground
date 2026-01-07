@@ -30,4 +30,13 @@ class AddressNormalizerTest {
 
         assertThat(result).isEqualTo("서울특별시 강남구 역삼동")
     }
+
+    @Test
+    fun shouldKeepKoreanCharactersAndDigitsUnchanged() {
+        val normalizer = AddressNormalizer()
+
+        val result = normalizer.normalize("서울특별시 123 강남구 7길")
+
+        assertThat(result).isEqualTo("서울특별시 123 강남구 7길")
+    }
 }
