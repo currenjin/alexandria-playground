@@ -39,4 +39,13 @@ class AddressNormalizerTest {
 
         assertThat(result).isEqualTo("서울특별시 123 강남구 7길")
     }
+
+    @Test
+    fun shouldPreserveHyphenatedLotNumbers() {
+        val normalizer = AddressNormalizer()
+
+        val result = normalizer.normalize("서울특별시 강남구 123-4")
+
+        assertThat(result).isEqualTo("서울특별시 강남구 123-4")
+    }
 }
