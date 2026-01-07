@@ -11,6 +11,8 @@ class AddressNormalizer {
 
     @Suppress("UNUSED_PARAMETER")
     fun validate(raw: String) {
-        TODO("Not yet Implemented")
+        if (raw.isBlank()) {
+            throw ValidationError(raw)
+        }
     }
 }
