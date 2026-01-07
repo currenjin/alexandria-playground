@@ -4,7 +4,7 @@ class AddressNormalizer {
     fun normalize(raw: String): String {
         return raw
             .trim()
-            .replace(Regex(" +"), " ")
+            .replace(Regex("\\s+"), " ")
     }
 
     fun validate(raw: String) {
