@@ -106,6 +106,13 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldNotExpandAbbreviationInsideLongerWord() {
+        val result = normalizer.normalize("경기장")
+
+        assertThat(result).isEqualTo("경기장")
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
