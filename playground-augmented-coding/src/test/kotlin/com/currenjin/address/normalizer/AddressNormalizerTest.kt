@@ -120,6 +120,13 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldRemoveSurroundingParenthesesWhilePreservingText() {
+        val result = normalizer.normalize("서울특별시(광진구)")
+
+        assertThat(result).isEqualTo("서울특별시 광진구")
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 

@@ -3,6 +3,8 @@ package com.currenjin.address.normalizer
 class AddressNormalizer {
     fun normalize(raw: String): String {
         val normalizedWhitespace = raw
+            .replace("(", " ")
+            .replace(")", " ")
             .trim()
             .replace(Regex("\\s+"), " ")
         if (normalizedWhitespace.isEmpty()) {
