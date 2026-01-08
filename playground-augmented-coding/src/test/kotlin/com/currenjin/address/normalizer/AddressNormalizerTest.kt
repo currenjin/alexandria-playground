@@ -159,6 +159,24 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldBeIdempotentForFixedSamplesWithExtraWhitespaceAndNewlines() {
+        val samples = listOf(
+            "  서울시  강남구  ",
+            "부산시\t해운대구\n",
+            "경기  수원시\n영통구",
+            "서울특별시 ( 광진구 )",
+            "충남\t천안시  ",
+        )
+
+        samples.forEach { input ->
+            val once = normalizer.normalize(input)
+            val twice = normalizer.normalize(once)
+
+            assertThat(twice).isEqualTo(once)
+        }
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
