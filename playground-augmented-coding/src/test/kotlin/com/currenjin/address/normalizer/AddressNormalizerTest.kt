@@ -141,6 +141,24 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldKeepBehaviorIdenticalForPreviousV1Samples() {
+        val samples = listOf(
+            "  서울특별시 강남구  " to "서울특별시 강남구",
+            "서울특별시  강남구   역삼동" to "서울특별시 강남구 역삼동",
+            "서울특별시\t강남구\n역삼동" to "서울특별시 강남구 역삼동",
+            "서울특별시 123 강남구 7길" to "서울특별시 123 강남구 7길",
+            "서울특별시 강남구 123-4" to "서울특별시 강남구 123-4",
+            "서울시 강남구" to "서울특별시 강남구",
+            "부산시 해운대구" to "부산광역시 해운대구",
+            "서울특별시 강남구" to "서울특별시 강남구",
+        )
+
+        samples.forEach { (input, expected) ->
+            assertThat(normalizer.normalize(input)).isEqualTo(expected)
+        }
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
