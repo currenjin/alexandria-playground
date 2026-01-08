@@ -99,6 +99,13 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldNormalizeGyeongbukToGyeongsangbukProvince() {
+        val result = normalizer.normalize("경북 포항시")
+
+        assertThat(result).isEqualTo("경상북도 포항시")
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
