@@ -11,6 +11,7 @@ class AddressNormalizer {
             .replace("충남", "충청남도")
             .replace("충북", "충청북도")
             .replace("전남", "전라남도")
+            .replace("전북", "전라북도")
     }
 
     @Suppress("UNUSED_PARAMETER")
