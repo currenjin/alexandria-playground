@@ -2,13 +2,18 @@ package com.currenjin.address.normalizer
 
 class AddressNormalizer {
     fun normalize(raw: String): String {
-        val normalizedWhitespace = raw
-            .replace("(", " ")
-            .replace(")", " ")
-            .trim()
-            .replace(Regex("\\s+"), " ")
-        if (normalizedWhitespace.isEmpty()) {
-            return normalizedWhitespace
+        val pipeline = listOf<(String) -> String>(
+            { input -> input.replace("(", " ").replace(")", " ") },
+            { input -> input.trim().replace(Regex("\\s+"), " ") },
+            { input -> expandAbbreviations(input) },
+        )
+
+        return pipeline.fold(raw) { value, step -> step(value) }
+    }
+
+    private fun expandAbbreviations(input: String): String {
+        if (input.isEmpty()) {
+            return input
         }
 
         val replacements = mapOf(
@@ -23,7 +28,7 @@ class AddressNormalizer {
             "경북" to "경상북도",
         )
 
-        return normalizedWhitespace
+        return input
             .split(" ")
             .joinToString(" ") { token -> replacements[token] ?: token }
     }
