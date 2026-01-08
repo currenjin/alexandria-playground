@@ -127,6 +127,13 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldRemoveEmptyParentheses() {
+        val result = normalizer.normalize("서울특별시()")
+
+        assertThat(result).isEqualTo("서울특별시")
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
