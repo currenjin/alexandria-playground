@@ -10,6 +10,7 @@ class AddressNormalizer {
             .replace("경기", "경기도")
             .replace("충남", "충청남도")
             .replace("충북", "충청북도")
+            .replace("전남", "전라남도")
     }
 
     @Suppress("UNUSED_PARAMETER")
