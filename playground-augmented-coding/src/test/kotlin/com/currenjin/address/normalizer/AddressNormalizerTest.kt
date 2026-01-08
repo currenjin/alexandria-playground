@@ -113,6 +113,13 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldExpandAbbreviationOnlyWhenStandaloneToken() {
+        val result = normalizer.normalize("서울시 경기 수원시 경기장")
+
+        assertThat(result).isEqualTo("서울특별시 경기도 수원시 경기장")
+    }
+
+    @Test
     fun shouldNotChangeAlreadyCanonicalSeoulMetropolitanCity() {
         val result = normalizer.normalize("서울특별시 강남구")
 
