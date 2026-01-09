@@ -22,7 +22,7 @@ class AddressNormalizer {
         if (raw.trim().contains("  ")) {
             appliedRules.add(NormalizationRule.WHITESPACE_COLLAPSE)
         }
-        if (raw.split(" ").any { token -> isAbbreviation(token) }) {
+        if (tokensBeforeAbbreviation(raw).any { token -> isAbbreviation(token) }) {
             appliedRules.add(NormalizationRule.ABBR_EXPAND)
         }
         if (raw.contains('(') || raw.contains(')')) {
@@ -35,6 +35,18 @@ class AddressNormalizer {
 
     private fun isAbbreviation(token: String): Boolean {
         return abbreviationReplacements().containsKey(token)
+    }
+
+    private fun tokensBeforeAbbreviation(raw: String): List<String> {
+        val normalized = raw
+            .replace("(", " ")
+            .replace(")", " ")
+            .trim()
+            .replace(Regex("\\s+"), " ")
+        if (normalized.isEmpty()) {
+            return emptyList()
+        }
+        return normalized.split(" ")
     }
 
     private fun expandAbbreviations(input: String): String {

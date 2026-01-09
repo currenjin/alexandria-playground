@@ -240,6 +240,19 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldPreserveAppliedRulesOrderWithoutDuplicates() {
+        val report = normalizer.normalizeWithReport("  서울시\t강남구  역삼동\n")
+
+        assertThat(report.value).isEqualTo("서울특별시 강남구 역삼동")
+        assertThat(report.appliedRules).containsExactly(
+            NormalizationRule.TRIM,
+            NormalizationRule.NEWLINE_TO_SPACE,
+            NormalizationRule.WHITESPACE_COLLAPSE,
+            NormalizationRule.ABBR_EXPAND,
+        )
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
