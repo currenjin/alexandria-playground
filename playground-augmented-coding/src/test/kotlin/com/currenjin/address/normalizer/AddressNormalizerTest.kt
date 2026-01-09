@@ -208,6 +208,14 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldIncludeWhitespaceCollapseWhenMultipleSpacesAreCollapsed() {
+        val report = normalizer.normalizeWithReport("서울특별시  강남구")
+
+        assertThat(report.value).isEqualTo("서울특별시 강남구")
+        assertThat(report.appliedRules).containsExactly(NormalizationRule.WHITESPACE_COLLAPSE)
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
