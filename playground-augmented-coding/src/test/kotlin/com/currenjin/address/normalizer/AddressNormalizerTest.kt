@@ -232,6 +232,14 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldIncludeParenthesesRemovalWhenParenthesesAreRemoved() {
+        val report = normalizer.normalizeWithReport("서울특별시(광진구)")
+
+        assertThat(report.value).isEqualTo("서울특별시 광진구")
+        assertThat(report.appliedRules).containsExactly(NormalizationRule.PAREN_REMOVAL)
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
