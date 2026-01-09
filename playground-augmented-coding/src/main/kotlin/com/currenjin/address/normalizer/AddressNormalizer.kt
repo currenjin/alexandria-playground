@@ -25,6 +25,9 @@ class AddressNormalizer {
         if (raw.split(" ").any { token -> isAbbreviation(token) }) {
             appliedRules.add(NormalizationRule.ABBR_EXPAND)
         }
+        if (raw.contains('(') || raw.contains(')')) {
+            appliedRules.add(NormalizationRule.PAREN_REMOVAL)
+        }
 
         val value = normalize(raw)
         return NormalizationReport(value, appliedRules)
