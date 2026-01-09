@@ -200,6 +200,14 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldReturnEmptyAppliedRulesWhenInputIsAlreadyNormalized() {
+        val report = normalizer.normalizeWithReport("서울특별시 강남구")
+
+        assertThat(report.value).isEqualTo("서울특별시 강남구")
+        assertThat(report.appliedRules).isEmpty()
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
