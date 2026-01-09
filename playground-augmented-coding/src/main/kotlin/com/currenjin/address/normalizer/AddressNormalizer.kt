@@ -16,6 +16,9 @@ class AddressNormalizer {
         if (raw != raw.trim()) {
             appliedRules.add(NormalizationRule.TRIM)
         }
+        if (raw.trim().contains("  ")) {
+            appliedRules.add(NormalizationRule.WHITESPACE_COLLAPSE)
+        }
 
         val value = normalize(raw)
         return NormalizationReport(value, appliedRules)
