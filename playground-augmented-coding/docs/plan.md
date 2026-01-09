@@ -42,3 +42,16 @@
 
 ## Property-like checks (deterministic)
 - [x] normalize is idempotent for inputs with random extra spaces and newlines (use a fixed set of samples)
+
+# plan.md - Address Normalizer v3 (Normalization Report)
+
+## Report API
+- [ ] normalizeWithReport returns normalized value and applied rules
+- [ ] normalizeWithReport returns empty applied rules when input is already normalized
+- [ ] normalizeWithReport includes TRIM when leading/trailing whitespace is removed
+- [ ] normalizeWithReport includes WHITESPACE_COLLAPSE when multiple spaces are collapsed
+- [ ] normalizeWithReport includes NEWLINE_TO_SPACE when tabs/newlines are converted
+- [ ] normalizeWithReport includes ABBR_EXPAND when "서울시" is expanded to "서울특별시"
+- [ ] normalizeWithReport includes PAREN_REMOVAL when parentheses are removed
+- [ ] normalizeWithReport appliedRules has no duplicates and preserves application order
+- [ ] normalizeWithReport preserves behavior: report.value == normalize(raw)
