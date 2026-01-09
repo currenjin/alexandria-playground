@@ -11,6 +11,16 @@ class AddressNormalizer {
         return pipeline.fold(raw) { value, step -> step(value) }
     }
 
+    fun normalizeWithReport(raw: String): NormalizationReport {
+        val appliedRules = mutableListOf<NormalizationRule>()
+        if (raw != raw.trim()) {
+            appliedRules.add(NormalizationRule.TRIM)
+        }
+
+        val value = normalize(raw)
+        return NormalizationReport(value, appliedRules)
+    }
+
     private fun expandAbbreviations(input: String): String {
         if (input.isEmpty()) {
             return input
