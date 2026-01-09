@@ -22,9 +22,16 @@ class AddressNormalizer {
         if (raw.trim().contains("  ")) {
             appliedRules.add(NormalizationRule.WHITESPACE_COLLAPSE)
         }
+        if (raw.split(" ").any { token -> isAbbreviation(token) }) {
+            appliedRules.add(NormalizationRule.ABBR_EXPAND)
+        }
 
         val value = normalize(raw)
         return NormalizationReport(value, appliedRules)
+    }
+
+    private fun isAbbreviation(token: String): Boolean {
+        return abbreviationReplacements().containsKey(token)
     }
 
     private fun expandAbbreviations(input: String): String {
@@ -32,7 +39,14 @@ class AddressNormalizer {
             return input
         }
 
-        val replacements = mapOf(
+        val replacements = abbreviationReplacements()
+        return input
+            .split(" ")
+            .joinToString(" ") { token -> replacements[token] ?: token }
+    }
+
+    private fun abbreviationReplacements(): Map<String, String> {
+        return mapOf(
             "서울시" to "서울특별시",
             "부산시" to "부산광역시",
             "경기" to "경기도",
@@ -43,10 +57,6 @@ class AddressNormalizer {
             "경남" to "경상남도",
             "경북" to "경상북도",
         )
-
-        return input
-            .split(" ")
-            .joinToString(" ") { token -> replacements[token] ?: token }
     }
 
     @Suppress("UNUSED_PARAMETER")
