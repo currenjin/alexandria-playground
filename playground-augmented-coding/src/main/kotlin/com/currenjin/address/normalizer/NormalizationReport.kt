@@ -1,4 +1,6 @@
 package com.currenjin.address.normalizer
 
-class NormalizationReport {
-}
+data class NormalizationReport(
+    val value: String,
+    val appliedRules: List<NormalizationRule>,
+)
