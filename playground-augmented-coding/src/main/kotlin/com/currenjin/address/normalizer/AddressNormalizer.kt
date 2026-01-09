@@ -16,6 +16,9 @@ class AddressNormalizer {
         if (raw != raw.trim()) {
             appliedRules.add(NormalizationRule.TRIM)
         }
+        if (raw.contains('\t') || raw.contains('\n')) {
+            appliedRules.add(NormalizationRule.NEWLINE_TO_SPACE)
+        }
         if (raw.trim().contains("  ")) {
             appliedRules.add(NormalizationRule.WHITESPACE_COLLAPSE)
         }

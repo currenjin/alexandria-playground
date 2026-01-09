@@ -216,6 +216,14 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldIncludeNewlineToSpaceWhenTabsOrNewlinesAreConverted() {
+        val report = normalizer.normalizeWithReport("서울특별시\t강남구\n역삼동")
+
+        assertThat(report.value).isEqualTo("서울특별시 강남구 역삼동")
+        assertThat(report.appliedRules).containsExactly(NormalizationRule.NEWLINE_TO_SPACE)
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
