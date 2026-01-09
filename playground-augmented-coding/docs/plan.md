@@ -46,12 +46,12 @@
 # plan.md - Address Normalizer v3 (Normalization Report)
 
 ## Report API
-- [ ] normalizeWithReport returns normalized value and applied rules
-- [ ] normalizeWithReport returns empty applied rules when input is already normalized
-- [ ] normalizeWithReport includes TRIM when leading/trailing whitespace is removed
-- [ ] normalizeWithReport includes WHITESPACE_COLLAPSE when multiple spaces are collapsed
-- [ ] normalizeWithReport includes NEWLINE_TO_SPACE when tabs/newlines are converted
-- [ ] normalizeWithReport includes ABBR_EXPAND when "서울시" is expanded to "서울특별시"
-- [ ] normalizeWithReport includes PAREN_REMOVAL when parentheses are removed
-- [ ] normalizeWithReport appliedRules has no duplicates and preserves application order
-- [ ] normalizeWithReport preserves behavior: report.value == normalize(raw)
+- [x] normalizeWithReport returns normalized value and applied rules
+- [x] normalizeWithReport returns empty applied rules when input is already normalized
+- [x] normalizeWithReport includes TRIM when leading/trailing whitespace is removed
+- [x] normalizeWithReport includes WHITESPACE_COLLAPSE when multiple spaces are collapsed
+- [x] normalizeWithReport includes NEWLINE_TO_SPACE when tabs/newlines are converted
+- [x] normalizeWithReport includes ABBR_EXPAND when "서울시" is expanded to "서울특별시"
+- [x] normalizeWithReport includes PAREN_REMOVAL when parentheses are removed
+- [x] normalizeWithReport appliedRules has no duplicates and preserves application order
+- [x] normalizeWithReport preserves behavior: report.value == normalize(raw)
