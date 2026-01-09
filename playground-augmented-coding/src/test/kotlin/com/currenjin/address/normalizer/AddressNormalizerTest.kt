@@ -253,6 +253,15 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldPreserveBehaviorBetweenNormalizeAndNormalizeWithReport() {
+        val raw = "  서울시\t강남구\n"
+
+        val report = normalizer.normalizeWithReport(raw)
+
+        assertThat(report.value).isEqualTo(normalizer.normalize(raw))
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
