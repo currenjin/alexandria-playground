@@ -224,6 +224,14 @@ class AddressNormalizerTest {
     }
 
     @Test
+    fun shouldIncludeAbbreviationExpandWhenSeoulIsExpanded() {
+        val report = normalizer.normalizeWithReport("서울시 강남구")
+
+        assertThat(report.value).isEqualTo("서울특별시 강남구")
+        assertThat(report.appliedRules).containsExactly(NormalizationRule.ABBR_EXPAND)
+    }
+
+    @Test
     fun shouldRejectBlankInputWithValidationError() {
         assertThatThrownBy { normalizer.validate("   ") }
             .isInstanceOfSatisfying(ValidationError::class.java) { error ->
