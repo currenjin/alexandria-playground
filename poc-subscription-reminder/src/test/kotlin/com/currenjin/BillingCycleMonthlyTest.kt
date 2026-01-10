@@ -46,4 +46,14 @@ class BillingCycleMonthlyTest {
 
         assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 2, 28))
     }
+
+    @Test
+    fun shouldReturnSameMonthDateWhenValidDayOfMonthExists() {
+        val cycle = BillingCycle.Monthly(dayOfMonth = 31)
+        val today = LocalDate.of(2026, 3, 1)
+
+        val nextBillingDate = cycle.nextBillingDate(LocalDate.of(2026, 1, 31), today)
+
+        assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 3, 31))
+    }
 }
