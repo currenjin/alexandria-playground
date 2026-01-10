@@ -36,4 +36,14 @@ class BillingCycleYearlyTest {
 
         assertThat(nextBillingDate).isEqualTo(LocalDate.of(2027, 6, 10))
     }
+
+    @Test
+    fun shouldClampToLastDayWhenYearHasNoDayOfMonth() {
+        val cycle = BillingCycle.Yearly(month = 2, dayOfMonth = 29)
+        val today = LocalDate.of(2026, 1, 10)
+
+        val nextBillingDate = cycle.nextBillingDate(LocalDate.of(2024, 2, 29), today)
+
+        assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 2, 28))
+    }
 }
