@@ -15,4 +15,15 @@ class BillingCycleMonthlyTest {
 
         assertThat(nextBillingDate).isEqualTo(firstBillingDate)
     }
+
+    @Test
+    fun shouldReturnFirstBillingDateWhenTodayIsDayOfMonth() {
+        val cycle = BillingCycle.Monthly(dayOfMonth = 15)
+        val firstBillingDate = LocalDate.of(2026, 1, 15)
+        val today = LocalDate.of(2026, 1, 15)
+
+        val nextBillingDate = cycle.nextBillingDate(firstBillingDate, today)
+
+        assertThat(nextBillingDate).isEqualTo(firstBillingDate)
+    }
 }
