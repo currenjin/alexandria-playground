@@ -40,4 +40,14 @@ sealed interface BillingCycle {
             return yearMonth.atDay(clampedDay)
         }
     }
+
+    data class EveryNDays(val days: Int) : BillingCycle {
+        override fun nextBillingDate(firstBillingDate: LocalDate, today: LocalDate): LocalDate {
+            var candidate = firstBillingDate
+            while (candidate.isBefore(today)) {
+                candidate = candidate.plusDays(days.toLong())
+            }
+            return candidate
+        }
+    }
 }
