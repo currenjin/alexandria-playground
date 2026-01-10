@@ -15,4 +15,15 @@ class BillingCycleEveryNDaysTest {
 
         assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 1, 31))
     }
+
+    @Test
+    fun shouldReturnSameDateWhenTodayIsOnCycle() {
+        val cycle = BillingCycle.EveryNDays(days = 30)
+        val firstBillingDate = LocalDate.of(2026, 1, 1)
+        val today = LocalDate.of(2026, 1, 31)
+
+        val nextBillingDate = cycle.nextBillingDate(firstBillingDate, today)
+
+        assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 1, 31))
+    }
 }
