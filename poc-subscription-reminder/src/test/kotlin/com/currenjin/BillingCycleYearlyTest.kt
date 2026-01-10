@@ -15,4 +15,15 @@ class BillingCycleYearlyTest {
 
         assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 6, 10))
     }
+
+    @Test
+    fun shouldReturnSameYearDateWhenTodayIsMonthDay() {
+        val cycle = BillingCycle.Yearly(month = 6, dayOfMonth = 10)
+        val firstBillingDate = LocalDate.of(2020, 6, 10)
+        val today = LocalDate.of(2026, 6, 10)
+
+        val nextBillingDate = cycle.nextBillingDate(firstBillingDate, today)
+
+        assertThat(nextBillingDate).isEqualTo(LocalDate.of(2026, 6, 10))
+    }
 }
