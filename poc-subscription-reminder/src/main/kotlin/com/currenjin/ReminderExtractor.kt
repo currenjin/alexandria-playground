@@ -18,7 +18,7 @@ object ReminderExtractor {
         offsets: List<Int>,
     ): ReminderCandidate? {
         val dDay = ChronoUnit.DAYS.between(today, dueDate).toInt()
-        if (!offsets.contains(dDay)) {
+        if (dDay !in offsets) {
             return null
         }
 
