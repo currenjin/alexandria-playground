@@ -26,3 +26,15 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.register<JavaExec>("runDemo") {
+    group = "application"
+    description = "Run the subscription reminder demo."
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.currenjin.DemoKt")
+
+    val todayArg = project.findProperty("today") as String?
+    if (!todayArg.isNullOrBlank()) {
+        args(todayArg)
+    }
+}
