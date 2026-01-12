@@ -8,6 +8,6 @@ class StringCalculator {
         if (negatives.isNotEmpty()) {
             throw IllegalArgumentException("negatives not allowed: ${negatives.joinToString(", ")}")
         }
-        return nums.sum()
+        return nums.filter { it <= 1000 }.sum()
     }
 }

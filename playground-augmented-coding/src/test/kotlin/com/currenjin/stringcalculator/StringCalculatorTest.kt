@@ -51,4 +51,10 @@ class StringCalculatorTest {
         }
         assertEquals("negatives not allowed: -1, -3", exception.message)
     }
+
+    @Test
+    fun `1000 초과 숫자는 무시한다`() {
+        val calculator = StringCalculator()
+        assertEquals(2, calculator.add("2,1001"))
+    }
 }
