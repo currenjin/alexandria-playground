@@ -21,4 +21,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(3, calculator.add("1,2"))
     }
+
+    @Test
+    fun `임의 개수의 숫자는 합계를 반환한다`() {
+        val calculator = StringCalculator()
+        assertEquals(15, calculator.add("1,2,3,4,5"))
+    }
 }
