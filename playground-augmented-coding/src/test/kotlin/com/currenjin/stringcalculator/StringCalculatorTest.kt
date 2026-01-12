@@ -15,4 +15,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(1, calculator.add("1"))
     }
+
+    @Test
+    fun `쉼표로 구분된 두 숫자는 합계를 반환한다`() {
+        val calculator = StringCalculator()
+        assertEquals(3, calculator.add("1,2"))
+    }
 }
