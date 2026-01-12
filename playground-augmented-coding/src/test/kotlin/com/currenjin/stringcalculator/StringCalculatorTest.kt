@@ -63,4 +63,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(6, calculator.add("//[***]\n1***2***3"))
     }
+
+    @Test
+    fun `다중 구분자를 지원한다`() {
+        val calculator = StringCalculator()
+        assertEquals(6, calculator.add("//[*][%]\n1*2%3"))
+    }
 }
