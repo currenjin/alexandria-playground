@@ -27,4 +27,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(15, calculator.add("1,2,3,4,5"))
     }
+
+    @Test
+    fun `줄바꿈도 구분자로 허용한다`() {
+        val calculator = StringCalculator()
+        assertEquals(6, calculator.add("1\n2,3"))
+    }
 }
