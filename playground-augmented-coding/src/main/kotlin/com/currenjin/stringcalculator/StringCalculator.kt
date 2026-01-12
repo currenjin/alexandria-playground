@@ -25,7 +25,9 @@ class StringCalculator {
         }
         val delimiterEnd = numbers.indexOf("\n")
         val delimiterPart = numbers.substring(2, delimiterEnd)
-        val delimiter = delimiterPart.removeSurrounding("[", "]")
-        return Pair(listOf(delimiter), numbers.substring(delimiterEnd + 1))
+        val delimiters = Regex("\\[([^]]+)]").findAll(delimiterPart)
+            .map { it.groupValues[1] }
+            .toList()
+        return Pair(delimiters, numbers.substring(delimiterEnd + 1))
     }
 }
