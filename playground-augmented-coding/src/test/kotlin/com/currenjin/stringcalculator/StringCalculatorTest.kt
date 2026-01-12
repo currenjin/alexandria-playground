@@ -9,4 +9,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(0, calculator.add(""))
     }
+
+    @Test
+    fun `숫자 하나는 해당 숫자를 반환한다`() {
+        val calculator = StringCalculator()
+        assertEquals(1, calculator.add("1"))
+    }
 }
