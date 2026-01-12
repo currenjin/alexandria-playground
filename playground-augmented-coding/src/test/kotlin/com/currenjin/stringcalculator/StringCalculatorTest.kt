@@ -42,4 +42,13 @@ class StringCalculatorTest {
             calculator.add("-1,2")
         }
     }
+
+    @Test
+    fun `예외 메시지에 모든 음수 값이 포함된다`() {
+        val calculator = StringCalculator()
+        val exception = assertThrows<IllegalArgumentException> {
+            calculator.add("-1,2,-3")
+        }
+        assertEquals("negatives not allowed: -1, -3", exception.message)
+    }
 }
