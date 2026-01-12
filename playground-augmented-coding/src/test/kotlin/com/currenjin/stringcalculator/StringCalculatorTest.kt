@@ -57,4 +57,10 @@ class StringCalculatorTest {
         val calculator = StringCalculator()
         assertEquals(2, calculator.add("2,1001"))
     }
+
+    @Test
+    fun `임의 길이 커스텀 구분자를 지원한다`() {
+        val calculator = StringCalculator()
+        assertEquals(6, calculator.add("//[***]\n1***2***3"))
+    }
 }
