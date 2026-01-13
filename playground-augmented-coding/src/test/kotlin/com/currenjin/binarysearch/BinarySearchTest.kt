@@ -11,4 +11,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(0))
     }
+
+    @Test
+    fun `search for existing element in single element list returns Found`() {
+        val result = BinarySearch.search(listOf(5), 5)
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(0))
+    }
 }
