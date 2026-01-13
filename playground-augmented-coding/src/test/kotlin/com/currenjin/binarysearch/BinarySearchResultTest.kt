@@ -13,4 +13,11 @@ class BinarySearchResultTest {
         assertThat(found).isInstanceOf(BinarySearchResult::class.java)
         assertThat(notFound).isInstanceOf(BinarySearchResult::class.java)
     }
+
+    @Test
+    fun `Found contains index value`() {
+        val found = BinarySearchResult.Found<Int>(5)
+
+        assertThat(found.index).isEqualTo(5)
+    }
 }
