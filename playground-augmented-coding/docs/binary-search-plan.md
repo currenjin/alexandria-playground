@@ -6,7 +6,7 @@
 - [x] NotFound는 삽입 위치(insertionPoint)를 포함
 
 ## 빈 배열과 단일 요소
-- [ ] 빈 배열에서 검색 -> NotFound 반환
+- [x] 빈 배열에서 검색 -> NotFound 반환
 - [ ] 단일 요소 배열에서 해당 값 검색 -> Found(0) 반환
 - [ ] 단일 요소 배열에서 없는 값 검색 -> NotFound 반환
 
