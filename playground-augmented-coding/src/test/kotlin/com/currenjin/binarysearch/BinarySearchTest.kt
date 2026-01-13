@@ -25,4 +25,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(0))
     }
+
+    @Test
+    fun `search for first element in multiple element list returns Found 0`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 1)
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(0))
+    }
 }
