@@ -32,4 +32,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(0))
     }
+
+    @Test
+    fun `search for last element in multiple element list returns Found lastIndex`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 9)
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(4))
+    }
 }

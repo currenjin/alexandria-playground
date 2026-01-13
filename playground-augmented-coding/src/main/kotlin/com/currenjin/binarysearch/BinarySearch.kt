@@ -2,8 +2,10 @@ package com.currenjin.binarysearch
 
 object BinarySearch {
     fun <T : Comparable<T>> search(list: List<T>, target: T): BinarySearchResult<T> {
-        if (list.isNotEmpty() && list[0] == target) {
-            return BinarySearchResult.Found(0)
+        for (i in list.indices) {
+            if (list[i] == target) {
+                return BinarySearchResult.Found(i)
+            }
         }
         return BinarySearchResult.NotFound(0)
     }
