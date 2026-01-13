@@ -20,4 +20,11 @@ class BinarySearchResultTest {
 
         assertThat(found.index).isEqualTo(5)
     }
+
+    @Test
+    fun `NotFound contains insertionPoint value`() {
+        val notFound = BinarySearchResult.NotFound<Int>(3)
+
+        assertThat(notFound.insertionPoint).isEqualTo(3)
+    }
 }
