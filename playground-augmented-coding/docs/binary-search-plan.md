@@ -1,7 +1,7 @@
 # plan.md - Binary Search (Kotlin)
 
 ## Result 타입 정의
-- [ ] BinarySearchResult sealed class 정의 (Found, NotFound)
+- [x] BinarySearchResult sealed class 정의 (Found, NotFound)
 - [ ] Found는 index 값을 포함
 - [ ] NotFound는 삽입 위치(insertionPoint)를 포함
 
