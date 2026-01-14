@@ -46,4 +46,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(2))
     }
+
+    @Test
+    fun `search for non-existing element in multiple element list returns NotFound`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 4)
+
+        assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(0))
+    }
 }
