@@ -22,5 +22,5 @@
 - [x] 모든 요소보다 큰 값 -> insertionPoint = size
 
 ## 제네릭 지원
-- [ ] Comparable<T>를 구현한 타입에서 동작 (String 테스트)
+- [x] Comparable<T>를 구현한 타입에서 동작 (String 테스트)
 - [ ] 커스텀 Comparable 객체에서 동작

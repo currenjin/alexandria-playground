@@ -74,4 +74,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(5))
     }
+
+    @Test
+    fun `search works with comparable string`() {
+        val result = BinarySearch.search(listOf("a", "b", "c", "d"), "c")
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<String>(2))
+    }
 }
