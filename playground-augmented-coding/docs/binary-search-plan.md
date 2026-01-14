@@ -23,4 +23,4 @@
 
 ## 제네릭 지원
 - [x] Comparable<T>를 구현한 타입에서 동작 (String 테스트)
-- [ ] 커스텀 Comparable 객체에서 동작
+- [x] 커스텀 Comparable 객체에서 동작

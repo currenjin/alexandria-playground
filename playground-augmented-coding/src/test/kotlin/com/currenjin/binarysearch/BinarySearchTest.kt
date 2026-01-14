@@ -4,6 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class BinarySearchTest {
+    private data class Score(val value: Int) : Comparable<Score> {
+        override fun compareTo(other: Score): Int = value.compareTo(other.value)
+    }
 
     @Test
     fun `search in empty list returns NotFound`() {
@@ -80,5 +83,15 @@ class BinarySearchTest {
         val result = BinarySearch.search(listOf("a", "b", "c", "d"), "c")
 
         assertThat(result).isEqualTo(BinarySearchResult.Found<String>(2))
+    }
+
+    @Test
+    fun `search works with custom comparable object`() {
+        val result = BinarySearch.search(
+            listOf(Score(10), Score(20), Score(30), Score(40)),
+            Score(30),
+        )
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<Score>(2))
     }
 }
