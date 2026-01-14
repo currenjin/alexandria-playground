@@ -39,4 +39,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(4))
     }
+
+    @Test
+    fun `search for middle element in multiple element list returns correct index`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 5)
+
+        assertThat(result).isEqualTo(BinarySearchResult.Found<Int>(2))
+    }
 }
