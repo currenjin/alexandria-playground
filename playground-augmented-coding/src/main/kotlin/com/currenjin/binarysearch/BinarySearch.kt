@@ -6,7 +6,10 @@ object BinarySearch {
             if (list[i] == target) {
                 return BinarySearchResult.Found(i)
             }
+            if (list[i] > target) {
+                return BinarySearchResult.NotFound(i)
+            }
         }
-        return BinarySearchResult.NotFound(0)
+        return BinarySearchResult.NotFound(list.size)
     }
 }

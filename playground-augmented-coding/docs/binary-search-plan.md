@@ -17,7 +17,7 @@
 - [x] 배열에 없는 값 검색 -> NotFound 반환
 
 ## 삽입 위치 (insertionPoint)
-- [ ] NotFound 시 삽입 위치 반환 (값이 들어갈 정렬된 위치)
+- [x] NotFound 시 삽입 위치 반환 (값이 들어갈 정렬된 위치)
 - [ ] 모든 요소보다 작은 값 -> insertionPoint = 0
 - [ ] 모든 요소보다 큰 값 -> insertionPoint = size
 
