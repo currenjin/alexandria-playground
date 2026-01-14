@@ -67,4 +67,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(0))
     }
+
+    @Test
+    fun `search for value larger than all elements returns insertion point size`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 10)
+
+        assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(5))
+    }
 }
