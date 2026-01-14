@@ -19,7 +19,7 @@
 ## 삽입 위치 (insertionPoint)
 - [x] NotFound 시 삽입 위치 반환 (값이 들어갈 정렬된 위치)
 - [x] 모든 요소보다 작은 값 -> insertionPoint = 0
-- [ ] 모든 요소보다 큰 값 -> insertionPoint = size
+- [x] 모든 요소보다 큰 값 -> insertionPoint = size
 
 ## 제네릭 지원
 - [ ] Comparable<T>를 구현한 타입에서 동작 (String 테스트)
