@@ -14,7 +14,7 @@
 - [x] 배열의 첫 번째 요소 검색 -> Found(0) 반환
 - [x] 배열의 마지막 요소 검색 -> Found(lastIndex) 반환
 - [x] 배열의 중간 요소 검색 -> 올바른 인덱스 반환
-- [ ] 배열에 없는 값 검색 -> NotFound 반환
+- [x] 배열에 없는 값 검색 -> NotFound 반환
 
 ## 삽입 위치 (insertionPoint)
 - [ ] NotFound 시 삽입 위치 반환 (값이 들어갈 정렬된 위치)
