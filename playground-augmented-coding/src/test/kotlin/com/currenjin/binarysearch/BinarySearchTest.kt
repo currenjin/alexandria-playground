@@ -60,4 +60,11 @@ class BinarySearchTest {
 
         assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(3))
     }
+
+    @Test
+    fun `search for value smaller than all elements returns insertion point 0`() {
+        val result = BinarySearch.search(listOf(1, 3, 5, 7, 9), 0)
+
+        assertThat(result).isEqualTo(BinarySearchResult.NotFound<Int>(0))
+    }
 }
