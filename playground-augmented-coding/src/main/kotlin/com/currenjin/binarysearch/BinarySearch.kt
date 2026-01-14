@@ -2,14 +2,23 @@ package com.currenjin.binarysearch
 
 object BinarySearch {
     fun <T : Comparable<T>> search(list: List<T>, target: T): BinarySearchResult<T> {
-        for (i in list.indices) {
-            if (list[i] == target) {
-                return BinarySearchResult.Found(i)
+        var low = 0
+        var high = list.size - 1
+
+        while (low <= high) {
+            val mid = (low + high) / 2
+            val comparison = list[mid].compareTo(target)
+
+            if (comparison == 0) {
+                return BinarySearchResult.Found(mid)
             }
-            if (list[i] > target) {
-                return BinarySearchResult.NotFound(i)
+            if (comparison < 0) {
+                low = mid + 1
+            } else {
+                high = mid - 1
             }
         }
-        return BinarySearchResult.NotFound(list.size)
+
+        return BinarySearchResult.NotFound(low)
     }
 }
