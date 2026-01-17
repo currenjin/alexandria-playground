@@ -1,0 +1,22 @@
+# Reference
+## [KentBeck/BPlusTree3](https://github.com/KentBeck/BPlusTree3)
+- [CLAUDE.md](https://github.com/KentBeck/BPlusTree3/blob/ca80e4d85a99cd0af2effe717f709d43e80403bc/rust/docs/CLAUDE.md)
+- 추가 작업에 대한 plan.md: https://github.com/KentBeck/BPlusTree3/tree/main/docs
+- https://tidyfirst.substack.com/p/augmented-coding-beyond-the-vibes
+- https://tidyfirst.substack.com/p/augmented-coding-and-design
+- https://velog.io/@qlgks1/Kent-Beck-Augmented-Coding
+- https://www.hanbit.co.kr/channel/view.html?cmscode=CMS7386143238
+- https://news.hada.io/topic?id=21733
+- https://news.hada.io/topic?id=22635
+- https://yozm.wishket.com/magazine/detail/3339/
+- https://www.anthropic.com/engineering/claude-code-best-practices
+- https://maily.so/devpill/posts/g1o4k45mrve
+- https://www.youtube.com/watch?v=aSXaxOdVtAQ&t=10s
+- https://www.youtube.com/watch?v=5cFxIwCaW0M
+    - 부모님의 건강 관리 시스템을 배포하는 것, 자신의 급여를 관리하는 시스템을 만드는 것과 같은 책임감. 부정적인 결과를 다른 사람에게 넘기면 됐다는 마인드는 안 된다. 최종 결과를 책임져라. 그리고 결과가 항상 따라야 한다.
+    - 코딩은 운전과 비슷하다. 구불구불한 산길을 간다면, 계속해서 체크하고, 운전대를 잦게 조정해야 한다. 만약 5마일로 곧은 길을 트랙터를 운전한다면, 조금 더 여유를 가져도 된다. 레이싱장에서 운전하는 상황이라면 한 시도 눈을 떼서는 안 된다.
+    - 토양에 비료를 주지 않고 씨앗을 심었는데 열매가 맺히지 않는다면, 그것은 나무의 잘못이 아닙니다.
+    - 바이브코딩: 외부적 동작을 보여주는 방식. 어떤 동작이 나타나는지 확인하는 것. 결과가 나오면, 끝났다고 생각하고 코드는 신경쓰지 않는다. 증강코딩: 외골격을 착용한 코딩으로 무른다. 외골격 없이는 들 수 없었던 것들을 들 수 있게 된 것.
+    - 기능 사이의 공간을 찾는 능력을 가져야 한다. 음표 사이에 쉬면 되듯이. 이 기능은 끝났다. 말할 수 있어야 한다. 그 기능이 제대로 작동한다는 것을 확인할 수 있어야 한다. 여기서 어떤 장단점이 있을까? 통과해야 할 다른 테스트 케이스가 있을까? 코드 커버리지 테스트를 실행해서 테스트하지 않은 부분이나 해결해야 할 불안정한 부분이 있는지 확인할 수 있을까? 다른 방식으로 설계할 수 있는 방법은 없을까? 이 부분을 다른 것으로 바꾸면 코드가 더 명확해질까? 더 작은 부분으로 나눌 수 있을까? 병합할 부분이 있을까? 등등 다음에 만들 기능에만 매몰되면 안 된다. 중간 중간 기쁨의 순간을 찾을 수 있어야 한다.
+    - 코드를 작성하되, 그 코드가 단순히 무엇을 하는지가 아니라, 어떻게 작동하는지 설명해달라고 하세요.
+    - 억제의 원칙(The principle of inhibition): 어떻게 하면 나쁜 결과를 더 잘, 더 철저하게 표현할 수 있는가. TDD, TCR, 테스트 커밋 리버트 워크플로우, 스펙 기반 개발 방식. 항상 배우는 자세가 중요하다.
