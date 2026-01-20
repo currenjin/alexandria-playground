@@ -44,10 +44,10 @@
 
 ### Book
 
-- [book-designing-data-intensive-applications](book-designing-data-intensive-applications) - 데이터 중심 애플리케이션 설계 (12챕터)
+- [book-designing-data-intensive-applications](book-designing-data-intensive-applications) - 데이터 중심 애플리케이션 설계
 - [book-toby-spring](book-toby-spring) - 토비의 스프링
 - [book-test-driven-development-by-example](book-test-driven-development-by-example) - 테스트 주도 개발
-- [book-implementation-patterns](book-implementation-patterns) - 구현 패턴 (켄트 벡)
+- [book-implementation-patterns](book-implementation-patterns) - 켄트 벡의 구현 패턴
 - [book-building-microservices](book-building-microservices) - 마이크로서비스 아키텍처
 - [book-sre-google](book-sre-google) - 사이트 신뢰성 엔지니어링
 - [book-junit-in-action](book-junit-in-action) - JUnit in Action
@@ -120,7 +120,7 @@
 - [poc-string-calculator](poc-string-calculator) - 문자열 계산기
 - [poc-api-mocker](poc-api-mocker) - API Mocker
 - [poc-subscription-reminder](poc-subscription-reminder) - 구독 알림
-- [poc-challenges](poc-challenges) - 일일 코딩 챌린지 (75+)
+- [poc-challenges](poc-challenges) - 일일 코딩 챌린지
 
 ### Template
 
