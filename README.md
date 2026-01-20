@@ -21,7 +21,9 @@
 
 ---
 
-## Category
+## Projects
+
+### Category
 
 - [Algorithm](#algorithm) - 알고리즘
 - [Book](#book) - 기술 서적 정리 및 실습
@@ -31,9 +33,7 @@
 - [POC](#poc) - 기술 검증
 - [Template](#template) - 프로젝트 템플릿
 
----
-
-## Algorithm
+### Algorithm
 
 - [algorithm-two-sum](algorithm-two-sum) - Two Sum
 - [algorithm-two-sum-2](algorithm-two-sum-2) - Two Sum II (정렬된 배열)
@@ -42,7 +42,7 @@
 - [algorithm-merge-two-sorted-lists](algorithm-merge-two-sorted-lists) - Merge Two Sorted Lists
 - [algorithm-valid-parentheses](algorithm-valid-parentheses) - Valid Parentheses
 
-## Book
+### Book
 
 - [book-designing-data-intensive-applications](book-designing-data-intensive-applications) - 데이터 중심 애플리케이션 설계 (12챕터)
 - [book-toby-spring](book-toby-spring) - 토비의 스프링
@@ -55,7 +55,7 @@
 - [book-data-structures](book-data-structures) - 자료구조
 - [book-programming-languages](book-programming-languages) - 프로그래밍 언어론
 
-## Implementation
+### Implementation
 
 - [implementation-garbage-collector](implementation-garbage-collector) - 가비지 컬렉터
 - [implementation-mark-and-sweep-algorithm](implementation-mark-and-sweep-algorithm) - Mark & Sweep 알고리즘
@@ -72,7 +72,7 @@
 - [implementation-postfix-notation](implementation-postfix-notation) - 후위 표기법 계산기
 - [implementation-pid-module](implementation-pid-module) - PID 모듈
 
-## Pattern
+### Pattern
 
 - [pattern-builder](pattern-builder) - Builder
 - [pattern-command](pattern-command) - Command
@@ -83,7 +83,7 @@
 - [pattern-strategy-kotlin](pattern-strategy-kotlin) - Strategy (Kotlin)
 - [pattern-visitor](pattern-visitor) - Visitor
 
-## Playground
+### Playground
 
 - [playground-inventory-management-system](playground-inventory-management-system) - 재고 관리 시스템 (CQRS, Event Sourcing)
 - [playground-mafia-server](playground-mafia-server) - 마피아 게임 서버 (Kotlin + Netty)
@@ -94,7 +94,7 @@
 - [playground-java-racingcar](playground-java-racingcar) - 자동차 경주 게임
 - [playground-java-coordinate](playground-java-coordinate) - 좌표 계산기
 
-## POC
+### POC
 
 - [poc-spring-graphql](poc-spring-graphql) - GraphQL
 - [poc-spring-data-elasticsearch](poc-spring-data-elasticsearch) - Elasticsearch
@@ -122,9 +122,7 @@
 - [poc-subscription-reminder](poc-subscription-reminder) - 구독 알림
 - [poc-challenges](poc-challenges) - 일일 코딩 챌린지 (75+)
 
----
-
-## Template
+### Template
 
 - [template-project](template-project) - Java + Gradle
 - [template-project-kotlin](template-project-kotlin) - Kotlin + Gradle
