@@ -1,6 +1,6 @@
 # Alexandria Playground 🏛️
 
-<sub>이름은 [알렉산드리아 도서관](https://ko.wikipedia.org/wiki/%EC%95%8C%EB%A0%89%EC%82%B0%EB%93%9C%EB%A6%AC%EC%95%84_%EB%8F%84%EC%84%9C%EA%B4%80)에서 영감을 받았습니다.</sub>
+<sub>이름은 [알렉산드리아 도서관](https://ko.wikipedia.org/wiki/%EC%95%8C%EB%A0%89%EC%82%B0%EB%93%9C%EB%A6%AC%EC%95%84_%EB%8F%84%EC%84%9C%EA%B4%80)에서 영감을 받았다.</sub>
 
 ## 희망
 
