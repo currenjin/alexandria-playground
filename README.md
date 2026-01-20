@@ -19,6 +19,8 @@
 ### 연결과 확장
 수많은 분야의 지식이 한 곳에 모이자, 그 속에서 새로운 발견과 통찰이 피어났듯이. 이 공간에서의 다양한 실험과 도전이 서로 연결되어 더 큰 아이디어로 발전하기를 기대한다.
 
+---
+
 ## Category
 
 - [Algorithm](#algorithm) - 알고리즘
@@ -28,15 +30,6 @@
 - [Playground](#playground) - 자유로운 실험
 - [POC](#poc) - 기술 검증
 - [Template](#template) - 프로젝트 템플릿
-
-## Highlight
-
-- [playground-inventory-management-system](playground-inventory-management-system) - CQRS, Event Sourcing, SAGA 패턴, 분산 락
-- [playground-mafia-server](playground-mafia-server) - Kotlin + Netty TCP 게임 서버
-- [book-designing-data-intensive-applications](book-designing-data-intensive-applications) - 분산 시스템 12챕터 실습
-- [implementation-garbage-collector](implementation-garbage-collector) - GC 직접 구현
-- [implementation-jvm-simple-interpreter](implementation-jvm-simple-interpreter) - JVM 바이트코드 인터프리터
-- [implementation-x-unit](implementation-x-unit) - 테스팅 프레임워크 직접 구현
 
 ---
 
