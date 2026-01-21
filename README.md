@@ -51,6 +51,7 @@
 - [book-building-microservices](book-building-microservices) - 마이크로서비스 아키텍처
 - [book-sre-google](book-sre-google) - 사이트 신뢰성 엔지니어링
 - [book-junit-in-action](book-junit-in-action) - JUnit in Action
+- [book-the-essence-of-object-orientation](book-the-essence-of-object-orientation) - 객체지향의 사실과 오해
 - [book-the-well-grounded-java-developer](book-the-well-grounded-java-developer) - The Well-Grounded Java Developer
 - [book-data-structures](book-data-structures) - 자료구조
 - [book-programming-languages](book-programming-languages) - 프로그래밍 언어론
