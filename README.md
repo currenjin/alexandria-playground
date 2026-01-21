@@ -55,6 +55,7 @@
 - [book-the-well-grounded-java-developer](book-the-well-grounded-java-developer) - The Well-Grounded Java Developer
 - [book-data-structures](book-data-structures) - 자료구조
 - [book-programming-languages](book-programming-languages) - 프로그래밍 언어론
+- [book-tidy-first](book-tidy-first) - 켄트 벡의 Tidy First?
 
 ### Implementation
 
