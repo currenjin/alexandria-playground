@@ -127,6 +127,7 @@
 - [template-project](template-project) - Java + Gradle
 - [template-project-kotlin](template-project-kotlin) - Kotlin + Gradle
 - [template-project-clang](template-project-clang) - C
+- [template-book](template-book) - Book
 
 ---
 
