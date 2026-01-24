@@ -48,4 +48,24 @@ class OutputViewTest {
         assertThat(result).contains("5개 일치, 보너스 볼 일치(30000000원) - 0개")
         assertThat(result).contains("6개 일치 (2000000000원)- 0개")
     }
+
+    @Test
+    fun `should print profit rate`() {
+        val output = ByteArrayOutputStream()
+        System.setOut(PrintStream(output))
+
+        val lottos = listOf(
+            LottoGenerator.create(listOf(1, 2, 3, 43, 44, 45)) // FIFTH = 5000원
+        )
+        val winningLotto = WinningLotto(
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 6)),
+            LottoNumber(7)
+        )
+        val lottoResult = LottoResult(lottos, winningLotto)
+
+        OutputView.printProfitRate(lottoResult)
+
+        val result = output.toString()
+        assertThat(result).contains("총 수익률은 500.0%입니다.")
+    }
 }

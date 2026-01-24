@@ -17,4 +17,8 @@ object OutputView {
         println("5개 일치, 보너스 볼 일치(30000000원) - ${result.countByRank(Rank.SECOND)}개")
         println("6개 일치 (2000000000원)- ${result.countByRank(Rank.FIRST)}개")
     }
+
+    fun printProfitRate(result: LottoResult) {
+        println("총 수익률은 ${result.profitRate()}%입니다.")
+    }
 }
