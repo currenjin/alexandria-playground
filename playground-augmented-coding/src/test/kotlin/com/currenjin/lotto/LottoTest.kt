@@ -69,4 +69,20 @@ class LottoTest {
             )
         }.isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should return true when lotto contains the number`() {
+        val lotto = Lotto(
+            listOf(
+                LottoNumber(1),
+                LottoNumber(2),
+                LottoNumber(3),
+                LottoNumber(4),
+                LottoNumber(5),
+                LottoNumber(6)
+            )
+        )
+
+        assertThat(lotto.contains(LottoNumber(3))).isTrue()
+    }
 }
