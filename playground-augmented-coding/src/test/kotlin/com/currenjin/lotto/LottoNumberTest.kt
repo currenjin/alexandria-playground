@@ -1,6 +1,7 @@
 package com.currenjin.lotto
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class LottoNumberTest {
@@ -10,5 +11,11 @@ class LottoNumberTest {
         val lottoNumber = LottoNumber(1)
 
         assertThat(lottoNumber.value).isEqualTo(1)
+    }
+
+    @Test
+    fun `should throw exception when number is zero or less`() {
+        assertThatThrownBy { LottoNumber(0) }
+            .isInstanceOf(IllegalArgumentException::class.java)
     }
 }
