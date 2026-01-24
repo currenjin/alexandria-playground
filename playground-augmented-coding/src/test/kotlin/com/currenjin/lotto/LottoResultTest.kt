@@ -23,4 +23,29 @@ class LottoResultTest {
         assertThat(result.countByRank(Rank.SECOND)).isEqualTo(1)
         assertThat(result.countByRank(Rank.FOURTH)).isEqualTo(1)
     }
+
+    @Test
+    fun `should count each rank correctly`() {
+        val lottos = listOf(
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 6)),  // FIRST
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 7)),  // SECOND (bonus)
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 45)), // THIRD
+            LottoGenerator.create(listOf(1, 2, 3, 4, 44, 45)),// FOURTH
+            LottoGenerator.create(listOf(1, 2, 3, 43, 44, 45)),// FIFTH
+            LottoGenerator.create(listOf(1, 2, 42, 43, 44, 45)) // MISS
+        )
+        val winningLotto = WinningLotto(
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 6)),
+            LottoNumber(7)
+        )
+
+        val result = LottoResult(lottos, winningLotto)
+
+        assertThat(result.countByRank(Rank.FIRST)).isEqualTo(1)
+        assertThat(result.countByRank(Rank.SECOND)).isEqualTo(1)
+        assertThat(result.countByRank(Rank.THIRD)).isEqualTo(1)
+        assertThat(result.countByRank(Rank.FOURTH)).isEqualTo(1)
+        assertThat(result.countByRank(Rank.FIFTH)).isEqualTo(1)
+        assertThat(result.countByRank(Rank.MISS)).isEqualTo(1)
+    }
 }
