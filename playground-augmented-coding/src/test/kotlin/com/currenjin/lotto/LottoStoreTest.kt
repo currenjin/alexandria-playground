@@ -30,4 +30,13 @@ class LottoStoreTest {
         assertThatThrownBy { store.purchase(1500) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should return lottos for the amount - 5000 won returns 5 lottos`() {
+        val store = LottoStore()
+
+        val lottos = store.purchase(5000)
+
+        assertThat(lottos).hasSize(5)
+    }
 }

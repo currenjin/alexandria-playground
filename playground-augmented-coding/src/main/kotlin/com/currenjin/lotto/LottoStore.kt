@@ -4,7 +4,8 @@ class LottoStore {
     fun purchase(amount: Int): List<Lotto> {
         require(amount >= LOTTO_PRICE)
         require(amount % LOTTO_PRICE == 0)
-        return listOf(LottoGenerator.generate())
+        val count = amount / LOTTO_PRICE
+        return (1..count).map { LottoGenerator.generate() }
     }
 
     companion object {
