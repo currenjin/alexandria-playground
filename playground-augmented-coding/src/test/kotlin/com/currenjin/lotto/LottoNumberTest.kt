@@ -24,4 +24,12 @@ class LottoNumberTest {
         assertThatThrownBy { LottoNumber(46) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should be equal when two LottoNumbers have the same value`() {
+        val lottoNumber1 = LottoNumber(7)
+        val lottoNumber2 = LottoNumber(7)
+
+        assertThat(lottoNumber1).isEqualTo(lottoNumber2)
+    }
 }
