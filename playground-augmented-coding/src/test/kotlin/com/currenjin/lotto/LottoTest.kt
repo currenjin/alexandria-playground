@@ -85,4 +85,30 @@ class LottoTest {
 
         assertThat(lotto.contains(LottoNumber(3))).isTrue()
     }
+
+    @Test
+    fun `should return match count with another lotto`() {
+        val lotto = Lotto(
+            listOf(
+                LottoNumber(1),
+                LottoNumber(2),
+                LottoNumber(3),
+                LottoNumber(4),
+                LottoNumber(5),
+                LottoNumber(6)
+            )
+        )
+        val other = Lotto(
+            listOf(
+                LottoNumber(1),
+                LottoNumber(2),
+                LottoNumber(3),
+                LottoNumber(7),
+                LottoNumber(8),
+                LottoNumber(9)
+            )
+        )
+
+        assertThat(lotto.matchCount(other)).isEqualTo(3)
+    }
 }
