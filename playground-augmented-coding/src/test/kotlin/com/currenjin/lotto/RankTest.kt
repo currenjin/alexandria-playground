@@ -52,4 +52,16 @@ class RankTest {
         assertThat(rank.matchCount).isEqualTo(0)
         assertThat(rank.prize).isEqualTo(0)
     }
+
+    @Test
+    fun `should determine rank by match count and bonus match`() {
+        assertThat(Rank.of(6, false)).isEqualTo(Rank.FIRST)
+        assertThat(Rank.of(5, true)).isEqualTo(Rank.SECOND)
+        assertThat(Rank.of(5, false)).isEqualTo(Rank.THIRD)
+        assertThat(Rank.of(4, false)).isEqualTo(Rank.FOURTH)
+        assertThat(Rank.of(3, false)).isEqualTo(Rank.FIFTH)
+        assertThat(Rank.of(2, false)).isEqualTo(Rank.MISS)
+        assertThat(Rank.of(1, false)).isEqualTo(Rank.MISS)
+        assertThat(Rank.of(0, false)).isEqualTo(Rank.MISS)
+    }
 }
