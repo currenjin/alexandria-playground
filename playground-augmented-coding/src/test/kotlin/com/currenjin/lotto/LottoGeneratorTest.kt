@@ -19,4 +19,11 @@ class LottoGeneratorTest {
 
         assertThat(lotto.numbers.map { it.value }.distinct()).hasSize(6)
     }
+
+    @Test
+    fun `should create lotto from given numbers`() {
+        val lotto = LottoGenerator.create(listOf(1, 2, 3, 4, 5, 6))
+
+        assertThat(lotto.numbers.map { it.value }).containsExactlyInAnyOrder(1, 2, 3, 4, 5, 6)
+    }
 }
