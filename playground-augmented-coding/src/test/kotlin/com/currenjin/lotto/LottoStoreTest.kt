@@ -22,4 +22,12 @@ class LottoStoreTest {
         assertThatThrownBy { store.purchase(999) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should throw exception when amount is not in 1000 won units`() {
+        val store = LottoStore()
+
+        assertThatThrownBy { store.purchase(1500) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+    }
 }
