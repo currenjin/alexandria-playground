@@ -64,4 +64,29 @@ class WinningLottoTest {
 
         assertThat(winningLotto.matchCount(userLotto)).isEqualTo(3)
     }
+
+    @Test
+    fun `should return true when user lotto contains bonus number`() {
+        val winningLotto = WinningLotto(
+            Lotto(listOf(
+                LottoNumber(1),
+                LottoNumber(2),
+                LottoNumber(3),
+                LottoNumber(4),
+                LottoNumber(5),
+                LottoNumber(6)
+            )),
+            LottoNumber(7)
+        )
+        val userLotto = Lotto(listOf(
+            LottoNumber(1),
+            LottoNumber(2),
+            LottoNumber(3),
+            LottoNumber(4),
+            LottoNumber(5),
+            LottoNumber(7)
+        ))
+
+        assertThat(winningLotto.matchBonus(userLotto)).isTrue()
+    }
 }
