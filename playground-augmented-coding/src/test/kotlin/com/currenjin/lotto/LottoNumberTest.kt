@@ -32,4 +32,12 @@ class LottoNumberTest {
 
         assertThat(lottoNumber1).isEqualTo(lottoNumber2)
     }
+
+    @Test
+    fun `should not be equal when two LottoNumbers have different values`() {
+        val lottoNumber1 = LottoNumber(7)
+        val lottoNumber2 = LottoNumber(8)
+
+        assertThat(lottoNumber1).isNotEqualTo(lottoNumber2)
+    }
 }
