@@ -1,6 +1,7 @@
 package com.currenjin.lotto
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class LottoTest {
@@ -19,5 +20,20 @@ class LottoTest {
         )
 
         assertThat(lotto.numbers).hasSize(6)
+    }
+
+    @Test
+    fun `should throw exception when less than 6 numbers`() {
+        assertThatThrownBy {
+            Lotto(
+                listOf(
+                    LottoNumber(1),
+                    LottoNumber(2),
+                    LottoNumber(3),
+                    LottoNumber(4),
+                    LottoNumber(5)
+                )
+            )
+        }.isInstanceOf(IllegalArgumentException::class.java)
     }
 }
