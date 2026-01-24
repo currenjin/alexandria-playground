@@ -39,4 +39,29 @@ class WinningLottoTest {
         assertThatThrownBy { WinningLotto(lotto, bonus) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should return match count with user lotto`() {
+        val winningLotto = WinningLotto(
+            Lotto(listOf(
+                LottoNumber(1),
+                LottoNumber(2),
+                LottoNumber(3),
+                LottoNumber(4),
+                LottoNumber(5),
+                LottoNumber(6)
+            )),
+            LottoNumber(7)
+        )
+        val userLotto = Lotto(listOf(
+            LottoNumber(1),
+            LottoNumber(2),
+            LottoNumber(3),
+            LottoNumber(10),
+            LottoNumber(11),
+            LottoNumber(12)
+        ))
+
+        assertThat(winningLotto.matchCount(userLotto)).isEqualTo(3)
+    }
 }
