@@ -64,4 +64,22 @@ class LottoResultTest {
         // 수익률 = (5,000 / 1,000) * 100 = 500%
         assertThat(result.profitRate()).isEqualTo(500.0)
     }
+
+    @Test
+    fun `should round profit rate to two decimal places`() {
+        val lottos = listOf(
+            LottoGenerator.create(listOf(1, 2, 3, 43, 44, 45)), // FIFTH = 5,000원
+            LottoGenerator.create(listOf(10, 11, 12, 13, 14, 15)), // MISS
+            LottoGenerator.create(listOf(20, 21, 22, 23, 24, 25))  // MISS
+        )
+        val winningLotto = WinningLotto(
+            LottoGenerator.create(listOf(1, 2, 3, 4, 5, 6)),
+            LottoNumber(7)
+        )
+
+        val result = LottoResult(lottos, winningLotto)
+
+        // 수익률 = (5,000 / 3,000) * 100 = 166.666...% -> 166.67%
+        assertThat(result.profitRate()).isEqualTo(166.67)
+    }
 }
