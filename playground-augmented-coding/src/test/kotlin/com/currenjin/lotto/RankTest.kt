@@ -44,4 +44,12 @@ class RankTest {
         assertThat(rank.matchCount).isEqualTo(3)
         assertThat(rank.prize).isEqualTo(5_000)
     }
+
+    @Test
+    fun `should return MISS rank with prize 0 when 2 or less numbers match`() {
+        val rank = Rank.MISS
+
+        assertThat(rank.matchCount).isEqualTo(0)
+        assertThat(rank.prize).isEqualTo(0)
+    }
 }
