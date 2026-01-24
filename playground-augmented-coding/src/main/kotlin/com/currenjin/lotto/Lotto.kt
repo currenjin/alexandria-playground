@@ -1,10 +1,15 @@
 package com.currenjin.lotto
 
-class Lotto(val numbers: List<LottoNumber>) {
+class Lotto(numbers: List<LottoNumber>) {
+    val numbers: Set<LottoNumber> = numbers.toSet()
+
     init {
-        require(numbers.size == 6)
-        require(numbers.toSet().size == 6)
+        require(this.numbers.size == LOTTO_SIZE)
     }
 
     fun contains(number: LottoNumber): Boolean = numbers.contains(number)
+
+    companion object {
+        private const val LOTTO_SIZE = 6
+    }
 }
