@@ -83,7 +83,7 @@
 ## Phase 7: 당첨 통계 (LottoResult)
 
 ### 통계 생성
-- [ ] 구매한 Lotto 목록과 WinningLotto로 통계 생성
+- [x] 구매한 Lotto 목록과 WinningLotto로 통계 생성
 - [ ] 각 등수별 당첨 개수 집계
 
 ### 수익률 계산
