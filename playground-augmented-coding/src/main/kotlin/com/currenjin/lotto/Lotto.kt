@@ -9,6 +9,8 @@ class Lotto(numbers: List<LottoNumber>) {
 
     fun contains(number: LottoNumber): Boolean = numbers.contains(number)
 
+    fun matchCount(other: Lotto): Int = numbers.intersect(other.numbers).size
+
     companion object {
         private const val LOTTO_SIZE = 6
     }
