@@ -18,4 +18,10 @@ class LottoNumberTest {
         assertThatThrownBy { LottoNumber(0) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should throw exception when number is 46 or more`() {
+        assertThatThrownBy { LottoNumber(46) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+    }
 }
