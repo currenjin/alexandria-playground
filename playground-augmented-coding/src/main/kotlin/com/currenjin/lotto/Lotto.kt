@@ -5,4 +5,6 @@ class Lotto(val numbers: List<LottoNumber>) {
         require(numbers.size == 6)
         require(numbers.toSet().size == 6)
     }
+
+    fun contains(number: LottoNumber): Boolean = numbers.contains(number)
 }
