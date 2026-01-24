@@ -6,4 +6,6 @@ class WinningLotto(val lotto: Lotto, val bonus: LottoNumber) {
     }
 
     fun matchCount(userLotto: Lotto): Int = lotto.matchCount(userLotto)
+
+    fun matchBonus(userLotto: Lotto): Boolean = userLotto.contains(bonus)
 }
