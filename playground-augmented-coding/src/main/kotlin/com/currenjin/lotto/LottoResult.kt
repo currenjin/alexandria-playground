@@ -14,4 +14,14 @@ class LottoResult(
         .eachCount()
 
     fun countByRank(rank: Rank): Int = results[rank] ?: 0
+
+    fun profitRate(): Double {
+        val totalPrize = results.entries.sumOf { (rank, count) -> rank.prize.toLong() * count }
+        val purchaseAmount = lottos.size * LOTTO_PRICE
+        return totalPrize.toDouble() / purchaseAmount * 100
+    }
+
+    companion object {
+        private const val LOTTO_PRICE = 1000
+    }
 }
