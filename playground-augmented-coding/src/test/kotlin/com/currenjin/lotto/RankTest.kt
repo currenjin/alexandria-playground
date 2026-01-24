@@ -28,4 +28,12 @@ class RankTest {
         assertThat(rank.matchCount).isEqualTo(5)
         assertThat(rank.prize).isEqualTo(1_500_000)
     }
+
+    @Test
+    fun `should return FOURTH rank with prize 50_000 when 4 numbers match`() {
+        val rank = Rank.FOURTH
+
+        assertThat(rank.matchCount).isEqualTo(4)
+        assertThat(rank.prize).isEqualTo(50_000)
+    }
 }
