@@ -9,7 +9,7 @@
 
 ### 로또 번호 동등성
 - [x] 같은 숫자의 LottoNumber는 동등함
-- [ ] 다른 숫자의 LottoNumber는 동등하지 않음
+- [x] 다른 숫자의 LottoNumber는 동등하지 않음
 
 ---
 
