@@ -25,4 +25,14 @@ class InputViewTest {
 
         assertThat(numbers).containsExactly(1, 2, 3, 4, 5, 6)
     }
+
+    @Test
+    fun `should read bonus number from input`() {
+        val input = ByteArrayInputStream("7\n".toByteArray())
+        System.setIn(input)
+
+        val bonus = InputView.readBonusNumber()
+
+        assertThat(bonus).isEqualTo(7)
+    }
 }
