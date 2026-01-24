@@ -20,4 +20,12 @@ class RankTest {
         assertThat(rank.matchCount).isEqualTo(5)
         assertThat(rank.prize).isEqualTo(30_000_000)
     }
+
+    @Test
+    fun `should return THIRD rank with prize 1_500_000 when 5 numbers match`() {
+        val rank = Rank.THIRD
+
+        assertThat(rank.matchCount).isEqualTo(5)
+        assertThat(rank.prize).isEqualTo(1_500_000)
+    }
 }
