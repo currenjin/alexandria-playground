@@ -15,4 +15,14 @@ class InputViewTest {
 
         assertThat(amount).isEqualTo(14000)
     }
+
+    @Test
+    fun `should read winning numbers from comma separated input`() {
+        val input = ByteArrayInputStream("1, 2, 3, 4, 5, 6\n".toByteArray())
+        System.setIn(input)
+
+        val numbers = InputView.readWinningNumbers()
+
+        assertThat(numbers).containsExactly(1, 2, 3, 4, 5, 6)
+    }
 }
