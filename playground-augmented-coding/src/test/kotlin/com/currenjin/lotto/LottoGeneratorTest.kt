@@ -12,4 +12,11 @@ class LottoGeneratorTest {
         assertThat(lotto.numbers).hasSize(6)
         assertThat(lotto.numbers.map { it.value }).allMatch { it in 1..45 }
     }
+
+    @Test
+    fun `should generate lotto with no duplicate numbers`() {
+        val lotto = LottoGenerator.generate()
+
+        assertThat(lotto.numbers.map { it.value }.distinct()).hasSize(6)
+    }
 }
