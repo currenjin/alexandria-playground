@@ -18,11 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.MinIOContainer
+import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.RabbitMQContainer
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import java.io.ByteArrayInputStream
 import java.time.Duration
 import java.util.*
@@ -47,9 +49,12 @@ class ImageProcessingIntegrationTest {
 
         @Container
         @JvmStatic
-        val minio = MinIOContainer("minio/minio:latest")
-            .withUserName("minioadmin")
-            .withPassword("minioadmin")
+        val minio = GenericContainer(DockerImageName.parse("minio/minio:latest"))
+            .withEnv("MINIO_ROOT_USER", "minioadmin")
+            .withEnv("MINIO_ROOT_PASSWORD", "minioadmin")
+            .withCommand("server", "/data")
+            .withExposedPorts(9000)
+            .waitingFor(HttpWaitStrategy().forPath("/minio/health/ready").forPort(9000))
 
         @Container
         @JvmStatic
@@ -63,7 +68,7 @@ class ImageProcessingIntegrationTest {
             registry.add("spring.datasource.username") { postgres.username }
             registry.add("spring.datasource.password") { postgres.password }
 
-            registry.add("minio.endpoint") { minio.s3URL }
+            registry.add("minio.endpoint") { "http://${minio.host}:${minio.getMappedPort(9000)}" }
             registry.add("minio.access-key") { "minioadmin" }
             registry.add("minio.secret-key") { "minioadmin" }
             registry.add("minio.bucket") { BUCKET_NAME }
