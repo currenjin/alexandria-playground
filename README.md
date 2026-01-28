@@ -122,6 +122,7 @@
 - [poc-string-calculator](poc-string-calculator) - 문자열 계산기
 - [poc-api-mocker](poc-api-mocker) - API Mocker
 - [poc-subscription-reminder](poc-subscription-reminder) - 구독 알림
+- [poc-large-image-handling](poc-large-image-handling) - 대용량 이미지 핸들링
 - [poc-challenges](poc-challenges) - 일일 코딩 챌린지
 
 ### Template
@@ -130,6 +131,7 @@
 - [template-project-kotlin](template-project-kotlin) - Kotlin + Gradle
 - [template-project-clang](template-project-clang) - C
 - [template-book](template-book) - Book
+- [template-ai-context](template-ai-context) - AI Context
 
 ---
 
