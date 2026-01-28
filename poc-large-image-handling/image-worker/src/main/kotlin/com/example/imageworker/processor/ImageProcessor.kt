@@ -30,7 +30,8 @@ class ImageProcessor(
     private val processingProperties: ImageProcessingProperties,
     private val assetRepository: ImageAssetRepository,
     private val variantRepository: ImageVariantRepository,
-    private val meterRegistry: MeterRegistry
+    private val meterRegistry: MeterRegistry,
+    private val assetStatusUpdater: AssetStatusUpdater
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -98,7 +99,6 @@ class ImageProcessor(
                     bytes = variantBytes.size.toLong()
                 )
                 variantRepository.save(variant)
-                asset.variants.add(variant)
 
                 log.info("Created variant {} for asset {}: {}x{}, {} bytes",
                     config.type, assetId, resized.width, resized.height, variantBytes.size)
@@ -114,18 +114,7 @@ class ImageProcessor(
         } catch (e: Exception) {
             log.error("Failed to process image: assetId={}, error={}", assetId, e.message, e)
             meterRegistry.counter("image.process.failures").increment()
-
-            try {
-                val asset = assetRepository.findById(assetId).orElse(null)
-                if (asset != null) {
-                    asset.status = AssetStatus.FAILED
-                    asset.errorMessage = e.message?.take(500)
-                    assetRepository.save(asset)
-                }
-            } catch (ex: Exception) {
-                log.error("Failed to update asset status to FAILED: {}", ex.message)
-            }
-
+            assetStatusUpdater.markAsFailed(assetId, e.message)
             throw e
         } finally {
             timer.stop(meterRegistry.timer("image.process.duration"))
@@ -178,4 +167,5 @@ class ImageProcessor(
                 .build()
         )
     }
+
 }
