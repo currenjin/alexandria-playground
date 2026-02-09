@@ -83,6 +83,7 @@
 - [pattern-observer](pattern-observer) - Observer
 - [pattern-specification](pattern-specification) - Specification
 - [pattern-strategy-kotlin](pattern-strategy-kotlin) - Strategy (Kotlin)
+- [pattern-saga](pattern-saga) - Saga (Kotlin)
 - [pattern-visitor](pattern-visitor) - Visitor
 
 ### Playground
