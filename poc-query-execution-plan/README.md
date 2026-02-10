@@ -22,7 +22,7 @@ docker exec -it query-execution-plan-mysql mysql -uexplain -pexplain explain_lab
 
 ### Scenario 1: Full Table Scan -> Index Scan
 
-> `FullTableScanToIndexScanTest.java`
+> [`FullTableScanToIndexScanTest.java`](src/test/java/com/currenjin/explain/FullTableScanToIndexScanTest.java)
 
 인덱스의 가장 기본적인 효과를 체험한다.
 
@@ -35,7 +35,7 @@ docker exec -it query-execution-plan-mysql mysql -uexplain -pexplain explain_lab
 
 ### Scenario 2: Composite Index Column Order
 
-> `CompositeIndexColumnOrderTest.java`
+> [`CompositeIndexColumnOrderTest.java`](src/test/java/com/currenjin/explain/CompositeIndexColumnOrderTest.java)
 
 복합 인덱스에서 컬럼 순서가 성능에 미치는 영향을 체험한다.
 핵심 원칙: **등치(=) 조건 컬럼을 먼저, 범위(>) 조건 컬럼을 나중에**.
@@ -50,7 +50,7 @@ docker exec -it query-execution-plan-mysql mysql -uexplain -pexplain explain_lab
 
 ### Scenario 3: N+1 Problem -> JOIN
 
-> `NplusOneToJoinTest.java`
+> [`NplusOneToJoinTest.java`](src/test/java/com/currenjin/explain/NplusOneToJoinTest.java)
 
 N+1 문제와 JOIN의 차이를 실행 계획 관점에서 체험한다.
 
@@ -63,7 +63,7 @@ N+1 문제와 JOIN의 차이를 실행 계획 관점에서 체험한다.
 
 ### Scenario 4: LIKE Pattern Optimization
 
-> `LikePatternOptimizationTest.java`
+> [`LikePatternOptimizationTest.java`](src/test/java/com/currenjin/explain/LikePatternOptimizationTest.java)
 
 LIKE 검색에서 와일드카드 위치에 따른 인덱스 사용 여부를 체험한다.
 
@@ -76,7 +76,7 @@ LIKE 검색에서 와일드카드 위치에 따른 인덱스 사용 여부를 �
 
 ### Scenario 5: ORDER BY filesort Elimination
 
-> `OrderByFilesortEliminationTest.java`
+> [`OrderByFilesortEliminationTest.java`](src/test/java/com/currenjin/explain/OrderByFilesortEliminationTest.java)
 
 정렬 쿼리에서 filesort가 발생하는 원인과 인덱스로 제거하는 방법을 체험한다.
 
@@ -89,7 +89,7 @@ LIKE 검색에서 와일드카드 위치에 따른 인덱스 사용 여부를 �
 
 ### Scenario 6: Covering Index
 
-> `CoveringIndexTest.java`
+> [`CoveringIndexTest.java`](src/test/java/com/currenjin/explain/CoveringIndexTest.java)
 
 커버링 인덱스로 테이블 룩업(I/O)을 제거하는 효과를 체험한다.
 

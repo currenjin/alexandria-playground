@@ -106,6 +106,7 @@
 - [poc-jpa-deep-dive-by-currenjin](poc-jpa-deep-dive-by-currenjin) - JPA 딥다이브
 - [poc-querydsl-advanced](poc-querydsl-advanced) - QueryDSL 고급
 - [poc-transaction-isolation](poc-transaction-isolation) - 트랜잭션 격리 수준
+- [poc-query-execution-plan](poc-query-execution-plan) - 쿼리 실행 계획 (EXPLAIN)
 - [poc-sleuth-sqs](poc-sleuth-sqs) - Spring Cloud Sleuth + SQS
 - [poc-learning-test](poc-learning-test) - 학습 테스트
 - [poc-queue](poc-queue) - 큐 구현
