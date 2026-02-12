@@ -84,6 +84,7 @@
 - [pattern-specification](pattern-specification) - Specification
 - [pattern-strategy-kotlin](pattern-strategy-kotlin) - Strategy (Kotlin)
 - [pattern-saga](pattern-saga) - Saga (Kotlin)
+- [pattern-idempotency-key](pattern-idempotency-key) - Idempotency Key (Kotlin)
 - [pattern-visitor](pattern-visitor) - Visitor
 
 ### Playground
