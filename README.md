@@ -128,6 +128,7 @@
 - [poc-subscription-reminder](poc-subscription-reminder) - 구독 알림
 - [poc-large-image-handling](poc-large-image-handling) - 대용량 이미지 핸들링
 - [poc-archunit](poc-archunit) - ArchUnit 아키텍처 테스트
+- [poc-seata-at](poc-seata-at) - Apache Seata AT 모드
 - [poc-challenges](poc-challenges) - 일일 코딩 챌린지
 
 ### Template
@@ -139,4 +140,3 @@
 - [template-ai-context](template-ai-context) - AI Context
 
 ---
-

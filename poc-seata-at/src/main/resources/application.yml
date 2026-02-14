@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: poc-seata-at
+  datasource:
+    url: jdbc:mysql://localhost:13306/seata_demo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: 1234
+  sql:
+    init:
+      mode: always
+
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: seata-demo-tx-group
+  data-source-proxy-mode: AT
+  service:
+    vgroup-mapping:
+      seata-demo-tx-group: default
+    grouplist:
+      default: 127.0.0.1:8091

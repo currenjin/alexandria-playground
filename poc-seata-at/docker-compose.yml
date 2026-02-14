@@ -1,0 +1,9 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: seata-demo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: seata_demo
+    ports:
+      - "13306:3306"
