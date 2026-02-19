@@ -93,6 +93,7 @@
 - [playground-inventory-management-system](playground-inventory-management-system) - 재고 관리 시스템 (CQRS, Event Sourcing)
 - [playground-mafia-server](playground-mafia-server) - 마피아 게임 서버 (Kotlin + Netty)
 - [playground-opencode](playground-opencode) - OpenCode 실험
+- [playground-redis-cache](playground-redis-cache) - Redis 캐시 실험
 - [playground-tracing-order-event](playground-tracing-order-event) - 주문 이벤트 추적
 - [playground-augmented-coding](playground-augmented-coding) - Augmented Coding
 - [playground-java-baseball](playground-java-baseball) - 숫자 야구 게임
