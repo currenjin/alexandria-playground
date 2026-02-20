@@ -1,0 +1,6 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: pattern-redis-distributed-lock-redis
+    ports:
+      - "6379:6379"

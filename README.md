@@ -85,6 +85,7 @@
 - [pattern-strategy-kotlin](pattern-strategy-kotlin) - Strategy (Kotlin)
 - [pattern-saga](pattern-saga) - Saga (Kotlin)
 - [pattern-idempotency-key](pattern-idempotency-key) - Idempotency Key (Kotlin)
+- [pattern-redis-distributed-lock](pattern-redis-distributed-lock) - Redis Distributed Lock (Kotlin)
 - [pattern-outbox-inbox](pattern-outbox-inbox) - Outbox + Inbox (Kotlin)
 - [pattern-visitor](pattern-visitor) - Visitor
 
