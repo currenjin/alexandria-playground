@@ -87,3 +87,6 @@
 ### 실패 시 체크포인트
 - 팔로워 지연이 급증하면 읽기 경로를 즉시 리더로 전환
 - failover 이후 이중 리더 징후(동시 쓰기 허용) 로그 확인
+
+## Incident Playbook
+- [Replication Lag 급증](../runbook.md#replication-lag)

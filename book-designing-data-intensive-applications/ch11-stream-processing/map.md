@@ -104,3 +104,6 @@
 ### 실패 시 체크포인트
 - lag 급증 시 상태 크기/체크포인트 주기 조정
 - diff_rate가 높으면 워터마크를 보수적으로 되돌림
+
+## Incident Playbook
+- [스트림 Consumer Lag 급증](../runbook.md#stream-lag)

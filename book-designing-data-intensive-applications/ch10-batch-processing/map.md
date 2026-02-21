@@ -99,3 +99,6 @@
 ### 실패 시 체크포인트
 - OOM 발생 시 Broadcast 임계값 축소 또는 파티션 전략 전환
 - diff_count > 0 이면 출력 경로 원자성/중복 제거 로직 점검
+
+## Incident Playbook
+- [배치 SLA 미준수](../runbook.md#batch-sla)

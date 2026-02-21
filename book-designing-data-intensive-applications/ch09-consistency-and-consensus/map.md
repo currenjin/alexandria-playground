@@ -92,3 +92,6 @@
 ### 실패 시 체크포인트
 - stale write 1건이라도 발생하면 락 구현을 즉시 차단/교체
 - 리더 선출 지연이 길면 quorum/네트워크 설정 점검
+
+## Incident Playbook
+- [분산 락/합의 계층 이상](../runbook.md#consensus-lock)

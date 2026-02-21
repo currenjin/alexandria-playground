@@ -95,3 +95,6 @@
 ### 실패 시 체크포인트
 - 교착 급증 시 트랜잭션 범위/락 순서 재검토
 - abort율이 SLO 초과면 Serializable 적용 범위를 축소해 핵심 경로만 보호
+
+## Incident Playbook
+- [트랜잭션 경합/교착 급증](../runbook.md#tx-contention)

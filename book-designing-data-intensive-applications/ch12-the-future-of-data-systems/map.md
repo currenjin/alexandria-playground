@@ -109,3 +109,6 @@
 ### 실패 시 체크포인트
 - 불일치 발생 시 재처리(runbook)로 복구 가능 여부 우선 검증
 - CDC 중단 시 재시작 오프셋/스냅샷 전략 점검
+
+## Incident Playbook
+- [CDC 중단/스키마 비호환](../runbook.md#cdc-schema)

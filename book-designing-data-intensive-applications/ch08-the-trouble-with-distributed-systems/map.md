@@ -80,3 +80,6 @@
 ### 실패 시 체크포인트
 - retry_rate 급증 시 즉시 circuit open 및 재시도 차단
 - 헤지 비율이 과도하면 발사 조건(p95 임계) 상향
+
+## Incident Playbook
+- [Timeout/Retry Storm](../runbook.md#retry-storm)

@@ -89,3 +89,6 @@
 ### 실패 시 체크포인트
 - 특정 파티션 CPU 80%+ 지속 시 핫 키 분산 전략 즉시 적용
 - 리밸런싱 중 p95 지연 급증 시 이동 스로틀 다운
+
+## Incident Playbook
+- [Partition Hotspot](../runbook.md#partition-hotspot)
