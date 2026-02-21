@@ -75,3 +75,27 @@
 - **마이크로 배치**(Spark Structured Streaming)로 전환 시 지연 개선 폭은?
 - 재처리 시 **멱등성 보장**을 위한 출력 경로/버저닝 전략은?
 - 배치 실패 시 **알람 및 자동 재시도** 정책은?
+
+## Hands-on
+### 실험 목표
+- 조인 전략(Broadcast vs Partitioned)에 따른 처리 시간/비용 차이를 측정한다.
+
+### 준비
+- 대용량 사실 테이블 + 소형/중형 차원 테이블
+- 동일 로직을 두 조인 전략으로 실행 가능한 잡 정의
+
+### 실행 단계
+1. Broadcast Join으로 배치를 실행해 소요시간/메모리 사용량을 기록한다.
+2. Partitioned Join으로 동일 작업을 실행한다.
+3. 입력량을 2배로 늘려 두 전략의 확장 추세를 비교한다.
+4. 실패 레코드 주입 후 재실행 시 멱등 결과 여부를 확인한다.
+
+### 검증 메트릭
+- `batch.job.duration_min`
+- `batch.shuffle_bytes`
+- `executor.memory_peak_mb`
+- `batch.result.diff_count`
+
+### 실패 시 체크포인트
+- OOM 발생 시 Broadcast 임계값 축소 또는 파티션 전략 전환
+- diff_count > 0 이면 출력 경로 원자성/중복 제거 로직 점검
