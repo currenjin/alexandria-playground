@@ -91,6 +91,7 @@
 ## 보강 자료
 - [DDIA 핵심 용어집](./glossary.md)
 - [DDIA 학습 로드맵 (실무 적용형)](./study-roadmap.md)
+- [DDIA Phase 미션 팩](./missions/README.md)
 - [DDIA 운영 플레이북](./runbook.md)
 - [DDIA 플레이북 리허설 가이드](./runbook-drill.md)
 

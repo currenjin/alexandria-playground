@@ -9,38 +9,26 @@
 
 권장 순서: `1 -> 2 -> 3` (원서 순서 유지)
 
-## 1. 4주 학습 플랜
-### Week 1: Foundations
-- 목표: 서비스 품질 지표와 데이터 모델 의사결정 기준 정립
+## 1. Phase 기반 학습 플랜
+### Phase 1: Foundations
+- 목표: 모델링, 인덱싱, 스키마 진화의 기본기를 실제로 검증
 - 읽기: Ch01-04
-- 산출물:
-  - 핵심 API 1개에 대해 SLI/SLO 정의
-  - 주요 테이블 2개에 대해 정규화/비정규화 근거 문서화
-  - 메시지 스키마 호환성 규칙(backward/forward) 명세
+- 미션: [Phase 1 미션 카드](./missions/phase-1-foundations.md)
 
-### Week 2: Distributed Data
-- 목표: 복제/샤딩/트랜잭션의 트레이드오프를 운영 관점으로 정리
+### Phase 2: Reliability
+- 목표: 복제/파티셔닝/트랜잭션에서 정합성 이슈 재현 및 완화
 - 읽기: Ch05-07
-- 산출물:
-  - 읽기/쓰기 경로별 일관성 요구사항 표
-  - 파티션 키 후보 3개와 핫스팟 위험 평가
-  - 핵심 불변식 3개와 보장 방식(동기 제약/비동기 감사) 정의
+- 미션: [Phase 2 미션 카드](./missions/phase-2-reliability.md)
 
-### Week 3: Failure + Consensus
-- 목표: 장애 모델을 가정하고 복구 전략을 수립
+### Phase 3: Distributed Workflows
+- 목표: 분산 워크플로(Saga)에서 장애 복구 자동화
 - 읽기: Ch08-09
-- 산출물:
-  - 타임아웃/재시도/서킷브레이커 정책 초안
-  - 분산 락이 필요한 시나리오와 대안(락 없이 가능 여부) 분석
-  - 합의 시스템 의존 구간(리더 선출, 설정 저장 등) 명시
+- 미션: [Phase 3 미션 카드](./missions/phase-3-distributed-workflows.md)
 
-### Week 4: Derived Data + End-to-End
-- 목표: 배치/스트림을 함께 고려한 데이터 플랫폼 구조 설계
+### Phase 4: Streaming + Decisions
+- 목표: 스트림/배치 결과를 비교하고 ADR로 의사결정 고정
 - 읽기: Ch10-12
-- 산출물:
-  - CDC 기반 파생 데이터 파이프라인 다이어그램
-  - 배치/스트림 재처리(runbook) 문서
-  - End-to-End 멱등성 키 설계(클라이언트~저장~이벤트 소비자)
+- 미션: [Phase 4 미션 카드](./missions/phase-4-streaming-and-decisions.md)
 
 ## 2. 실무 체크리스트
 ### 설계 리뷰 전에 확인할 것
