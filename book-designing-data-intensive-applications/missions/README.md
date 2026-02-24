@@ -25,4 +25,5 @@ DDIA 학습을 "읽기"에서 끝내지 않고, 실제 설계/구현/장애대�
 - [Mission Log 템플릿](./templates/mission-log.md)
 - [1페이지 회고 템플릿](./templates/retrospective-1p.md)
 - [ADR 템플릿](./templates/adr-template.md)
-
+- [실험 계획 템플릿](../experiments/templates/experiment-plan.md)
+- [실험 결과 템플릿](../experiments/templates/experiment-result.md)
