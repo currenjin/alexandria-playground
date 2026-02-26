@@ -101,6 +101,7 @@
 - [playground-java-baseball](playground-java-baseball) - 숫자 야구 게임
 - [playground-java-racingcar](playground-java-racingcar) - 자동차 경주 게임
 - [playground-java-coordinate](playground-java-coordinate) - 좌표 계산기
+- [playground-playwright-usage](playground-playwright-usage) - Playwright 사용법 실습
 
 ### POC
 
