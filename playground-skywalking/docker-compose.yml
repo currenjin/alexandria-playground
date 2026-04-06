@@ -1,11 +1,36 @@
 services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: skywalking
+    ports:
+      - "3306:3306"
+    command:
+      - --general-log=1
+      - --general-log-file=/var/lib/mysql/general.log
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   oap:
     image: apache/skywalking-oap-server:10.1.0
     environment:
-      SW_STORAGE: h2
+      SW_STORAGE: mysql
+      SW_JDBC_URL: jdbc:mysql://mysql:3306/skywalking?rewriteBatchedStatements=true&allowMultiQueries=true
+      SW_DATA_SOURCE_USER: root
+      SW_DATA_SOURCE_PASSWORD: root
     ports:
       - "11800:11800"
       - "12800:12800"
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -X POST -H 'Content-Type: application/json' -d '{\"query\":\"{ version }\"}' http://localhost:12800/graphql || exit 1"]
       interval: 10s
