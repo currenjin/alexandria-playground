@@ -51,8 +51,8 @@ services:
   order-service:
     build: ./order-service
     environment:
-      SERVICE_NAME: order-service
-      OAP_HOST: oap
+      SW_AGENT_NAME: order-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
       PRODUCT_SERVICE_URL: http://product-service:8081
       PAYMENT_SERVICE_URL: http://payment-service:8082
     ports:
@@ -64,8 +64,8 @@ services:
   product-service:
     build: ./product-service
     environment:
-      SERVICE_NAME: product-service
-      OAP_HOST: oap
+      SW_AGENT_NAME: product-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
     ports:
       - "8081:8081"
     depends_on:
@@ -75,8 +75,8 @@ services:
   payment-service:
     build: ./payment-service
     environment:
-      SERVICE_NAME: payment-service
-      OAP_HOST: oap
+      SW_AGENT_NAME: payment-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
     ports:
       - "8082:8082"
     depends_on:
