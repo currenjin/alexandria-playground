@@ -5,7 +5,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: skywalking
     ports:
-      - "3306:3306"
+      - "3307:3306"
     command:
       - --general-log=1
       - --general-log-file=/var/lib/mysql/general.log
@@ -19,7 +19,7 @@ services:
       start_period: 30s
 
   oap:
-    image: apache/skywalking-oap-server:10.1.0
+    build: ./oap
     environment:
       SW_STORAGE: mysql
       SW_JDBC_URL: jdbc:mysql://mysql:3306/skywalking?rewriteBatchedStatements=true&allowMultiQueries=true
