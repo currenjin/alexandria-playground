@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+product-service:
+  url: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+
+payment-service:
+  url: ${PAYMENT_SERVICE_URL:http://localhost:8082}
