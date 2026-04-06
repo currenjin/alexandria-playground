@@ -7,7 +7,7 @@ services:
       - "11800:11800"
       - "12800:12800"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:12800/internal/l7check || exit 1"]
+      test: ["CMD-SHELL", "curl -sf -X POST -H 'Content-Type: application/json' -d '{\"query\":\"{ version }\"}' http://localhost:12800/graphql || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20
