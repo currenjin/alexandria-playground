@@ -31,6 +31,7 @@
 - [Pattern](#pattern) - 디자인 패턴
 - [Playground](#playground) - 자유로운 실험
 - [POC](#poc) - 기술 검증
+- [Talk](#talk) - 발표 자료
 - [Template](#template) - 프로젝트 템플릿
 
 ### Algorithm
@@ -143,6 +144,10 @@
 - [poc-archunit](poc-archunit) - ArchUnit 아키텍처 테스트
 - [poc-seata-at](poc-seata-at) - Apache Seata AT 모드
 - [poc-challenges](poc-challenges) - 일일 코딩 챌린지
+
+### Talk
+
+- [talk-distributed-transactions](talk-distributed-transactions) - 분산 트랜잭션의 종류와 한계 (feat. SAGA)
 
 ### Template
 
