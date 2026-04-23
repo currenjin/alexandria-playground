@@ -1,0 +1,708 @@
+/* =========================================================
+   분산 트랜잭션 — Minimal
+   Black bg · Bright green (#00ff88) · Pretendard
+   ========================================================= */
+
+:root {
+  --bg:     #000000;
+  --fg:     #ffffff;
+  --dim:    #a8a8a8;
+  --mute:   #5a5a5a;
+  --line:   rgba(255,255,255,0.10);
+  --g:      #00ff88;
+  --bad:    #ff5577;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-size: 32px; }
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  font-feature-settings: 'ss01';
+  -webkit-font-smoothing: antialiased;
+}
+code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.g { color: var(--g); }
+.dim { color: var(--dim); }
+
+/* =========================================================
+   Slide shell — uniform padding, uniform number header
+   ========================================================= */
+.slide {
+  background: var(--bg);
+  color: var(--fg);
+  position: relative;
+  padding: 120px 140px;
+  overflow: hidden;
+}
+
+.num {
+  position: absolute;
+  top: 64px;
+  left: 140px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--g);
+  letter-spacing: 0.08em;
+}
+.num::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--g);
+  margin-right: 16px;
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   1. Title
+   ========================================================= */
+.s-title {
+  display: grid;
+  place-items: start;
+  align-content: center;
+  padding: 120px 140px;
+}
+.s-title h1 {
+  font-size: 200px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: 0;
+  color: var(--fg);
+}
+.s-title .cursor {
+  width: 22px;
+  height: 200px;
+  background: var(--g);
+  margin-top: 8px;
+  animation: blink 1.1s steps(2, end) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.s-title h1 + .cursor { margin-left: 12px; }
+.s-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* =========================================================
+   Text slides — headline + supporting sentence
+   ========================================================= */
+.s-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.s-text h2 {
+  font-size: 120px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin: 0 0 60px;
+  max-width: 1550px;
+  text-wrap: balance;
+}
+.s-text p {
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--dim);
+  margin: 0;
+  max-width: 1500px;
+}
+.s-text p .g { font-weight: 500; }
+
+.s-text .cases {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: var(--fg);
+  font-size: 52px;
+  font-weight: 500;
+}
+.s-text .cases span { display: flex; align-items: baseline; }
+.s-text .cases .g { font-family: 'JetBrains Mono', monospace; margin-right: 28px; font-size: 44px; }
+
+/* =========================================================
+   List slides
+   ========================================================= */
+.s-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.s-list h2 {
+  font-size: 100px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0 0 72px;
+}
+
+.big-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: bl;
+  display: flex;
+  flex-direction: column;
+}
+.big-list li {
+  counter-increment: bl;
+  display: flex;
+  align-items: baseline;
+  gap: 48px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 72px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.big-list li::before {
+  content: counter(bl, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--g);
+  min-width: 80px;
+}
+.big-list li span {
+  margin-left: auto;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--dim);
+  letter-spacing: -0.005em;
+  font-family: 'JetBrains Mono', monospace;
+}
+.big-list li:last-child { border-bottom: none; }
+
+.bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.bullets li {
+  display: flex;
+  align-items: baseline;
+  gap: 48px;
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--dim);
+  line-height: 1.3;
+}
+.bullets li b {
+  color: var(--g);
+  font-weight: 600;
+  font-size: 44px;
+  min-width: 320px;
+  letter-spacing: -0.01em;
+}
+.bullets--match li b { min-width: 420px; }
+.bullets li:last-child { border-bottom: 1px solid var(--line); }
+
+.quote {
+  margin-top: 72px;
+  font-size: 64px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.025em;
+}
+
+/* =========================================================
+   Diagram slides
+   ========================================================= */
+.s-diagram {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.s-diagram h2 {
+  font-size: 72px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0 0 56px;
+  max-width: 1550px;
+}
+.s-diagram h2 .sub,
+.s-list h2 .sub,
+.s-matrix h2 .sub,
+.s-saga h2 .sub,
+.s-flow h2 .sub {
+  display: block;
+  margin-top: 14px;
+  font-size: 38px;
+  font-weight: 400;
+  color: var(--dim);
+  letter-spacing: -0.01em;
+}
+.diagram {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.diagram svg { width: 100%; max-width: 1640px; height: auto; max-height: 640px; }
+
+/* =========================================================
+   Demo slides
+   ========================================================= */
+.s-demo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.s-demo h2 {
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0 0 60px;
+  line-height: 1;
+}
+.term {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  line-height: 1.5;
+  color: var(--fg);
+  margin: 0 0 60px;
+  padding: 0;
+  white-space: pre;
+}
+.term .ok  { color: var(--g); }
+.term .err { color: var(--bad); }
+
+.trace {
+  position: relative;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.bar {
+  position: absolute;
+  height: 50px;
+  border-radius: 4px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 500;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.b1 { top: 24px;  background: var(--g); }
+.b2 { top: 88px;  background: #9ecbff; }
+.b3 { top: 152px; background: #fcd34d; }
+.b4 { top: 88px;  background: var(--g); opacity: 0.6; }
+.be { top: 88px;  background: var(--bad); color: #fff; }
+
+/* =========================================================
+   Event-flow demo slides (s-flow)
+   Grid: [주문] [queue] [재고] [queue] [결제] [상태]
+   Each row is one event step; rows animate in sequence.
+   ========================================================= */
+.s-flow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.s-flow h2 {
+  font-size: 84px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 48px;
+}
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.flow-head,
+.flow-row {
+  display: grid;
+  grid-template-columns: 1.0fr 1.3fr 1.0fr 1.3fr 1.0fr 0.9fr;
+  align-items: center;
+  gap: 12px;
+}
+.flow-head {
+  padding: 0 20px 18px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+.flow-head > div {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  letter-spacing: 0.12em;
+  color: var(--dim);
+  text-transform: uppercase;
+  text-align: center;
+}
+.fh-svc { color: var(--g) !important; font-weight: 600; }
+.fh-q { color: var(--mute) !important; }
+.fh-state { text-align: right !important; }
+
+.flow-row {
+  padding: 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  opacity: 0.22;
+  transition: opacity 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+.flow-row.is-active {
+  opacity: 1;
+  border-color: var(--g);
+  background: rgba(0,255,136,0.05);
+}
+.flow-row.is-done { opacity: 0.55; border-color: var(--g); }
+
+.flow-row.fail.is-active {
+  border-color: var(--bad);
+  background: rgba(255,85,119,0.06);
+}
+.flow-row.fail.is-done { border-color: var(--bad); }
+
+.flow-row.comp.is-active {
+  border-color: #fcd34d;
+  background: rgba(252,211,77,0.06);
+}
+.flow-row.comp.is-done { border-color: #fcd34d; }
+
+.fc {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  text-align: center;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.fc.src::before, .fc.dst::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--g);
+  display: inline-block;
+  box-shadow: 0 0 14px rgba(0,255,136,0.6);
+}
+.fc.dst.bad::before { background: var(--bad); box-shadow: 0 0 14px rgba(255,85,119,0.6); }
+.fc.dst.warn::before { background: #fcd34d; box-shadow: 0 0 14px rgba(252,211,77,0.55); }
+
+/* Message on the queue — shows event name traveling */
+.fc.msg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  color: var(--g);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  position: relative;
+  padding: 10px 20px;
+  border: 1px dashed var(--g);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.4);
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+}
+.fc.msg .fc-meta {
+  font-size: 24px;
+  color: var(--dim);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+.fc.msg.bad { color: var(--bad); border-color: var(--bad); }
+.fc.msg.warn { color: #fcd34d; border-color: #fcd34d; }
+
+/* directional hints via pseudo arrows on msg cells */
+.fc.msg::after {
+  content: "▶";
+  position: absolute;
+  right: -18px;
+  color: var(--g);
+  font-size: 20px;
+}
+.fc.msg.bad::after { color: var(--bad); }
+.fc.msg.warn::after { color: #fcd34d; }
+.fc.msg.back::after {
+  content: "◀";
+  right: auto;
+  left: -18px;
+}
+
+.fc.state { justify-content: flex-end; }
+.pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 3px;
+  background: rgba(0,255,136,0.12);
+  color: var(--g);
+  border: 1px solid rgba(0,255,136,0.4);
+}
+.pill.done { background: var(--g); color: #000; }
+.pill.bad { background: rgba(255,85,119,0.15); color: var(--bad); border-color: rgba(255,85,119,0.5); }
+.pill.warn { background: rgba(252,211,77,0.15); color: #fcd34d; border-color: rgba(252,211,77,0.5); }
+
+/* =========================================================
+   Saga animated demo slides (legacy, kept)
+   ========================================================= */
+.s-saga {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.s-saga h2 {
+  font-size: 100px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0 0 80px;
+}
+.saga-anim {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.saga-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.sstep {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 32px;
+  padding: 28px 40px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  opacity: 0.25;
+  transition: opacity 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+}
+.sstep b {
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.sstep .sstate {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+.sdot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--dim);
+  background: transparent;
+  transition: all 0.4s ease;
+  justify-self: center;
+}
+
+/* Active states */
+.sstep.is-active {
+  opacity: 1;
+  border-color: var(--g);
+  background: rgba(0, 255, 136, 0.06);
+}
+.sstep.is-active .sdot {
+  border-color: var(--g);
+  background: var(--g);
+  box-shadow: 0 0 24px rgba(0, 255, 136, 0.5);
+}
+.sstep.is-active .sstate { color: var(--g); }
+
+.sstep.is-done {
+  opacity: 0.7;
+  border-color: var(--g);
+}
+.sstep.is-done .sdot {
+  border-color: var(--g);
+  background: var(--g);
+}
+.sstep.is-done .sstate { color: var(--g); }
+
+.sstep.is-active.fail {
+  border-color: var(--bad);
+  background: rgba(255, 85, 119, 0.08);
+}
+.sstep.is-active.fail .sdot {
+  border-color: var(--bad);
+  background: var(--bad);
+  box-shadow: 0 0 24px rgba(255, 85, 119, 0.5);
+}
+.sstep.is-active.fail .sstate { color: var(--bad); }
+
+.sstep.is-active.comp {
+  border-color: #fcd34d;
+  background: rgba(252, 211, 77, 0.08);
+}
+.sstep.is-active.comp .sdot {
+  border-color: #fcd34d;
+  background: #fcd34d;
+  box-shadow: 0 0 24px rgba(252, 211, 77, 0.45);
+}
+.sstep.is-active.comp .sstate { color: #fcd34d; }
+.sstep.is-done.comp .sstate { color: #fcd34d; }
+.sstep.is-done.comp { border-color: #fcd34d; }
+
+/* Controls */
+.saga-ctl {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+}
+.sbtn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 500;
+  padding: 18px 36px;
+  background: transparent;
+  color: var(--g);
+  border: 1.5px solid var(--g);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.sbtn:hover { background: rgba(0, 255, 136, 0.1); }
+.sbtn:active { background: rgba(0, 255, 136, 0.2); }
+
+/* =========================================================
+   Q&A
+   ========================================================= */
+.s-qa {
+  display: grid;
+  place-items: center;
+}
+.s-qa h1 {
+  font-size: 400px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin: 0;
+}
+
+/* =========================================================
+   Speaker notes overlay (press N)
+   ========================================================= */
+#notes-overlay {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 520px;
+  max-height: 60vh;
+  background: rgba(0,0,0,0.92);
+  border: 1px solid var(--g);
+  border-radius: 10px;
+  color: var(--fg);
+  font-family: 'Pretendard', sans-serif;
+  z-index: 2147483100;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,255,136,0.15);
+  backdrop-filter: blur(6px);
+}
+#notes-overlay.is-open { display: flex; }
+.notes-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+.notes-title { color: var(--g); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.notes-idx { color: var(--dim); margin-left: auto; }
+.notes-hint { color: var(--mute); font-size: 11px; }
+#notes-body {
+  padding: 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg);
+  overflow-y: auto;
+  letter-spacing: -0.005em;
+}
+@media print { #notes-overlay { display: none !important; } }
+
+/* =========================================================
+   Comparison matrix
+   ========================================================= */
+.s-matrix {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+.s-matrix h2 {
+  font-size: 100px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0 0 60px;
+}
+.mx {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--fg);
+}
+.mx col.first { width: 26%; }
+.mx th, .mx td {
+  padding: 28px 24px;
+  text-align: left;
+  border-top: 1px solid var(--line);
+  letter-spacing: -0.01em;
+}
+.mx thead th {
+  color: var(--dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-top: none;
+  padding-bottom: 14px;
+}
+.mx tbody th {
+  color: var(--g);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+}
+.mx td.hi  { color: var(--g); font-weight: 500; }
+.mx td.mid { color: var(--fg); }
+.mx td.lo  { color: var(--bad); }
+.mx tbody tr:last-child th,
+.mx tbody tr:last-child td { border-bottom: 1px solid var(--line); }

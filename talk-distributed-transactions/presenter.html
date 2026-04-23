@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Presenter · 분산 트랜잭션</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --panel: #141416;
+    --panel-2: #1c1c20;
+    --line: #2a2a30;
+    --text: #ededf0;
+    --text-dim: #9a9aa5;
+    --text-mute: #65656e;
+    --accent: #ffcf5c;
+    --good: #6ee7a3;
+    --bad: #ff7b7b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+  }
+  body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  /* Top bar */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 4px;
+  }
+  .brand {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .brand b { color: var(--text); margin-right: 8px; }
+
+  .timer {
+    display: flex; align-items: center; gap: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-clock {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    min-width: 110px;
+    text-align: center;
+  }
+  .timer-clock.running { color: var(--accent); }
+  .timer-ctl {
+    display: flex; gap: 6px;
+  }
+  .tbtn {
+    appearance: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+  .tbtn:hover { background: var(--panel-2); color: var(--text); border-color: #3a3a42; }
+  .tbtn:active { transform: translateY(1px); }
+
+  .counter {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+  }
+  .counter .cur { color: var(--text); font-weight: 600; font-size: 16px; }
+  .counter .total { color: var(--text-mute); }
+
+  /* Left: Current slide preview */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .panel-head {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-head .lbl { color: var(--text-dim); font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .slide-box {
+    flex: 1;
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .slide-box iframe {
+    position: absolute;
+    top: 0; left: 0;
+    border: 0;
+    /* Scaled to fit via JS */
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+  .slide-box.is-next iframe { opacity: 0.7; filter: saturate(0.85); }
+
+  /* Right side: notes */
+  .notes-panel {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .notes-body {
+    flex: 1;
+    padding: 22px 24px 24px;
+    overflow-y: auto;
+    font-size: 21px;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: keep-all;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a42 transparent;
+  }
+  .notes-body::-webkit-scrollbar { width: 8px; }
+  .notes-body::-webkit-scrollbar-track { background: transparent; }
+  .notes-body::-webkit-scrollbar-thumb { background: #3a3a42; border-radius: 4px; }
+
+  /* Bottom bar (under current slide column) */
+  .navbar {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .nav-btn {
+    appearance: none;
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 120ms ease;
+  }
+  .nav-btn:hover { background: var(--panel-2); border-color: #3a3a42; }
+  .nav-btn:active { transform: translateY(1px); }
+  .nav-btn .kbd {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 5px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+  }
+
+  .status {
+    position: absolute;
+    top: 10px; right: 10px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--bad);
+    box-shadow: 0 0 0 0 rgba(255,123,123,0.4);
+  }
+  .status.ok .status-dot {
+    background: var(--good);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,163,0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(110,231,163,0); }
+  }
+
+  /* No-next placeholder */
+  .no-next {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-mute);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .help {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+  }
+  .help kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 0 2px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><b>Presenter</b>분산 트랜잭션</div>
+  <div class="timer">
+    <div class="timer-ctl">
+      <button class="tbtn" id="t-start">▶ 시작</button>
+      <button class="tbtn" id="t-reset">↺ 리셋</button>
+    </div>
+    <div class="timer-clock" id="t-clock">00:00</div>
+  </div>
+  <div class="counter"><span class="cur" id="cur-n">1</span><span style="color:var(--text-mute); margin: 0 4px;">/</span><span class="total" id="cur-total">28</span></div>
+</div>
+
+<!-- Current slide -->
+<div class="panel">
+  <div class="panel-head">
+    <span>Current</span>
+    <span class="lbl" id="cur-label">—</span>
+  </div>
+  <div class="slide-box" id="slide-current">
+    <iframe id="if-current" src="index.html?presenter=1" title="Current slide"></iframe>
+    <div class="status" id="sync-status"><span class="status-dot"></span><span id="sync-text">연결 중</span></div>
+  </div>
+</div>
+
+<!-- Notes panel (spans 2 rows on right) -->
+<div class="panel notes-panel">
+  <div class="panel-head">
+    <span>Speaker Notes</span>
+    <span class="help"><kbd>←</kbd> <kbd>→</kbd> 이동 &nbsp;·&nbsp; <kbd>Space</kbd> 타이머</span>
+  </div>
+  <div class="notes-body" id="notes-body">노트를 불러오는 중…</div>
+</div>
+
+<!-- Next slide + nav -->
+<div class="navbar">
+  <button class="nav-btn" id="btn-prev">◀ 이전 <span class="kbd">←</span></button>
+  <button class="nav-btn" id="btn-next">다음 ▶ <span class="kbd">→</span></button>
+</div>
+
+<script>
+(() => {
+  // ---- Elements
+  const ifCurrent = document.getElementById('if-current');
+  const slideCurrent = document.getElementById('slide-current');
+  const notesBody = document.getElementById('notes-body');
+  const curN = document.getElementById('cur-n');
+  const curTotal = document.getElementById('cur-total');
+  const curLabel = document.getElementById('cur-label');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const tClock = document.getElementById('t-clock');
+  const tStart = document.getElementById('t-start');
+  const tReset = document.getElementById('t-reset');
+  const syncStatus = document.getElementById('sync-status');
+  const syncText = document.getElementById('sync-text');
+
+  // Next slide will be shown as overlay in the same current panel after scale calc.
+  // Actually: put it below notes? Design says: current on left, notes on right.
+  // We'll create a second iframe and overlay logic differently:
+
+  // ---- State
+  let notes = [];
+  let labels = [];
+  let total = 1;
+  let currentIdx = 0;
+
+  const DESIGN_W = 1920;
+  const DESIGN_H = 1080;
+
+  // ---- BroadcastChannel
+  const ch = new BroadcastChannel('deck-sync');
+  let lastSeen = 0;
+  ch.onmessage = (e) => {
+    const d = e.data;
+    if (!d || d.type !== 'slide' || typeof d.index !== 'number') return;
+    lastSeen = Date.now();
+    setConnected(true);
+    applyIndex(d.index, false);
+  };
+
+  function sendIndex(i) {
+    ch.postMessage({ type: 'slide', index: i });
+  }
+
+  function setConnected(ok) {
+    syncStatus.classList.toggle('ok', ok);
+    syncText.textContent = ok ? '연결됨' : '연결 안됨';
+  }
+
+  // Request state periodically until we get a reply
+  setInterval(() => {
+    ch.postMessage({ type: 'request-state' });
+    if (Date.now() - lastSeen > 3000) setConnected(false);
+  }, 1500);
+  ch.postMessage({ type: 'request-state' });
+
+  // ---- Scale iframes to fit container
+  function scaleIframe(iframe, container) {
+    const rect = container.getBoundingClientRect();
+    const s = Math.min(rect.width / DESIGN_W, rect.height / DESIGN_H);
+    iframe.style.width = DESIGN_W + 'px';
+    iframe.style.height = DESIGN_H + 'px';
+    iframe.style.transformOrigin = '0 0';
+    iframe.style.transform = `scale(${s})`;
+    // Center the scaled iframe within the container
+    iframe.style.left = ((rect.width - DESIGN_W * s) / 2) + 'px';
+    iframe.style.top = ((rect.height - DESIGN_H * s) / 2) + 'px';
+  }
+
+  const fitAll = () => {
+    scaleIframe(ifCurrent, slideCurrent);
+  };
+  window.addEventListener('resize', fitAll);
+  ifCurrent.addEventListener('load', () => {
+    fitAll();
+    // Load notes from the iframe's DOM once it's ready
+    loadNotesFromIframe();
+    // Send current state so index knows we exist
+    setTimeout(fitAll, 100);
+    setTimeout(fitAll, 500);
+  });
+
+  function loadNotesFromIframe() {
+    try {
+      const doc = ifCurrent.contentDocument;
+      const tag = doc && doc.getElementById('speaker-notes');
+      if (tag) {
+        const parsed = JSON.parse(tag.textContent || '[]');
+        if (Array.isArray(parsed)) notes = parsed;
+      }
+      // Also collect slide labels from deck-stage sections
+      const sections = doc ? doc.querySelectorAll('deck-stage > section') : [];
+      labels = Array.from(sections).map(s => s.getAttribute('data-label') || '');
+      total = sections.length || notes.length || 1;
+      curTotal.textContent = total;
+      applyIndex(currentIdx, false);
+    } catch (e) {
+      console.warn('Failed to load notes:', e);
+    }
+  }
+
+  // ---- Apply slide index to all panels
+  function applyIndex(i, broadcast) {
+    currentIdx = Math.max(0, Math.min(total - 1, i));
+    curN.textContent = currentIdx + 1;
+    curLabel.textContent = labels[currentIdx] || '';
+    notesBody.textContent = notes[currentIdx] || '(노트 없음)';
+    notesBody.scrollTop = 0;
+
+    // Tell iframe to go to this slide (by accessing its deck-stage)
+    try {
+      const stage = ifCurrent.contentDocument && ifCurrent.contentDocument.querySelector('deck-stage');
+      if (stage && typeof stage.goTo === 'function' && stage.index !== currentIdx) {
+        stage.goTo(currentIdx);
+      }
+    } catch (e) { /* cross-origin or not ready */ }
+
+    if (broadcast) sendIndex(currentIdx);
+  }
+
+  // ---- Navigation
+  btnPrev.addEventListener('click', () => applyIndex(currentIdx - 1, true));
+  btnNext.addEventListener('click', () => applyIndex(currentIdx + 1, true));
+
+  // ---- Keyboard
+  window.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+      applyIndex(currentIdx + 1, true); e.preventDefault();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      applyIndex(currentIdx - 1, true); e.preventDefault();
+    } else if (e.key === 'Home') {
+      applyIndex(0, true); e.preventDefault();
+    } else if (e.key === 'End') {
+      applyIndex(total - 1, true); e.preventDefault();
+    } else if (e.key === ' ' || e.key === 'Spacebar') {
+      toggleTimer(); e.preventDefault();
+    } else if (e.key === 'r' || e.key === 'R') {
+      resetTimer(); e.preventDefault();
+    }
+  });
+
+  // ---- Timer
+  let tStartMs = null;
+  let tAccum = 0;
+  let tRunning = false;
+  let tInterval = null;
+
+  function fmt(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const ss = s % 60;
+    if (m >= 60) {
+      const h = Math.floor(m / 60);
+      const mm = m % 60;
+      return `${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    }
+    return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }
+  function tick() {
+    const elapsed = tAccum + (tRunning ? (Date.now() - tStartMs) : 0);
+    tClock.textContent = fmt(elapsed);
+  }
+  function toggleTimer() {
+    if (tRunning) {
+      tAccum += Date.now() - tStartMs;
+      tRunning = false;
+      clearInterval(tInterval);
+      tInterval = null;
+      tClock.classList.remove('running');
+      tStart.textContent = '▶ 시작';
+    } else {
+      tStartMs = Date.now();
+      tRunning = true;
+      tInterval = setInterval(tick, 250);
+      tClock.classList.add('running');
+      tStart.textContent = '❚❚ 일시정지';
+    }
+  }
+  function resetTimer() {
+    tRunning = false;
+    tAccum = 0;
+    tStartMs = null;
+    clearInterval(tInterval); tInterval = null;
+    tClock.classList.remove('running');
+    tStart.textContent = '▶ 시작';
+    tClock.textContent = '00:00';
+  }
+  tStart.addEventListener('click', toggleTimer);
+  tReset.addEventListener('click', resetTimer);
+})();
+</script>
+</body>
+</html>

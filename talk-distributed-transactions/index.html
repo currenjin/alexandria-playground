@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>분산 트랜잭션</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=10" />
+
+
+<script src="deck-stage.js"></script>
+</head>
+
+<body>
+<deck-stage width="1920" height="1080">
+
+<!-- 1. Title -->
+<section data-label="Title" class="slide s-title">
+  <h1>분산 트랜잭션</h1>
+  <div class="cursor"></div>
+</section>
+
+<!-- 2. Monolith -->
+<section data-label="Monolith" class="slide s-text">
+  <div class="num">01</div>
+  <h2>모놀리식에서는 쉬웠다.</h2>
+  <p>하나의 DB, 하나의 트랜잭션.<br/>실패하면 전부 원래대로.</p>
+</section>
+
+<!-- 3. Split -->
+<section data-label="MSA Dilemma" class="slide s-diagram">
+  <div class="num">02</div>
+  <h2>서비스를 쪼개면<br/><span class="g">이야기가 달라진다.</span></h2>
+  <div class="diagram" id="d-split"></div>
+</section>
+
+<!-- 4. Four patterns -->
+<section data-label="Four Patterns" class="slide s-list">
+  <div class="num">03</div>
+  <h2>네 가지 패턴.</h2>
+  <ol class="big-list">
+    <li>2PC<span>Two-Phase Commit</span></li>
+    <li>3PC<span>Three-Phase Commit</span></li>
+    <li>Saga<span>Compensating Transaction</span></li>
+    <li>TCC<span>Try / Confirm / Cancel</span></li>
+  </ol>
+</section>
+
+<!-- 5. 2PC -->
+<section data-label="2PC" class="slide s-diagram">
+  <div class="num">2PC</div>
+  <h2>Two-Phase Commit</h2>
+  <div class="diagram" id="d-2pc"></div>
+</section>
+
+<!-- 6. 2PC limits -->
+<section data-label="2PC Limits" class="slide s-list">
+  <div class="num">2PC</div>
+  <h2>한계.</h2>
+  <ul class="bullets">
+    <li><b>Blocking</b>Coordinator 장애 → Participant 무한 대기</li>
+    <li><b>SPOF</b>Coordinator가 단일 장애점</li>
+    <li><b>성능</b>응답 대기 중 lock 유지 → 처리량 저하</li>
+    <li><b>파티션</b>Phase 2 중 장애 시 상태 불일치</li>
+  </ul>
+</section>
+
+<!-- 7. 3PC -->
+<section data-label="3PC" class="slide s-text">
+  <div class="num">3PC</div>
+  <h2>Prepare → <span class="g">Pre-Commit</span> → Commit</h2>
+  <p>Non-blocking은 얻었지만<br/>네트워크 파티션에는 여전히 취약.<br/><span class="dim">실무에서 거의 쓰지 않음.</span></p>
+</section>
+
+<!-- 8. Saga core -->
+<section data-label="Saga" class="slide s-diagram">
+  <div class="num">Saga</div>
+  <h2>긴 트랜잭션을<br/><span class="g">짧은 로컬 트랜잭션의 시퀀스</span>로.</h2>
+  <div class="diagram" id="d-saga"></div>
+</section>
+
+<!-- 9. Choreography -->
+<section data-label="Choreography" class="slide s-diagram">
+  <div class="num">Saga</div>
+  <h2>Choreography<span class="sub">각 서비스가 이벤트를 발행하고, 관심 있는 서비스가 구독한다</span></h2>
+  <div class="diagram" id="d-choreo"></div>
+</section>
+
+<!-- 9b. Choreography failure -->
+<section data-label="Choreography Fail" class="slide s-diagram">
+  <div class="num">Saga</div>
+  <h2>Choreography · 실패 흐름<span class="sub">실패 이벤트를 앞 서비스들이 구독해 각자 롤백</span></h2>
+  <div class="diagram" id="d-choreo-fail"></div>
+</section>
+
+<!-- 10. Orchestration -->
+<section data-label="Orchestration" class="slide s-diagram">
+  <div class="num">Saga</div>
+  <h2>Orchestration<span class="sub">지휘자가 명령하고 응답을 기다린다</span></h2>
+  <div class="diagram" id="d-orch"></div>
+</section>
+
+<!-- 10b. Orchestration failure -->
+<section data-label="Orchestration Fail" class="slide s-diagram">
+  <div class="num">Saga</div>
+  <h2>Orchestration · 실패 흐름<span class="sub">실패 응답을 받으면 역순으로 보상 명령을 발행</span></h2>
+  <div class="diagram" id="d-orch-fail"></div>
+</section>
+
+<!-- 11. Saga limits -->
+<section data-label="Saga Limits" class="slide s-list">
+  <div class="num">Saga</div>
+  <h2>한계.</h2>
+  <ul class="bullets">
+    <li><b>최종 일관성</b>중간 상태에서 불일치 노출</li>
+    <li><b>보상 로직</b>모든 스텝에 Compensating 설계 필요</li>
+    <li><b>멱등성</b>재시도 시 중복 실행 방지 필수</li>
+    <li><b>격리성 없음</b>타 트랜잭션이 중간 상태를 읽음</li>
+  </ul>
+</section>
+
+<!-- 12. TCC -->
+<section data-label="TCC" class="slide s-text">
+  <div class="num">TCC</div>
+  <h2>Try · <span class="g">Confirm</span> · Cancel</h2>
+  <p>DB lock이 아닌 비즈니스 상태로 관리.<br/>잔액을 깎지 않고, 먼저 <span class="g">예약</span>한다.</p>
+</section>
+
+<!-- 13. TCC trade -->
+<section data-label="TCC Trade" class="slide s-list">
+  <div class="num">TCC</div>
+  <h2>트레이드오프.</h2>
+  <ul class="bullets">
+    <li><b>+</b>DB에 종속되지 않음 · 이기종 시스템 가능</li>
+    <li><b>−</b>서비스마다 3개 API 구현 필요</li>
+    <li><b>−</b>Confirm 실패 시 재시도 → 멱등성 필수</li>
+  </ul>
+</section>
+
+<!-- 14. Retry & DLQ -->
+<section data-label="Retry & DLQ" class="slide s-list">
+  <div class="num">B · 실무</div>
+  <h2>재시도와 DLQ.<span class="sub">일시적 실패는 재시도 · 영구 실패는 격리</span></h2>
+  <ul class="bullets bullets--match">
+    <li><b>Exponential Backoff</b>1s · 2s · 4s · 8s… 지수적으로 간격 증가</li>
+    <li><b>Max Attempts</b>N회 실패 시 Dead Letter Queue로 이동</li>
+    <li><b>DLQ 모니터링</b>알람 · 수동 개입 · 재처리 파이프라인 필수</li>
+    <li><b>Poison Pill</b>파싱 불가 메시지로 컨슈머가 영원히 멈추는 것 방지</li>
+  </ul>
+</section>
+
+<!-- 15. Event ordering -->
+<section data-label="Event Ordering" class="slide s-list">
+  <div class="num">B · 실무</div>
+  <h2>이벤트 순서 · 전달 보장.<span class="sub">분산 환경에서 순서는 저절로 지켜지지 않는다</span></h2>
+  <ul class="bullets bullets--match">
+    <li><b>Partition Key</b>같은 orderId는 같은 파티션으로 · 파티션 내 순서 보장</li>
+    <li><b>at-least-once</b>중복 허용 · 멱등성으로 방어 (기본값)</li>
+    <li><b>exactly-once</b>Kafka 트랜잭션 + idempotent producer · 성능 비용</li>
+    <li><b>Saga State Machine</b>역순 이벤트 도착 시 state transition으로 차단</li>
+  </ul>
+</section>
+
+<!-- 17. Idempotency why -->
+<section data-label="Idempotency Why" class="slide s-text">
+  <div class="num">B · 실무</div>
+  <h2>같은 이벤트를<br/><span class="g">두 번 받으면?</span></h2>
+  <p>네트워크 타임아웃, 재시도, 브로커 재전송.<br/>중복은 <span class="g">정상 동작</span>이다.</p>
+</section>
+
+<!-- 18. Idempotency how -->
+<section data-label="Idempotency How" class="slide s-list">
+  <div class="num">B · 실무</div>
+  <h2>멱등성 구현 3가지.</h2>
+  <ul class="bullets bullets--match">
+    <li><b>Idempotency Key</b>요청 ID를 DB unique로 잡아 중복 차단</li>
+    <li><b>Dedup Table</b>처리한 이벤트 ID를 저장 · 조회 후 skip</li>
+    <li><b>Version Check</b>낙관적 락으로 state transition만 허용</li>
+  </ul>
+</section>
+
+<!-- 19. Dual Write problem -->
+<section data-label="Dual Write" class="slide s-diagram">
+  <div class="num">B · 실무</div>
+  <h2>Dual Write 문제.<span class="sub">DB 커밋 후 이벤트 발행 사이의 틈</span></h2>
+  <div class="diagram" id="d-dualwrite"></div>
+</section>
+
+<!-- 20. Outbox -->
+<section data-label="Outbox" class="slide s-diagram">
+  <div class="num">B · 실무</div>
+  <h2>Outbox Pattern.<span class="sub">이벤트를 같은 트랜잭션으로 DB에 쓰고, CDC로 발행</span></h2>
+  <div class="diagram" id="d-outbox"></div>
+</section>
+
+<!-- 21. Observability -->
+<section data-label="Observability" class="slide s-list">
+  <div class="num">B · 실무</div>
+  <h2>관측성.</h2>
+  <ul class="bullets bullets--match">
+    <li><b>Trace ID</b>요청 하나를 서비스 전체에 꿰는 식별자</li>
+    <li><b>Saga 상태</b>단계별 상태를 DB에 기록 · 대시보드화</li>
+    <li><b>Dead Letter</b>실패 이벤트 별도 큐 · 수동 개입 경로</li>
+  </ul>
+</section>
+
+<!-- 22. CAP intro -->
+<section data-label="CAP Intro" class="slide s-list">
+  <div class="num">CAP</div>
+  <h2>CAP 정리.<span class="sub">분산 시스템은 세 가지 중 두 가지만 가질 수 있다</span></h2>
+  <ul class="bullets bullets--match">
+    <li><b>C · Consistency</b>모든 노드가 같은 데이터를 본다</li>
+    <li><b>A · Availability</b>요청은 언제나 응답을 받는다</li>
+    <li><b>P · Partition Tolerance</b>노드 간 통신이 끊겨도 시스템은 계속 동작한다</li>
+  </ul>
+</section>
+
+<!-- 23. CAP why P -->
+<section data-label="CAP" class="slide s-text">
+  <div class="num">CAP</div>
+  <h2>P는 <span class="g">선택이 아니라 현실</span>이다.</h2>
+  <p>네트워크는 끊긴다 · 패킷은 유실된다 · 지연은 커진다.<br/>결국 선택은 <span class="g">C와 A 사이</span>.<br/><span class="dim">2PC는 CP · Saga는 AP.</span></p>
+</section>
+
+<!-- 23. Decision tree -->
+<section data-label="Decision Tree" class="slide s-diagram">
+  <div class="num">C · 선택</div>
+  <h2>의사결정 트리.</h2>
+  <div class="diagram" id="d-decision"></div>
+</section>
+
+<!-- 24. Comparison matrix -->
+<section data-label="Comparison" class="slide s-matrix">
+  <div class="num">C · 선택</div>
+  <h2>비교.</h2>
+  <table class="mx">
+    <colgroup><col class="first"/><col/><col/><col/><col/></colgroup>
+    <thead>
+      <tr><th></th><th>일관성</th><th>가용성</th><th>복잡도</th><th>처리량</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>2PC</th><td class="hi">강함</td><td class="lo">낮음</td><td>중간</td><td class="lo">낮음</td></tr>
+      <tr><th>Saga · Orch</th><td class="mid">최종</td><td class="hi">높음</td><td class="mid">중상</td><td class="hi">높음</td></tr>
+      <tr><th>Saga · Choreo</th><td class="mid">최종</td><td class="hi">높음</td><td class="hi">높음</td><td class="hi">높음</td></tr>
+      <tr><th>TCC</th><td class="hi">강함</td><td class="mid">중간</td><td class="hi">높음</td><td class="mid">중간</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 25. Case study -->
+<section data-label="Case Study" class="slide s-list">
+  <div class="num">C · 선택</div>
+  <h2>실제로는.</h2>
+  <ul class="bullets bullets--match">
+    <li><b>Netflix Conductor</b>Orchestration · 워크플로우 엔진</li>
+    <li><b>Uber Cadence</b>Orchestration · 장시간 트랜잭션</li>
+    <li><b>AWS Step Functions</b>매니지드 Orchestration</li>
+    <li><b>Kafka 기반</b>Choreography · 이벤트 소싱과 결합</li>
+  </ul>
+</section>
+
+<!-- 26. Choice -->
+<section data-label="Choice" class="slide s-list">
+  <div class="num">결론</div>
+  <h2>선택.</h2>
+  <ul class="bullets bullets--match">
+    <li><b>2PC</b>강한 일관성 · 짧은 트랜잭션</li>
+    <li><b>Saga · Orch</b>긴 트랜잭션 · 가용성 중요</li>
+    <li><b>Saga · Choreo</b>느슨한 결합 · 이벤트 기반</li>
+    <li><b>TCC</b>이기종 시스템 · DB 독립성</li>
+  </ul>
+  <div class="quote">은탄환은 없다.</div>
+</section>
+
+<!-- Q&A 제거됨 -->
+
+</deck-stage>
+
+<script type="application/json" id="speaker-notes">
+[
+"자, 오늘 주제는 분산 트랜잭션입니다. 마이크로서비스로 넘어오면서 한 번쯤은 다 고민해보셨을 주제죠. 45분 동안 2PC부터 Saga, TCC까지 주요 패턴들을 쭉 훑어보고, 각 패턴의 한계가 뭔지, 어떤 상황에서 뭘 써야 하는지까지 같이 정리해볼게요. 중간에 궁금한 거 생기면 바로 물어보셔도 됩니다.",
+
+"먼저 워밍업부터. 모놀리식 시절에는 사실 트랜잭션이 별 고민거리가 아니었어요. 주문 생성하고, 재고 깎고, 결제 처리하는 걸 그냥 하나의 DB 트랜잭션으로 묶으면 끝이었죠. BEGIN, COMMIT, 문제 생기면 ROLLBACK. DB가 원자성을 보장해주니까 우리는 비즈니스 로직만 짜면 됐습니다. 편했어요, 그때는.",
+
+"그런데 서비스를 쪼개면 이야기가 달라져요. 주문 서비스, 재고 서비스, 결제 서비스. 각자 자기 DB만 들고 있어요. 화면 보시면 각 서비스마다 자기 전용 DB가 붙어 있고, 서비스 간에는 API나 이벤트로만 통신해요. 다른 서비스의 DB를 직접 건드릴 수가 없어요. 이 구조에서 주문은 성공했는데 결제가 실패했다 - 예전 같으면 롤백하면 되는데, 이제는 주문 DB랑 결제 DB가 따로 돌아가니까 한 쪽만 커밋된 상태로 멈춰버려요. 데이터 불일치. 이게 분산 트랜잭션 문제의 출발점입니다.",
+
+"그래서 분산 트랜잭션이 풀려는 건 결국 하나예요. 여러 서비스에 걸친 작업을 원자적으로 만들자. 전부 성공하거나, 실패하면 전부 원래대로. 오늘 네 가지 패턴을 볼 거예요. 2PC, 3PC, Saga, TCC. 각자 해결 방식도 다르고, 포기하는 것도 달라요. 그 트레이드오프를 이해하는 게 오늘의 핵심입니다.",
+
+"첫 번째, 2PC입니다. Two-Phase Commit. 이름 그대로 두 단계로 나눠서 처리해요. 용어부터 정리하면, Coordinator는 전체 트랜잭션을 총괄하는 중앙 조정자예요. Participant는 실제로 데이터를 가진 각 DB나 서비스고요. Phase 1은 Prepare 단계인데, Coordinator가 모든 Participant한테 '너 커밋할 준비 됐어?' 물어보는 단계예요. 각 Participant는 트랜잭션 로그를 내려쓰고 lock을 잡고 'YES' 또는 'NO'로 답합니다. 이 상태에서는 아직 커밋 안 된 거예요. Phase 2에서 전부 YES면 Coordinator가 '커밋해!' 명령 보내고, 하나라도 NO면 전부 롤백. Java에서 JTA 써보신 분 있을 텐데 - JTA는 Java Transaction API로, 여러 리소스를 묶어서 분산 트랜잭션을 관리하는 표준 API예요. 보통 XA 프로토콜 위에서 동작하고, 그 XA가 바로 2PC의 업계 표준 구현입니다.",
+
+"근데 2PC는 치명적인 한계가 많아요. 제일 큰 건 Blocking. Coordinator가 Phase 2 중간에 죽으면 Participant들이 lock 잡은 채로 무한 대기해요. 이게 Participant 입장에서는 커밋해야 하는지 롤백해야 하는지 판단을 못하니까요. 그리고 Coordinator 자체가 단일 장애점이 되고, 모든 참여자 응답 기다리는 동안 lock을 계속 잡고 있으니 처리량도 확 떨어져요. 그래서 지금은 현대적인 MSA에서 거의 안 씁니다.",
+
+"2PC의 blocking 문제를 풀어보려고 나온 게 3PC예요. Prepare와 Commit 사이에 Pre-Commit이라는 단계를 하나 더 넣어요. 이러면 Coordinator가 죽어도 Participant들이 Pre-Commit 상태를 보고 스스로 판단할 수 있어서 Non-blocking이 돼요. 근데 네트워크 파티션에서는 여전히 취약합니다. 파티션 양쪽이 서로 다른 결정을 내려버릴 수 있어요. 그래서 3PC도 실무에서는 거의 안 씁니다. 이론적으로만 알아두시면 돼요.",
+
+"이제 현대 MSA에서 실제로 많이 쓰는 Saga로 넘어갑니다. 아이디어가 완전히 달라요. 긴 하나의 트랜잭션을 짧은 로컬 트랜잭션 여러 개로 쪼개요. 각 로컬 트랜잭션은 자기 DB만 건드리니까 원자성 보장되고, 다음 단계를 이벤트로 트리거해요. 중간에 실패하면? 보상 트랜잭션, Compensating Transaction을 역순으로 실행해서 되돌립니다. lock을 오래 안 잡으니까 가용성은 확 올라가요.",
+
+"Saga 구현 방식은 크게 둘인데, 첫 번째가 Choreography. 중앙에서 조율하는 애가 없고, 서비스들이 이벤트만 주고받으면서 춤추듯이 진행돼요. 주문이 이벤트 쏘면 재고가 듣고, 재고가 처리하고 이벤트 쏘면 결제가 듣고. 장점은 결합도가 낮다는 거. 단점은 전체 흐름이 코드 여기저기에 흩어져 있어서 디버깅이 정말 힘들어요. '이게 왜 여기까지 왔지' 추적하기 어려워요.",
+
+"Choreography에서 실패가 터지면 어떻게 되냐. 중앙 지휘자가 없으니까 보상도 이벤트 기반이에요. 예를 들어 결제 서비스가 실패했다 하면 PaymentFailed 같은 이벤트를 쏴요. 그러면 이 이벤트를 앞 단계의 재고 서비스랑 주문 서비스가 각자 구독하고 있다가 자기가 할 롤백을 알아서 해요. 재고는 예약 풀고, 주문은 CANCELLED로 바꾸고. 각자 자기 책임만 아는 구조죠. 깔끔해 보이지만, 실패 이벤트를 누가 구독해야 하는지 전부 서비스마다 알아서 챙겨야 해서 실무에서는 빠뜨리기 쉬워요. 테스트도 어렵고요.",
+
+"두 번째가 Orchestration. 중앙에 Orchestrator라는 지휘자를 둬요. 얘가 '주문 생성해', '재고 예약해', '결제해' 이렇게 순서대로 명령을 내리고, 중간에 실패하면 보상 로직도 얘가 다 돌립니다. 장점은 전체 흐름이 한 곳에 모여 있어서 파악하기 쉽고, 디버깅도 편해요. 단점은 Orchestrator가 너무 많은 걸 알게 되는 거예요. 결국 여기로 로직이 쏠리는 경향이 있어요. 둘 중 뭐가 좋냐는 팀 상황에 따라 다릅니다.",
+
+"Orchestration 실패 흐름은 훨씬 직관적이에요. Orchestrator가 단계를 하나씩 명령하면서 응답을 기다리고 있잖아요. 중간에 누가 실패 응답을 주면, Orchestrator가 지금까지 지나온 단계를 역순으로 훑으면서 보상 명령을 쏴요. 결제에서 실패했다면 재고한테 '예약 취소해', 주문한테 '취소 상태로 바꿔' 이렇게요. 전체 상태가 Orchestrator 한 곳에 있으니까 어디까지 갔다가 어떻게 되돌리는지 한 눈에 보이고 재시도 정책도 중앙에서 관리할 수 있어요. 그래서 돈이나 재고처럼 실패 처리가 복잡한 도메인에서는 Orchestration을 많이 선택합니다.",
+
+"Saga의 한계도 분명해요. 제일 큰 건 최종 일관성이에요. 중간 단계에서는 데이터가 잠깐 불일치 상태예요. 주문은 생겼는데 재고는 아직 안 깎인 순간이 있어요. 그리고 모든 스텝마다 보상 로직을 짜야 돼요. 멱등성도 보장해야 하고 - 이벤트 재시도되면 중복 실행되면 안 되니까. 격리성도 없어서 다른 트랜잭션이 중간 상태를 읽을 수 있어요. 돈 관련된 도메인에서는 이게 은근히 무섭습니다.",
+
+"마지막 패턴, TCC입니다. Try, Confirm, Cancel. 2PC랑 비슷한데 DB 레이어가 아니라 비즈니스 레이어에서 처리해요. Try 단계에서 리소스를 '예약'만 해두는 거예요. 결제라면 잔액을 바로 깎지 않고 '예약'만 걸어둬요. 다 Try가 성공하면 Confirm으로 확정. 하나라도 실패하면 Cancel로 예약 해제. DB lock 대신 비즈니스 상태로 관리하는 거죠.",
+
+"TCC의 장점은 DB에 종속되지 않는다는 거예요. 이기종 시스템, 외부 결제 게이트웨이 같은 거랑도 묶을 수 있어요. 근데 단점도 만만치 않아요. 모든 서비스에 Try, Confirm, Cancel 이 세 개 API를 다 구현해야 돼요. 기존 API가 있으면 전부 리팩토링 해야 하고. 그리고 Confirm 실패했을 때 재시도 로직이 필수라서 멱등성 설계가 꼭 필요합니다. 구현 복잡도가 높아요.",
+
+"자, 이제부터는 Saga를 실제로 운영할 때 반드시 부딪히는 문제들을 쭉 살펴볼 거예요. 재시도, 이벤트 순서, 멱등성, Dual Write, 관측성. 이론은 깔끔한데 이걸 놓치면 Saga는 그냥 버그 생성기가 돼요. 먼저 재시도와 DLQ부터. 서비스 간 통신은 실패해요. 타임아웃, 일시적 네트워크 장애, 대상 서비스 재시작 같은 것들. 이걸 전부 영구 실패로 처리하면 안 되고 일단 재시도해야 됩니다. 근데 1초 간격으로 무한 재시도하면 장애 서비스에 부하만 더 주게 돼요. 그래서 Exponential Backoff. 1초, 2초, 4초, 8초 이렇게 간격을 지수적으로 늘려요. 여기에 약간의 지터도 추가해서 재시도가 한꺼번에 몰리는 thundering herd도 방지하고요. N회 실패하면 Dead Letter Queue로 보내요. 파싱 자체가 안 되는 poison pill 메시지가 컨슈머를 영원히 멈추지 않게 격리하는 것도 중요하고, DLQ는 반드시 모니터링하고 재처리 파이프라인을 같이 설계해야 됩니다. DLQ에 쌓이기만 하고 아무도 안 보는 건 최악이에요.",
+
+"다음은 이벤트 순서와 전달 보장이에요. 분산 환경에서 순서는 저절로 지켜지지 않아요. Kafka를 예로 들면 토픽에 여러 파티션이 있는데 파티션 내에서만 순서가 보장돼요. 그래서 Partition Key가 중요합니다. 같은 orderId는 반드시 같은 파티션으로 가게 해야 OrderCreated가 OrderCancelled보다 먼저 처리돼요. 전달 보장은 크게 두 가지예요. at-least-once는 기본값이고 최소 한 번은 전달되지만 중복 가능, 그래서 멱등성으로 방어해요. exactly-once는 Kafka 트랜잭션이랑 idempotent producer 조합으로 가능한데 성능 비용이 있어요. 그리고 파티션 키를 써도 리밸런싱이나 재시도 타이밍에 역순 이벤트가 올 수 있어요. 이걸 Saga state machine으로 막아야 합니다. CREATED에서만 RESERVED로 갈 수 있고, COMPLETED 상태에서 온 RESERVED 이벤트는 무시하는 식으로요.",
+
+"그럼 자연스럽게 멱등성 얘기로 넘어가요. 같은 이벤트를 왜 두 번 받을 수 있냐. 네트워크가 타임아웃 나면 클라이언트는 당연히 재시도하죠. 메시지 브로커도 at-least-once 보장이라 중복 전송이 흔해요. 즉 중복은 버그가 아니라 정상 동작이에요. 이걸 전제로 시스템을 설계해야 합니다.",
+
+"멱등성 구현은 크게 세 가지 방법이 있어요. 첫째, Idempotency Key. 요청 ID를 unique 컬럼으로 잡아서 DB가 중복을 막아주게 하는 거예요. 둘째, Dedup Table. 처리한 이벤트 ID를 별도 테이블에 저장해두고 들어올 때마다 조회해서 이미 있으면 skip. 셋째, Version Check. 낙관적 락으로 리소스의 버전을 같이 보내서 상태 전이가 한 번만 일어나게 합니다. 상황마다 맞는 걸 골라쓰시면 돼요.",
+
+"Saga에서 제일 은근히 발목 잡는 게 Dual Write 문제예요. 이벤트 발행을 많이 안 해보셨으면 이 문제가 낯설 수 있는데, 천천히 설명드릴게요. 상황은 이래요. 서비스가 주문을 받으면 두 가지 일을 해야 돼요. 하나는 자기 DB에 주문 레코드를 쓰는 것. 다른 하나는 '주문이 생겼다'는 이벤트를 Kafka 같은 메시지 브로커에 발행해서 다른 서비스들이 알게 하는 것. 문제는 이 둘이 다른 시스템이라는 거예요. DB는 DB, Kafka는 Kafka. 코드로 보면 DB commit 한 줄, Kafka send 한 줄, 두 줄이죠. 근데 두 줄 사이에 서버가 죽거나 네트워크가 끊기면? DB에는 주문이 써졌는데 이벤트는 안 나간 상태가 돼요. 다른 서비스들은 주문이 생긴 줄도 몰라요. 반대로 이벤트 먼저 쏘고 DB 커밋하려다 DB 실패하면, 일어나지도 않은 일을 브로커가 떠들고 다니는 꼴이 되죠. 두 시스템에 걸친 쓰기는 원자성이 보장되지 않아요. 이게 Dual Write 문제입니다.",
+
+"해결책이 Outbox Pattern입니다. 아이디어 단순해요. 이벤트를 Kafka에 바로 쏘지 않고, 같은 DB 트랜잭션 안에서 outbox 테이블에 한 줄 추가로 insert 해요. 그러면 비즈니스 쓰기랑 이벤트가 같이 커밋되거나 같이 롤백돼요. 그 뒤에 Debezium 같은 CDC가 outbox 테이블을 따라가면서 Kafka로 발행합니다. 이게 요즘 MSA 이벤트 발행의 사실상 표준이에요.",
+
+"관측성은 Saga 운영의 생명줄이에요. 세 가지 축으로 봅시다. 첫째, Trace ID. 요청 하나가 서비스 여러 개를 거치니까 공통 ID를 달아서 끝까지 추적할 수 있어야 돼요. OpenTelemetry 쓰시면 자동 전파되고, Jaeger나 Tempo 같은 걸로 시각화하면 어느 구간에서 시간이 새는지 바로 보여요. 둘째, Saga 상태 자체를 DB에 기록하세요. 각 Saga 인스턴스가 어느 단계까지 갔는지, 지금 뭐 하고 있는지 상태 테이블로 관리하고 대시보드로 뽑으세요. 장애 때 '지금 진행 중인 Saga가 몇 개고 어디서 멈췄는지' 한 번에 봐야 대응이 됩니다. 셋째, Dead Letter. 재시도로도 해결 안 되는 이벤트는 별도 큐에 쌓고, DLQ 길이에 알람을 반드시 걸어두세요. 그리고 메트릭으로 Saga 성공률, 단계별 p99 지연, 보상 트랜잭션 실행 빈도 같은 걸 Prometheus나 DataDog에 쌓아서 SLO 기반으로 알람을 설정하는 게 운영의 기본입니다.",
+
+"CAP 정리가 뭔지부터 짚고 갈게요. 분산 시스템을 설계할 때 세 가지 속성이 있어요. Consistency는 일관성, 모든 노드에서 같은 데이터를 읽을 수 있다는 거예요. 어느 노드에 물어봐도 같은 답이 나와야 해요. Availability는 가용성, 모든 요청이 응답을 받는다는 거예요. 느리더라도 답은 돌려줘야 해요. 세 번째 Partition Tolerance, 분할 내성. 네트워크가 끊겨서 노드들이 서로 통신 못 해도 시스템은 계속 동작해야 된다는 거예요. CAP 정리의 핵심은 이 세 개를 동시에 만족시키는 건 불가능하다는 거예요. 두 개만 고를 수 있어요.",
+
+"근데 실제로는 P를 선택에서 뺄 수가 없어요. 왜냐하면 P는 우리가 원해서 추가하는 속성이 아니라 현실이거든요. 네트워크는 반드시 끊겨요. 패킷은 유실되고, 지연은 커지고, 노드는 죽어요. 분산 시스템을 하는 순간 P는 기본 조건이에요. 그러니까 실질적인 선택은 C와 A 사이예요. 일관성을 지키려면 네트워크 장애 동안 응답을 포기해야 하고, 응답을 주려면 데이터가 잠깐 달라지는 걸 받아들여야 해요. 2PC는 CP를 고른 패턴이에요. 일관성 지키려고 Participant들이 응답 못 받으면 멈춰버리죠. Saga는 AP를 고른 패턴이에요. 중간에 불일치가 있어도 응답은 계속 주고, 나중에 최종 일관성으로 맞춰갑니다.",
+
+"그럼 실제로 뭘 써야 하나. 이게 딱 정답이 있는 게 아니라서 의사결정 트리로 정리해봤어요. 첫 질문, 강한 일관성이 절대적으로 필요한가? 예를 들면 은행 이체 같은 거. Yes면 2PC나 TCC 쪽으로 가세요. No면 가용성 쪽으로 기울 수 있는데, 다음 질문은 전체 흐름을 한 곳에서 보고 싶은지예요. Yes면 Orchestration, No면 Choreography. 단순하죠.",
+
+"표로 비교해보면 트레이드오프가 확 보여요. 2PC는 일관성은 최고지만 가용성이랑 처리량이 바닥이에요. Saga Orchestration은 전체적으로 밸런스 좋은데 Orchestrator 구현 복잡도가 있어요. Choreography는 가장 느슨한 결합이지만 흐름 추적이 정말 힘들어요. TCC는 일관성 강하고 DB 독립적이지만 구현 복잡도가 제일 높아요. 이 표 한 장이 오늘 내용의 요약이라 보셔도 됩니다.",
+
+"실제로 업계에서 많이 쓰는 도구들. Netflix Conductor는 오픈소스 워크플로우 엔진인데 Orchestration Saga 구현에 많이 써요. Uber의 Cadence는 Temporal로 발전했고, 장시간 트랜잭션, 예를 들어 며칠 걸리는 워크플로우까지 커버해요. AWS Step Functions는 매니지드 서비스로 작은 팀이 운영 부담 없이 쓰기 좋고요. Kafka 기반으로 Choreography + Event Sourcing 조합도 여전히 흔합니다. 국내 커머스나 은행 쪽도 비슷한 패턴 많이 씁니다.",
+
+"그래서 결국 어떤 패턴을 언제 쓰냐. 정답은 없고 상황마다 달라요. 강한 일관성이 꼭 필요하고 트랜잭션이 짧다면 2PC도 여전히 선택지예요. 긴 트랜잭션에 가용성이 중요하면 Orchestration Saga가 현실적이고, 이벤트 기반으로 느슨하게 가고 싶으면 Choreography. DB 독립성이 중요하면 TCC. 은탄환은 없어요. 비즈니스 요구사항 보고 고르시면 됩니다."
+]
+</script>
+
+
+<!-- Speaker notes overlay — press N to toggle -->
+<div id="notes-overlay" aria-live="polite">
+  <div class="notes-head">
+    <span class="notes-title">Speaker Notes</span>
+    <span class="notes-idx"><span id="notes-n">1</span> / <span id="notes-total">27</span></span>
+    <span class="notes-hint">S to toggle</span>
+  </div>
+  <div id="notes-body"></div>
+</div>
+
+<script>
+(() => {
+  const overlay = document.getElementById('notes-overlay');
+  const body = document.getElementById('notes-body');
+  const nEl = document.getElementById('notes-n');
+  const totalEl = document.getElementById('notes-total');
+  let notes = [];
+  try {
+    notes = JSON.parse(document.getElementById('speaker-notes').textContent || '[]');
+  } catch (e) { notes = []; }
+  totalEl.textContent = notes.length;
+
+  // Persist open state across reloads
+  const KEY = 'notes-overlay-open';
+  let open = localStorage.getItem(KEY) === '1';
+  const apply = () => {
+    overlay.classList.toggle('is-open', open);
+    localStorage.setItem(KEY, open ? '1' : '0');
+  };
+  apply();
+
+  const render = (i) => {
+    nEl.textContent = i + 1;
+    body.textContent = notes[i] || '';
+  };
+  render(0);
+
+  // Track slide changes from deck-stage (it postMessages + CustomEvents)
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (d && typeof d === 'object' && typeof d.slideIndexChanged === 'number') {
+      render(d.slideIndexChanged);
+    }
+  });
+  document.addEventListener('slidechange', (e) => {
+    if (e.detail && typeof e.detail.index === 'number') render(e.detail.index);
+  });
+
+  // S toggles overlay (capture phase, document-level, to beat deck-stage handlers)
+  const onKey = (e) => {
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 's' || e.key === 'S' || e.code === 'KeyS') {
+      open = !open;
+      apply();
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+  window.addEventListener('keydown', onKey, true);
+  document.addEventListener('keydown', onKey, true);
+})();
+</script>
+
+<!-- Presenter sync: BroadcastChannel between index.html and presenter.html -->
+<script>
+(() => {
+  if (!('BroadcastChannel' in window)) return;
+  const ch = new BroadcastChannel('deck-sync');
+  const stage = document.querySelector('deck-stage');
+  if (!stage) return;
+
+  let suppress = false;
+
+  // Send our slide changes out.
+  stage.addEventListener('slidechange', (e) => {
+    if (suppress) return;
+    ch.postMessage({ type: 'slide', index: e.detail.index });
+  });
+
+  // Receive slide changes from other windows (e.g. presenter).
+  ch.onmessage = (e) => {
+    const d = e.data;
+    if (!d || d.type !== 'slide' || typeof d.index !== 'number') return;
+    if (d.index === stage.index) return;
+    suppress = true;
+    stage.goTo(d.index);
+    setTimeout(() => { suppress = false; }, 50);
+  };
+
+  // Presenter can ask us for current state on open.
+  ch.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'request-state') {
+      ch.postMessage({ type: 'slide', index: stage.index });
+    }
+  });
+})();
+</script>
+
+<script src="diagrams.js?v=24"></script>
+</body>
+</html>
