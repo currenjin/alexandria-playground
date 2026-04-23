@@ -706,3 +706,109 @@ code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 
 .mx td.lo  { color: var(--bad); }
 .mx tbody tr:last-child th,
 .mx tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+
+/* =========================================================
+   Case study slides — real-world incident
+   ========================================================= */
+.s-case {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.s-case .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  color: var(--dim);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.s-case h2 {
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0 0 64px;
+  max-width: 1500px;
+  text-wrap: balance;
+}
+.s-case h2 .g { color: var(--g); }
+.s-case .timeline {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px 48px;
+  max-width: 1500px;
+  font-size: 34px;
+  line-height: 1.5;
+}
+.s-case .timeline .t {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--g);
+  font-size: 28px;
+  padding-top: 10px;
+  white-space: nowrap;
+}
+.s-case .timeline .e {
+  color: var(--fg);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+.s-case .timeline > *:nth-last-child(-n+2) { border-bottom: none; padding-bottom: 0; }
+.s-case .lesson {
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+  max-width: 1500px;
+}
+.s-case .lesson .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  color: var(--g);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.s-case .lesson .text {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fg);
+}
+.s-case .lesson .text .dim { color: var(--dim); font-weight: 400; }
+
+/* Story / pull-quote layout for a second case */
+.s-case.s-case--pull h2 {
+  font-size: 84px;
+  margin-bottom: 48px;
+}
+.s-case .scene {
+  font-size: 44px;
+  line-height: 1.5;
+  max-width: 1500px;
+  color: var(--dim);
+  margin: 0 0 48px;
+}
+.s-case .scene b {
+  color: var(--fg);
+  font-weight: 600;
+}
+.s-case .scene .g { color: var(--g); font-weight: 500; }
+.s-case .qa {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 18px 32px;
+  max-width: 1500px;
+  font-size: 38px;
+  line-height: 1.45;
+}
+.s-case .qa .mark {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--g);
+  font-weight: 500;
+  padding-top: 6px;
+}
+.s-case .qa .line b { font-weight: 600; }
+.s-case .qa .line .dim { color: var(--dim); }
