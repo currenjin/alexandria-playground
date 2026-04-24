@@ -148,6 +148,8 @@
 ### Talk
 
 - [talk-distributed-transactions](talk-distributed-transactions) - 분산 트랜잭션의 종류와 한계 (feat. SAGA)
+- [talk-tidy-first](talk-tidy-first) - 켄트 벡의 Tidy First?
+- [talk-claude-code](talk-claude-code) - 클로드 코드 설명회
 
 ### Template
 
