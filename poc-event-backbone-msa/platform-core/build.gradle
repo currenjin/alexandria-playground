@@ -1,0 +1,10 @@
+// 공통 이벤트 인프라 라이브러리 (§7.1.1~7.1.6): 봉투·발행자·릴레이·소비지원·DLT.
+// 각 서비스가 의존. 부팅 앱이 아니므로 spring-boot 플러그인 없음.
+plugins { id 'java-library' }
+
+dependencies {
+    api project(':contracts')
+    api 'org.springframework.boot:spring-boot-starter-jdbc'
+    api 'org.springframework.kafka:spring-kafka'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+}

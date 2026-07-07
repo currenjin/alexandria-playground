@@ -1,0 +1,2 @@
+rootProject.name = 'event-backbone-example'
+include 'contracts', 'platform-core', 'oms-service', 'tms-service', 'bms-service'

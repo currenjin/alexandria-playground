@@ -1,0 +1,3 @@
+// 공유 계약 모듈 (§7.1.7): 이벤트·커맨드 record + @EventContract. Spring 의존 없음.
+// 모든 서비스가 이 모듈에만 의존, 서비스끼리는 서로 의존하지 않는다.
+plugins { id 'java-library' }

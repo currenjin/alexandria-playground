@@ -1,0 +1,20 @@
+spring:
+  application: { name: bms-service }
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/bms}
+    username: ${DB_USER:ebe}
+    password: ${DB_PASSWORD:ebe}
+  kafka:
+    bootstrap-servers: ${KAFKA:localhost:9092}
+    consumer: { auto-offset-reset: earliest, enable-auto-commit: false }
+    producer: { acks: all, properties: { enable.idempotence: true } }
+
+server: { port: ${PORT:8082} }
+
+platform:
+  events:
+    relay: { poll-interval-ms: 200, batch-size: 500 }
+    retry: { max-attempts: 3, backoff-ms: 1000 }
+
+logging:
+  level: { com.wemeet.eventbackbone: DEBUG }

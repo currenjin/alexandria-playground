@@ -143,6 +143,7 @@
 - [poc-large-image-handling](poc-large-image-handling) - 대용량 이미지 핸들링
 - [poc-archunit](poc-archunit) - ArchUnit 아키텍처 테스트
 - [poc-seata-at](poc-seata-at) - Apache Seata AT 모드
+- [poc-event-backbone-msa](poc-event-backbone-msa) - 이벤트 백본 MSA (Outbox·Inbox·Saga·DLT)
 - [poc-challenges](poc-challenges) - 일일 코딩 챌린지
 
 ### Talk
