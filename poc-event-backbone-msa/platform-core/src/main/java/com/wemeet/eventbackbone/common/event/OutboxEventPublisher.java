@@ -5,6 +5,7 @@ import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -27,12 +28,18 @@ public class OutboxEventPublisher implements EventPublisher {
 
     @Override
     public void publish(DomainEvent event) {
+        // §7.1.3: 활성 트랜잭션 밖 publish = 즉시 예외. 자체 트랜잭션으로 감싸지 않는다
+        // (감싸면 도메인 변경과 분리돼 이중 쓰기 사고가 되살아남).
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            throw new IllegalStateException(
+                "활성 트랜잭션 밖 publish 금지 (§7.1.3) — 도메인 변경과 같은 @Transactional 안에서 호출하세요");
+        }
         FlowContext.Ctx ctx = FlowContext.get();
         if (ctx == null) {
             // §7.1.1: 컨텍스트 없는 publish = 즉시 예외 (조용한 null 금지)
-            throw new IllegalStateException("FlowContext 없음 — @Transactional 진입점/컨텍스트 안에서 publish 하세요");
+            throw new IllegalStateException("FlowContext 없음 — 진입점/소비 컨텍스트 안에서 publish 하세요");
         }
-        UUID eventId = UUID.randomUUID();  // 실제는 UUIDv7 (§7.1.1)
+        UUID eventId = UuidV7.generate();  // §7.1.1 시간순 정렬 UUIDv7
         String type = EventTypes.typeOf(event.getClass());
         try {
             String payloadJson = mapper.writeValueAsString(event);

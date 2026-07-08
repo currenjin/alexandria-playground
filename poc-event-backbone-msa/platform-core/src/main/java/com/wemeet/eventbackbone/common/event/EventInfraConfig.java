@@ -10,7 +10,8 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.kafka.support.serializer.DeserializationException;
+import org.springframework.util.backoff.ExponentialBackOff;
 
 /**
  * 이벤트 인프라 배선 (§7.1.6 재시도→DLT 포함).
@@ -31,17 +32,24 @@ public class EventInfraConfig {
     @Bean
     public DefaultErrorHandler errorHandler(
             KafkaTemplate<String, String> kafkaTemplate,
-            @Value("${platform.events.retry.max-attempts:3}") int maxAttempts,
-            @Value("${platform.events.retry.backoff-ms:1000}") long backoffMs) {
+            @Value("${platform.events.retry.max-attempts:3}") int maxRetries,
+            @Value("${platform.events.retry.backoff-ms:1000}") long initialIntervalMs,
+            @Value("${platform.events.retry.multiplier:4.0}") double multiplier) {
 
+        // DLT는 Kafka 브로커 기능이 아니라 컨슈머가 스스로 <원본>.DLT로 produce (§7.1.6).
         var recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (record, ex) -> new org.apache.kafka.common.TopicPartition(record.topic() + ".DLT", -1));
 
-        // §7.1.6 스펙은 지수 백오프(1s→4s→16s). 예제 포터빌리티 위해 고정 간격 재시도로 단순화.
-        var backoff = new FixedBackOff(backoffMs, maxAttempts - 1);   // 초기 1회 + (maxAttempts-1) 재시도
+        // §7.1.6 인메모리 지수 백오프 3회 (1s → 4s → 16s) → DLT.
+        // (ExponentialBackOffWithMaxRetries는 이 Spring 버전에 없어 ExponentialBackOff + maxElapsedTime으로 N회 캡)
+        double sum = 0, interval = initialIntervalMs;
+        for (int k = 0; k < maxRetries; k++) { sum += interval; interval *= multiplier; }  // 1000+4000+16000
+        var backoff = new ExponentialBackOff(initialIntervalMs, multiplier);
+        backoff.setMaxElapsedTime((long) sum);           // maxRetries회 후 STOP → recoverer(DLT)
 
         var handler = new DefaultErrorHandler(recoverer, backoff);
-        handler.addNotRetryableExceptions(NonRetryableEventException.class); // 즉시 DLT
+        handler.addNotRetryableExceptions(              // 재시도 무의미 → 즉시 DLT (§7.1.6)
+                NonRetryableEventException.class, DeserializationException.class);
         return handler;
     }
 

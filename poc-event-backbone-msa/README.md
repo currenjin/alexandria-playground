@@ -63,12 +63,12 @@ POST /demo/orders (OMS)
 
 | 절 | 개념 | 코드 |
 | --- | --- | --- |
-| §7.1.1 | 봉투 8필드·논리명 eventType·컨텍스트 자동 | `platform-core: common/event/Envelope · EventContract · OutboxEventPublisher · common/context/FlowContext` |
-| §7.1.2 | 토픽=애그리거트당(앞 두 마디) | `EventTypes.topicOf()` |
-| §7.1.3 | Outbox 하이브리드·트랜잭션 밖 publish=예외 | `platform-core: common/event/OutboxEventPublisher` · `V1__outbox_inbox.sql` |
-| §7.1.4 | 폴링 릴레이·at-least-once | `platform-core: common/outbox/OutboxRelay` (각 서비스가 자기 outbox 릴레이) |
-| §7.1.5 | 컨슈머 그룹·Inbox 멱등·같은 트랜잭션 | `common/event/EventConsumerSupport` + **`common/inbox/InboxRepository`**(ON CONFLICT 원자 INSERT) · 각 서비스 `*EventListener`(그룹별) |
-| §7.1.6 | 재시도→DLT(컨슈머가 produce) | `common/event/EventInfraConfig`(DefaultErrorHandler + DeadLetterPublishingRecoverer) |
+| §7.1.1 | 봉투 8필드·논리명 eventType·컨텍스트 자동·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext` |
+| §7.1.2 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig`+`event-topics.yml`(카탈로그) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
+| §7.1.3 | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `common/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `common/maintenance/RetentionCleaner` |
+| §7.1.4 | 폴링 릴레이·at-least-once·**미발행 최고령 나이 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
+| §7.1.5 | 컨슈머 그룹·Inbox 멱등·같은 트랜잭션·7일 보존 | `common/event/EventConsumerSupport` + **`common/inbox/InboxRepository`**(ON CONFLICT) · `RetentionCleaner` |
+| §7.1.6 | 재시도→DLT·**지수 백오프 1s→4s→16s**·non-retryable 즉시 DLT | `common/event/EventInfraConfig`(DefaultErrorHandler + ExponentialBackOff + DeadLetterPublishingRecoverer) |
 | §7.1.7 | 사가 **step(도메인)/flow(중앙)** 분리·보상·타임아웃·계약 의존 한 방향 | **flow**: `orchestrator-service: application/OrderFulfillmentSaga` · **엔진**: `platform-core: common/saga/SagaStore·JdbcSagaStore` · **step**: 각 서비스 커맨드 핸들러(`OmsService·TmsService·BmsService`) · 계약: `contracts` |
 | §7.1.8 | docker-compose 한 방·골든패스 | `docker-compose.yml` · 아래 골든패스 |
 
@@ -79,8 +79,24 @@ POST /demo/orders (OMS)
 3. 소비: `registry.register("<group>", MyEvent.class, this::onMyEvent)` + 핸들러
 4. 사가로 엮을 땐 비즈 개발자는 step(핸들러)만 만들고, **중앙 flow 조합은 orchestrator에서**(플랫폼 오너) — 비즈 서비스는 Saga를 모른다.
 
-## 예제라서 단순화한 것
+## 테스트 (§7.1.8 3층)
+
+- **단위** — `OmsServiceUnitTest` + `FakeEventPublisher`: 인프라 0, 비즈 로직만.
+- **계약** — `ContractCatalogTest`: 모든 `@EventContract` 유일성 + 토픽 유도(앞 두 마디) 규칙.
+- **왕복(Testcontainers)** — `EventBackboneIT`: Postgres+Kafka 실제 기동 → confirm→outbox→릴레이→Kafka 발행 확인 + oms.cmd 소비→주문 CANCELLED→**Inbox 멱등**(같은 eventId 재전송해도 1회만).
+
+```bash
+./gradlew :oms-service:test        # 3층 전부 (Testcontainers = Docker 필요)
+./gradlew :oms-service:test --tests "*UnitTest" --tests "*ContractCatalogTest"   # 빠른 층만 (Docker 불필요)
+```
+
+## 확정 스펙 반영 (§7.1.x 그대로)
+
+`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(미발행 최고령 나이) · `Kafka String (de)serializer 명시`.
+
+## 예제라서 여전히 단순화한 것
 
 - **사가 = 얇은 구체 오케스트레이터**(가독성): 실제는 step/flow 선언형 엔진(§7.1.7, Eventuate Tram 스타일). 원칙(중앙 flow·보상·correlationId 매칭·타임아웃·비즈 서비스 무지)은 동일.
-- **Schema Registry 없음**(JSON 직접) / **eventId=randomUUID**(실제 UUIDv7) / **백오프=고정간격**(실제 지수) / **auto-create topics=on**(실제 off+IaC).
+- **Schema Registry 없음**(JSON 직접) — eventType 계약은 `ContractCatalog` + 계약 테스트로 대체. 실제는 레지스트리 + CI 게이트.
 - 4 DB를 한 PostgreSQL 인스턴스에(예제 편의). 실제 DB-per-service는 인스턴스 분리 가능.
+- **범위 밖**(§7.1.x 문서 참조): CDC 릴레이 승격 · JWT 테넌트 검증 · BO 재주입 UI · 이벤트 스토어(콜드).

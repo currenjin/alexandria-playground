@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: "classpath:event-topics.yml"   # §7.1.2 공통 토픽 카탈로그(as-code)
   application: { name: oms-service }
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/oms}
@@ -6,10 +8,19 @@ spring:
     password: ${DB_PASSWORD:ebe}
   kafka:
     bootstrap-servers: ${KAFKA:localhost:9092}
-    consumer: { auto-offset-reset: earliest, enable-auto-commit: false }
-    producer: { acks: all, properties: { enable.idempotence: true } }
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties: { enable.idempotence: true }
 
-server: { port: ${PORT:8080} }
+server:
+  port: ${PORT:8080}
 
 platform:
   events:
