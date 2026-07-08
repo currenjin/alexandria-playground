@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * §7.1.4 폴링 릴레이 — 커밋된 outbox 미발행 행을 seq 순서로 Kafka에 발행 후 마킹.
- * FOR UPDATE SKIP LOCKED로 다중 인스턴스 중복 발행 방지. 발행 후 마킹 전 크래시 → 재발행(중복)은
- * 소비 측 Inbox(§7.1.5)가 막는다 = at-least-once.
+ * Outbox 폴링 릴레이. 미발행 행을 seq 순서로 Kafka에 발행하고 마킹한다.
+ * {@code FOR UPDATE SKIP LOCKED}로 다중 인스턴스에서도 중복 발행이 없고, 발행-마킹 사이 크래시로 인한
+ * 재발행은 소비 측 inbox가 흡수한다(at-least-once).
  */
 @Component
 public class OutboxRelay {
@@ -42,7 +42,7 @@ public class OutboxRelay {
     }
 
     @Scheduled(fixedDelayString = "${platform.events.relay.poll-interval-ms:200}")
-    @Transactional   // FOR UPDATE SKIP LOCKED 락을 발행·마킹까지 유지 (다중 인스턴스 안전)
+    @Transactional
     public void relay() {
         List<Map<String, Object>> rows = jdbc.queryForList(
             "SELECT event_id, event_type, version, occurred_at, aggregate_id, tenant_id, corp_id, "
@@ -55,12 +55,11 @@ public class OutboxRelay {
                 String topic = EventTypes.topicOf(eventType);
                 String key = (String) r.get("aggregate_id");
                 String envelopeJson = mapper.writeValueAsString(toEnvelope(r));
-                kafka.send(topic, key, envelopeJson).get();   // acks=all 대기
+                kafka.send(topic, key, envelopeJson).get();
                 jdbc.update("UPDATE outbox SET published_at = now() WHERE event_id = ?", r.get("event_id"));
                 log.debug("relay -> {} key={} type={}", topic, key, eventType);
             } catch (Exception e) {
-                // 순서 보존: 실패 지점에서 멈추고 다음 주기에 seq 순서로 재시도 (§7.1.3/§7.1.4)
-                log.warn("발행 실패, 다음 폴링에 재개: {}", r.get("event_id"), e);
+                log.warn("relay 실패, 다음 폴링에 재개: {}", r.get("event_id"), e);
                 break;
             }
         }

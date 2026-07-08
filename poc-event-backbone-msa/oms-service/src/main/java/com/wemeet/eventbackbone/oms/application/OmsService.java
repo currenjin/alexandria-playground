@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 애플리케이션 서비스 (application 레이어). 유스케이스: 주문 확정 / 취소(보상).
- * 사가를 모른다 — 커맨드 핸들러(step)만 등록.
+ * 주문 유스케이스: 확정 / 취소(보상). 사가를 모르고 커맨드 핸들러(step)만 등록한다.
  */
 @Service
 public class OmsService {
@@ -34,10 +33,9 @@ public class OmsService {
 
     @PostConstruct
     void register() {
-        registry.register("oms", CancelOrder.class, this::onCancelOrder);   // 보상 커맨드 처리
+        registry.register("oms", CancelOrder.class, this::onCancelOrder);
     }
 
-    /** 주문 확정 — 도메인 저장 + publish가 같은 트랜잭션(§7.1.3). */
     @Transactional
     public void confirm(String orderId, String customerId, String amount, String currency) {
         orders.save(Order.confirm(orderId, customerId, amount, currency));
@@ -45,7 +43,6 @@ public class OmsService {
         log.info("주문 확정 {} amount={}", orderId, amount);
     }
 
-    /** 보상: 사가가 CancelOrder 커맨드를 보냄. */
     void onCancelOrder(CancelOrder cmd) {
         orders.updateStatus(cmd.orderId(), Order.CANCELLED);
         events.publish(new OrderCancelled(cmd.orderId(), cmd.reason()));

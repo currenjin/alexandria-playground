@@ -20,8 +20,8 @@ public class TopicCatalogProperties {
 
     public static class TopicSpec {
         private String name;
-        private int partitions = 12;              // §7.1.2 약수 많은 12로 시작
-        private long retentionMs = 604_800_000L;  // 기본 7일
+        private int partitions = 12;
+        private long retentionMs = 604_800_000L;
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }

@@ -4,7 +4,6 @@ package com.wemeet.eventbackbone.contracts;
 public final class TripContracts {
     private TripContracts() {}
 
-    // 커맨드 — 사가가 TMS에 배차 지시
     @EventContract(type = "tms.cmd.create_trip", version = 1)
     public record CreateTrip(String orderId, String amount, String currency) implements DomainEvent {
         @Override public String aggregateId() { return orderId; }
@@ -14,7 +13,6 @@ public final class TripContracts {
         @Override public String aggregateId() { return tripId; }
     }
 
-    // 이벤트 — 배차 결과
     @EventContract(type = "tms.trip.dispatched", version = 1)
     public record TripDispatched(String tripId, String orderId, String carrierId) implements DomainEvent {
         @Override public String aggregateId() { return tripId; }

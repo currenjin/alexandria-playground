@@ -12,10 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.function.Consumer;
 
 /**
- * 공통 소비 파이프라인 (§7.1.5) — 모든 @KafkaListener가 이걸 통해 처리.
- * ① 봉투 파싱 ② Inbox 멱등(ON CONFLICT DO NOTHING) ③ 컨텍스트 복원 ④ 핸들러 디스패치.
- * 전체가 한 트랜잭션: inbox 기록 + 핸들러 도메인 쓰기 + (핸들러가 발행하면) outbox INSERT가 함께 커밋.
- * 핸들러 예외 → 롤백(inbox 포함) → 재전달 시 재처리. 재시도 소진 시 DLT (§7.1.6, 컨테이너 에러 핸들러).
+ * 공통 소비 파이프라인. 모든 @KafkaListener가 이걸 통해 처리한다.
+ * envelope 파싱 → inbox 멱등 → 컨텍스트 복원 → 핸들러 디스패치가 한 트랜잭션으로 묶여,
+ * 핸들러가 실패하면 inbox 기록까지 롤백돼 재전달 때 다시 처리된다. 역직렬화 실패는 재시도 없이 DLT로 보낸다.
  */
 @Component
 public class EventConsumerSupport {
@@ -38,28 +37,25 @@ public class EventConsumerSupport {
         try {
             env = mapper.readValue(envelopeJson, Envelope.class);
         } catch (Exception e) {
-            // 역직렬화 실패 = 재시도 무의미 → 즉시 DLT (§7.1.6). 런타임 예외로 컨테이너에 위임.
-            throw new NonRetryableEventException("봉투 역직렬화 실패", e);
+            throw new NonRetryableEventException("envelope 역직렬화 실패", e);
         }
 
-        // ② Inbox 멱등: 확인과 기록이 한 번의 INSERT (§7.1.5) — InboxRepository로 위임
         if (!inbox.recordIfNew(group, env.eventId())) {
             log.debug("중복 skip: group={} eventId={}", group, env.eventId());
-            return;                         // 이미 처리 — 핸들러 안 태움
+            return;
         }
 
         Consumer<DomainEvent> handler = registry.lookup(group, env.eventType());
         if (handler == null) {
             log.trace("핸들러 없음(무시): group={} type={}", group, env.eventType());
-            return;                         // 이 그룹이 관심 없는 타입
+            return;
         }
 
-        // ③ 컨텍스트 복원: correlationId 전파 + currentEventId=이 이벤트(다운스트림의 causation)
         FlowContext.open(env.tenantId(), env.corpId(), env.correlationId(), env.eventId());
         try {
             Class<?> clazz = EventTypes.classOf(env.eventType());
             DomainEvent event = (DomainEvent) mapper.treeToValue(env.payload(), clazz);
-            handler.accept(event);          // ④ 도메인 핸들러 (같은 트랜잭션)
+            handler.accept(event);
         } catch (NonRetryableEventException e) {
             throw e;
         } catch (Exception e) {

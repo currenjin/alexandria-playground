@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface EventContract {
-    String type();          // 예: "oms.order.confirmed"
+    String type();
     int version() default 1;
 }

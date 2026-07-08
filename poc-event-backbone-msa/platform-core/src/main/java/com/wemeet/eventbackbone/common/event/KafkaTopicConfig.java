@@ -22,7 +22,7 @@ public class KafkaTopicConfig {
         NewTopic[] topics = props.getTopics().stream()
                 .map(t -> TopicBuilder.name(t.getName())
                         .partitions(t.getPartitions())
-                        .replicas(1)   // 예제 단일 브로커. 실제 3+.
+                        .replicas(1)
                         .config(TopicConfig.RETENTION_MS_CONFIG, String.valueOf(t.getRetentionMs()))
                         .build())
                 .toArray(NewTopic[]::new);

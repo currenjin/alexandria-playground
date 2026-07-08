@@ -29,7 +29,7 @@ public class RetentionCleaner {
         this.inboxDays = inboxDays;
     }
 
-    @Scheduled(fixedDelayString = "${platform.events.retention.scan-ms:3600000}")   // 1시간
+    @Scheduled(fixedDelayString = "${platform.events.retention.scan-ms:3600000}")
     @Transactional
     public void clean() {
         int ob = jdbc.update(

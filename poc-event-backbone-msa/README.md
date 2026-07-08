@@ -1,6 +1,6 @@
 # poc-event-backbone-msa
 
-이벤트 기반 MSA의 **이벤트 백본**(봉투 · Outbox · 폴링 릴레이 · Inbox 멱등 · DLT · Saga)을 실제로 구현·검증한 예제.
+이벤트 기반 MSA의 **이벤트 백본**(envelope · Outbox · 폴링 릴레이 · Inbox 멱등 · DLT · Saga)을 실제로 구현·검증한 예제.
 **OMS·TMS·BMS는 각각 독립 배포되는 비즈 서비스**, **orchestrator는 플랫폼 오너 소유의 중앙 사가**다. 모두 Kafka 이벤트로만 통신하고, 각 서비스는 **레이어드 아키텍처**(api / application / domain / infrastructure).
 
 > 본문에 나오는 절 번호(§7.1.x)는 이 예제의 설계 근거가 된 내부 설계 문서의 "이벤트 백본" 챕터를 가리키는 라벨이다.
@@ -10,7 +10,7 @@
 ```
 poc-event-backbone-msa/
 ├── contracts/             # 공유 계약: 이벤트·커맨드 record + @EventContract (Spring 무의존)
-├── platform-core/         # 공통 인프라(라이브러리): 봉투·EventPublisher·Outbox 릴레이·Inbox 멱등·DLT·사가 엔진(common/saga)
+├── platform-core/         # 공통 인프라(라이브러리): envelope·EventPublisher·Outbox 릴레이·Inbox 멱등·DLT·사가 엔진(common/saga)
 ├── orchestrator-service/  # ★ 중앙 사가(플랫폼 오너 소유): 흐름 정의 + saga_instance DB. DB=orchestrator (§7.1.7)
 ├── oms-service/           # 주문. 사가 step만(주문확정=진입, 취소=보상) — 사가를 모른다. REST 진입점. DB=oms
 ├── tms-service/           # 배차. 사가 step만. DB=tms
@@ -63,10 +63,10 @@ POST /demo/orders (OMS)
 
 | 절 | 개념 | 코드 |
 | --- | --- | --- |
-| §7.1.1 | 봉투 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
+| §7.1.1 | envelope 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
 | §7.1.2 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig`+`event-topics.yml`(카탈로그) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
 | §7.1.3 | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `common/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `common/maintenance/RetentionCleaner` |
-| §7.1.4 | 폴링 릴레이·at-least-once·**미발행 최고령 나이 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
+| §7.1.4 | 폴링 릴레이·at-least-once·**outbox lag 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
 | §7.1.5 | 컨슈머 그룹·Inbox 멱등·같은 트랜잭션·7일 보존 | `common/event/EventConsumerSupport` + **`common/inbox/InboxRepository`**(ON CONFLICT) · `RetentionCleaner` |
 | §7.1.6 | 재시도→DLT·**지수 백오프 1s→4s→16s**·non-retryable 즉시 DLT | `common/event/EventInfraConfig`(DefaultErrorHandler + ExponentialBackOff + DeadLetterPublishingRecoverer) |
 | §7.1.7 | 사가 **step(도메인)/flow(중앙)** 분리·보상·타임아웃·계약 의존 한 방향 | **flow**: `orchestrator-service: application/OrderFulfillmentSaga` · **엔진**: `platform-core: common/saga/SagaStore·JdbcSagaStore` · **step**: 각 서비스 커맨드 핸들러(`OmsService·TmsService·BmsService`) · 계약: `contracts` |
@@ -92,7 +92,7 @@ POST /demo/orders (OMS)
 
 ## 확정 스펙 반영 (§7.1.x 그대로)
 
-`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(미발행 최고령 나이) · `Kafka String (de)serializer 명시` · `컨텍스트 자동주입`(HTTP=`FlowContextFilter`/Kafka=리스너 — **비즈 코드는 컨텍스트를 모름**, JWT 파싱 지점은 필터에 표시).
+`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(outbox lag) · `Kafka String (de)serializer 명시` · `컨텍스트 자동주입`(HTTP=`FlowContextFilter`/Kafka=리스너 — **비즈 코드는 컨텍스트를 모름**, JWT 파싱 지점은 필터에 표시).
 
 ## 예제라서 여전히 단순화한 것
 

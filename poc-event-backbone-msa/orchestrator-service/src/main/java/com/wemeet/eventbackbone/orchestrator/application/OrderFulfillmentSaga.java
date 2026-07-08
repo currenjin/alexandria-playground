@@ -25,10 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 주문 이행 사가 = 중앙 flow (§7.1.7). <b>플랫폼 오너가 소유</b>하고 중앙 orchestrator 서비스에 산다.
- * 참여자(OMS·TMS·BMS)는 이 흐름을 모른 채 커맨드/이벤트만 다룬다. 사가 엔진(SagaStore)은 platform-core 공통.
- * 흐름: order.confirmed → CreateTrip → trip.dispatched → ScheduleSettlement → settlement.scheduled(완료)
- * 보상: trip.creation_failed → CancelOrder → COMPENSATED. 매칭 열쇠 = correlationId.
+ * 주문 이행 사가(flow). 플랫폼 오너가 소유하고 중앙 orchestrator에 산다 — 참여자(OMS·TMS·BMS)는 이 흐름을 모른다.
+ * order.confirmed → CreateTrip → trip.dispatched → ScheduleSettlement → settlement.scheduled(완료),
+ * 배차 실패 시 CancelOrder로 보상. 매칭 열쇠는 correlationId. 사가 엔진(SagaStore)은 platform-core 공통.
  */
 @Component
 public class OrderFulfillmentSaga {
@@ -80,12 +79,12 @@ public class OrderFulfillmentSaga {
 
     void onTripCreationFailed(TripCreationFailed e) {
         store.advance(corr(), "COMPENSATING", "compensate", store.state(corr()), null);
-        events.publish(new CancelOrder(e.orderId(), "배차 실패: " + e.reason()));  // 보상
+        events.publish(new CancelOrder(e.orderId(), "배차 실패: " + e.reason()));
         store.finish(corr(), "COMPENSATED");
         log.info("[saga {}] COMPENSATING -> CancelOrder -> COMPENSATED", corr());
     }
 
-    /** §7.1.7 타임아웃 스캐너 — step 무응답 감지 → 보상. (타임아웃≠실패: 실제는 재시도 선행) */
+    /** step 무응답(타임아웃) 감지 → 보상. 타임아웃은 실패가 아니므로 실무에선 재시도가 선행한다. */
     @Scheduled(fixedDelayString = "${platform.events.saga.timeout-scan-ms:1000}")
     @Transactional
     public void scanTimeouts() {
@@ -102,7 +101,10 @@ public class OrderFulfillmentSaga {
         }
     }
 
-    private String corr() { return FlowContext.get().correlationId(); }
+    private String corr() {
+        return FlowContext.get().correlationId();
+    }
+
     private OffsetDateTime deadline() {
         return OffsetDateTime.now(ZoneOffset.UTC).plusNanos(stepTimeoutMs * 1_000_000);
     }

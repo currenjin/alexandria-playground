@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-/** BMS 애플리케이션 서비스. 정산 예정 커맨드 처리(step). */
+/**
+ * 정산 유스케이스: 정산 예정 커맨드 처리(step).
+ */
 @Service
 public class BmsService {
 

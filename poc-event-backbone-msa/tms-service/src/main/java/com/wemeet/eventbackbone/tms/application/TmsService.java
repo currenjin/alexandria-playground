@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 /**
- * TMS 애플리케이션 서비스. 배차/취소 커맨드 처리(step). 사가 무지.
- * 데모: amount="0"이면 "차량 없음" 업무 실패 → 예외가 아니라 TripCreationFailed 발행(§7.1.7).
+ * 배차 유스케이스: 배차/취소 커맨드 처리(step). 사가를 모른다.
+ * 데모에서 amount="0"이면 "차량 없음" 업무 실패로 보고 예외가 아니라 TripCreationFailed를 발행한다.
  */
 @Service
 public class TmsService {
@@ -52,7 +52,7 @@ public class TmsService {
         log.info("배차 완료 {} -> {}", cmd.orderId(), tripId);
     }
 
-    void onCancelTrip(CancelTrip cmd) {   // 보상
+    void onCancelTrip(CancelTrip cmd) {
         trips.updateStatus(cmd.tripId(), Trip.CANCELLED);
         log.info("배차 취소(보상) {}", cmd.tripId());
     }

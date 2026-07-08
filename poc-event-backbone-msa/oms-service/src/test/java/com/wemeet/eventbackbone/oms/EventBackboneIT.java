@@ -26,7 +26,6 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
@@ -34,9 +33,9 @@ import java.util.function.BooleanSupplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * §7.1.8 테스트 2층 — Testcontainers 왕복(Postgres + Kafka로 실제 백본을 관통).
- * 검증: ① 발행 = confirm() → outbox INSERT → 릴레이 → Kafka(oms.order)에 봉투 도착(§7.1.3/4)
- *       ② 소비+멱등 = oms.cmd로 CancelOrder → 주문 CANCELLED + inbox 기록, 같은 eventId 재전송해도 1회만(§7.1.5)
+ * Testcontainers 왕복 테스트(§7.1.8). Postgres + Kafka로 실제 백본을 관통한다.
+ * 발행: confirm() → outbox INSERT → 릴레이 → Kafka(oms.order)에 envelope 도착.
+ * 소비+멱등: oms.cmd로 CancelOrder → 주문 CANCELLED + inbox 기록, 같은 eventId 재전송해도 1회만 처리.
  */
 @SpringBootTest(classes = OmsApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Testcontainers
@@ -67,22 +66,19 @@ class EventBackboneIT {
     void full_round_trip_publish_then_consume_with_idempotency() throws Exception {
         String orderId = "ORD-IT-1";
 
-        // ── ① 발행: confirm()이 outbox INSERT → 릴레이가 oms.order로 발행 ──────────────
         FlowContext.openEntry("dongsuh", "DS-GRP", null);
         try {
-            oms.confirm(orderId, "CUST-IT", "1250000", "KRW");   // @Transactional 프록시 → outbox와 함께 커밋
+            oms.confirm(orderId, "CUST-IT", "1250000", "KRW");
         } finally {
             FlowContext.clear();
         }
         assertThat(jdbc.queryForObject("SELECT status FROM orders WHERE order_id=?", String.class, orderId))
                 .isEqualTo("CONFIRMED");
 
-        // Kafka oms.order 에서 방금 발행된 봉투를 확인 (릴레이가 실제로 내보냄)
         String confirmed = pollFor("oms.order", "reader-order",
                 v -> v.contains("\"oms.order.confirmed\"") && v.contains(orderId), Duration.ofSeconds(20));
         assertThat(confirmed).contains("\"eventType\":\"oms.order.confirmed\"").contains(orderId);
 
-        // ── ② 소비 + Inbox 멱등: oms.cmd로 CancelOrder 커맨드 전송 ────────────────────
         UUID cmdEventId = UuidV7.generate();
         String envelope = mapper.writeValueAsString(new Envelope(
                 cmdEventId, "oms.cmd.cancel_order", 1,
@@ -98,9 +94,8 @@ class EventBackboneIT {
                 "SELECT count(*) FROM inbox WHERE consumer_group='oms' AND event_id=?", Integer.class, cmdEventId);
         assertThat(inboxCount).isEqualTo(1);
 
-        // 같은 eventId 재전송 → Inbox가 중복을 막아 여전히 1건, 주문도 그대로 CANCELLED
         kafka.send("oms.cmd", orderId, envelope).get();
-        Thread.sleep(2000);   // 재처리 시도 시간을 준 뒤에도 변화 없어야 함
+        Thread.sleep(2000);
         assertThat(jdbc.queryForObject(
                 "SELECT count(*) FROM inbox WHERE consumer_group='oms' AND event_id=?", Integer.class, cmdEventId))
                 .isEqualTo(1);
@@ -108,7 +103,14 @@ class EventBackboneIT {
                 .isEqualTo("CANCELLED");
     }
 
-    /** oms.order 등 토픽을 earliest부터 읽어 조건에 맞는 첫 value를 반환(타임아웃 시 실패). */
+    @Test
+    void poison_message_is_routed_to_DLT() throws Exception {
+        kafka.send("oms.cmd", "ORD-poison", "not-a-valid-envelope").get();
+        String dead = pollFor("oms.cmd.DLT", "reader-dlt",
+                v -> v.contains("not-a-valid-envelope"), Duration.ofSeconds(20));
+        assertThat(dead).contains("not-a-valid-envelope");
+    }
+
     private String pollFor(String topic, String group, java.util.function.Predicate<String> match, Duration timeout) {
         Properties p = new Properties();
         p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers());
@@ -130,7 +132,7 @@ class EventBackboneIT {
     private void waitUntil(Duration timeout, BooleanSupplier cond) throws InterruptedException {
         long deadline = System.nanoTime() + timeout.toNanos();
         while (System.nanoTime() < deadline) {
-            try { if (cond.getAsBoolean()) return; } catch (Exception ignore) { /* 아직 행 없음 */ }
+            try { if (cond.getAsBoolean()) return; } catch (Exception ignore) { }
             Thread.sleep(300);
         }
         throw new AssertionError("타임아웃: 조건 미충족");

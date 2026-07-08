@@ -14,7 +14,7 @@ import org.springframework.kafka.support.serializer.DeserializationException;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 /**
- * 이벤트 인프라 배선 (§7.1.6 재시도→DLT 포함).
+ * 이벤트 인프라 배선: ObjectMapper, DLT 에러 핸들러, Kafka 리스너 팩토리.
  */
 @Configuration
 public class EventInfraConfig {
@@ -26,8 +26,9 @@ public class EventInfraConfig {
     }
 
     /**
-     * §7.1.6 — 인메모리 백오프 3회(1s→4s→16s) 후 <원본>.DLT로 produce.
-     * DLT는 Kafka 브로커 기능이 아니라 컨슈머가 스스로 발행 = DeadLetterPublishingRecoverer.
+     * 핸들러 실패 시 인메모리 지수 백오프로 재시도(1s → 4s → 16s)하고, 소진되면 &lt;원본&gt;.DLT로 produce한다.
+     * DLT는 Kafka 브로커 기능이 아니라 컨슈머가 스스로 발행하는 것(DeadLetterPublishingRecoverer).
+     * 역직렬화 실패처럼 재시도가 무의미한 예외는 즉시 DLT로 보낸다.
      */
     @Bean
     public DefaultErrorHandler errorHandler(
@@ -36,20 +37,16 @@ public class EventInfraConfig {
             @Value("${platform.events.retry.backoff-ms:1000}") long initialIntervalMs,
             @Value("${platform.events.retry.multiplier:4.0}") double multiplier) {
 
-        // DLT는 Kafka 브로커 기능이 아니라 컨슈머가 스스로 <원본>.DLT로 produce (§7.1.6).
         var recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (record, ex) -> new org.apache.kafka.common.TopicPartition(record.topic() + ".DLT", -1));
 
-        // §7.1.6 인메모리 지수 백오프 3회 (1s → 4s → 16s) → DLT.
-        // (ExponentialBackOffWithMaxRetries는 이 Spring 버전에 없어 ExponentialBackOff + maxElapsedTime으로 N회 캡)
         double sum = 0, interval = initialIntervalMs;
-        for (int k = 0; k < maxRetries; k++) { sum += interval; interval *= multiplier; }  // 1000+4000+16000
+        for (int k = 0; k < maxRetries; k++) { sum += interval; interval *= multiplier; }
         var backoff = new ExponentialBackOff(initialIntervalMs, multiplier);
-        backoff.setMaxElapsedTime((long) sum);           // maxRetries회 후 STOP → recoverer(DLT)
+        backoff.setMaxElapsedTime((long) sum);
 
         var handler = new DefaultErrorHandler(recoverer, backoff);
-        handler.addNotRetryableExceptions(              // 재시도 무의미 → 즉시 DLT (§7.1.6)
-                NonRetryableEventException.class, DeserializationException.class);
+        handler.addNotRetryableExceptions(NonRetryableEventException.class, DeserializationException.class);
         return handler;
     }
 
