@@ -3,7 +3,7 @@ package com.wemeet.eventbackbone.common.event.transport;
 import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -25,7 +25,7 @@ import org.springframework.kafka.listener.MessageListener;
  * 서비스 코드(도메인·핸들러)는 브로커를 전혀 모른다.
  */
 @Configuration
-@ConditionalOnProperty(name = "platform.events.broker", havingValue = "kafka", matchIfMissing = true)
+@ConditionalOnExpression("'${platform.events.broker:kafka}'.equals('kafka') and !'${platform.events.subscribe-topics:}'.isEmpty()")
 public class KafkaEventSubscriber {
 
     @Bean

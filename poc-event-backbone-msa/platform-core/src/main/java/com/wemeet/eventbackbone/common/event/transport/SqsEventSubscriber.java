@@ -5,7 +5,7 @@ import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * subscribe-topics(=큐)를 구독해 support.consume(group, payload)를 호출한다.
  */
 @Component
-@ConditionalOnProperty(name = "platform.events.broker", havingValue = "sqs")
+@ConditionalOnExpression("'${platform.events.broker:kafka}'.equals('sqs') and !'${platform.events.subscribe-topics:}'.isEmpty()")
 public class SqsEventSubscriber {
 
     private static final Logger log = LoggerFactory.getLogger(SqsEventSubscriber.class);

@@ -22,7 +22,7 @@ public class EventHandlerRegistrar implements BeanPostProcessor {
     private final String group;
 
     public EventHandlerRegistrar(HandlerRegistry registry,
-                                 @Value("${platform.events.consumer-group}") String group) {
+                                 @Value("${platform.events.consumer-group:}") String group) {
         this.registry = registry;
         this.group = group;
     }

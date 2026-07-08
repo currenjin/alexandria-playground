@@ -3,7 +3,7 @@ package com.wemeet.eventbackbone.common.event.transport;
 import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * 설정(consumer-group / subscribe-topics)의 토픽을 버스에서 구독해 공통 소비 파이프라인으로 넘긴다.
  */
 @Component
-@ConditionalOnProperty(name = "platform.events.broker", havingValue = "inmemory")
+@ConditionalOnExpression("'${platform.events.broker:kafka}'.equals('inmemory') and !'${platform.events.subscribe-topics:}'.isEmpty()")
 public class InMemoryEventSubscriber {
 
     public InMemoryEventSubscriber(InMemoryBus bus, EventConsumerSupport support,
