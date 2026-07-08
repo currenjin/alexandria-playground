@@ -7,4 +7,9 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-jdbc'
     api 'org.springframework.kafka:spring-kafka'
     api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // HTTP 진입점 컨텍스트 필터(§7.1.1)용. 웹 서비스에서만 활성(@ConditionalOnWebApplication)이라
+    // compileOnly — 라이브러리가 비-웹 서비스(TMS·BMS)에 web을 강제하지 않는다.
+    compileOnly 'org.springframework:spring-web'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api'
 }

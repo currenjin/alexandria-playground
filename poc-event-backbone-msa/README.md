@@ -63,7 +63,7 @@ POST /demo/orders (OMS)
 
 | 절 | 개념 | 코드 |
 | --- | --- | --- |
-| §7.1.1 | 봉투 8필드·논리명 eventType·컨텍스트 자동·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext` |
+| §7.1.1 | 봉투 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
 | §7.1.2 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig`+`event-topics.yml`(카탈로그) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
 | §7.1.3 | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `common/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `common/maintenance/RetentionCleaner` |
 | §7.1.4 | 폴링 릴레이·at-least-once·**미발행 최고령 나이 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
@@ -92,7 +92,7 @@ POST /demo/orders (OMS)
 
 ## 확정 스펙 반영 (§7.1.x 그대로)
 
-`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(미발행 최고령 나이) · `Kafka String (de)serializer 명시`.
+`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(미발행 최고령 나이) · `Kafka String (de)serializer 명시` · `컨텍스트 자동주입`(HTTP=`FlowContextFilter`/Kafka=리스너 — **비즈 코드는 컨텍스트를 모름**, JWT 파싱 지점은 필터에 표시).
 
 ## 예제라서 여전히 단순화한 것
 

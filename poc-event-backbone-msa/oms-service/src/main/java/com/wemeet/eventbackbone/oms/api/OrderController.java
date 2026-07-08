@@ -33,14 +33,10 @@ public class OrderController {
                                            @RequestParam(defaultValue = "CUST-1") String customerId,
                                            @RequestParam(defaultValue = "KRW") String currency) {
         String orderId = "ORD-" + UUID.randomUUID().toString().substring(0, 8);
-        FlowContext.openEntry("dongsuh", "DS-GRP", null);           // correlationId 발급
-        String correlationId = FlowContext.get().correlationId();
-        try {
-            oms.confirm(orderId, customerId, amount, currency);
-        } finally {
-            FlowContext.clear();
-        }
-        return Map.of("orderId", orderId, "correlationId", correlationId,
+        // 컨텍스트(tenant·corp·correlationId)는 공통 FlowContextFilter가 이미 열어둠 — 컨트롤러는 안 건드림(§7.1.1/§7.1.5)
+        oms.confirm(orderId, customerId, amount, currency);
+        return Map.of("orderId", orderId,
+                "correlationId", FlowContext.get().correlationId(),
                 "hint", "0".equals(amount) ? "배차 불가 → 보상 흐름" : "정상 흐름");
     }
 
