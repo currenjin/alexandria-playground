@@ -1,16 +1,14 @@
-# poc-event-backbone-msa
+# event-backbone-example
 
-이벤트 기반 MSA의 **이벤트 백본**(envelope · Outbox · 폴링 릴레이 · Inbox 멱등 · DLT · Saga)을 실제로 구현·검증한 예제.
+확정된 **이벤트 백본**(`design/framework/공통-확정.md §7.1.1~7.1.8`)을 MSA로 구현한 실행 가능한 예제.
 **OMS·TMS·BMS는 각각 독립 배포되는 비즈 서비스**, **orchestrator는 플랫폼 오너 소유의 중앙 사가**다. 모두 Kafka 이벤트로만 통신하고, 각 서비스는 **레이어드 아키텍처**(api / application / domain / infrastructure).
-
-> 본문에 나오는 절 번호(§7.1.x)는 이 예제의 설계 근거가 된 내부 설계 문서의 "이벤트 백본" 챕터를 가리키는 라벨이다.
 
 > 🧑‍💻 **비즈니스 개발자라면** → [GUIDE.md](GUIDE.md) — 당신이 할 일(3단계)만 먼저, 그 아래로 내부 로직 뎁스다운.
 
 ## 모듈 구조
 
 ```
-poc-event-backbone-msa/
+event-backbone-example/
 ├── contracts/             # 공유 계약: 이벤트·커맨드 record + @EventContract (Spring 무의존)
 ├── platform-core/         # 공통 인프라(라이브러리): envelope·EventPublisher·Outbox 릴레이·Inbox 멱등·DLT·사가 엔진(common/saga)
 ├── orchestrator-service/  # ★ 중앙 사가(플랫폼 오너 소유): 흐름 정의 + saga_instance DB. DB=orchestrator (§7.1.7)
@@ -44,6 +42,21 @@ curl "http://localhost:8083/demo/saga/ORD-yyyy"                  # orchestrator:
 
 로컬(도커 인프라만) 개발: `docker compose up kafka postgres` 후 각 서비스를 `./gradlew :orchestrator-service:bootRun` 등으로.
 
+## 실시간 관찰 — 라이브 대시보드 (`monitor/`)
+
+`docker compose up` 후, **실제 구동 중인 스택**에서 이벤트·사가·outbox·inbox·도메인이 흐르는 걸 브라우저로 실시간 관찰한다.
+
+```bash
+python3 monitor/serve.py       # 표준 라이브러리만 — 별도 설치 없음
+# → http://localhost:8900
+```
+
+- 각 서비스 DB(oms/tms/bms/orchestrator)를 1초 주기로 폴링해 **outbox(발행 여부)·inbox(멱등)·도메인 상태·saga_instance**를 그린다.
+- 새 이벤트가 발행되면 ✉ 토큰이 **producer→consumer**로 이동하고 Kafka 토픽 칩이 반짝인다. **correlationId 색**으로 한 주문의 여정을 묶어 본다.
+- 상단 **[정상 흐름 실행] / [보상 흐름 실행]** 버튼으로 시나리오를 직접 트리거한다(→ `POST /demo/orders`, amount=0이면 보상).
+
+> 시뮬레이션(위키)이 "코드 관통"을 짜인 데이터로 보여준다면, 이 대시보드는 **실제 DB를 읽어 실동작**을 보여준다.
+
 ## MSA 이벤트 통신 흐름
 
 ```
@@ -61,7 +74,7 @@ POST /demo/orders (OMS)
 
 흐름 신호(oms.order/tms.trip/bms.settlement)는 **중앙 orchestrator**가 구독하고, 커맨드(oms.cmd/tms.cmd/bms.cmd)는 각 참여자 서비스가 구독한다. 참여자는 자기가 어느 사가에 속하는지 모른다.
 
-## 코드 ↔ 설계(§7.1.x)
+## 코드 ↔ 확정 설계(§7.1.x)
 
 | 절 | 개념 | 코드 |
 | --- | --- | --- |
