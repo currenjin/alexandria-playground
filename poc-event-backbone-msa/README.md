@@ -79,11 +79,14 @@ POST /demo/orders (OMS)
 3. 소비: `registry.register("<group>", MyEvent.class, this::onMyEvent)` + 핸들러
 4. 사가로 엮을 땐 비즈 개발자는 step(핸들러)만 만들고, **중앙 flow 조합은 orchestrator에서**(플랫폼 오너) — 비즈 서비스는 Saga를 모른다.
 
-## 테스트 (§7.1.8 3층)
+## 테스트 방법 (§7.1.8 3층)
+
+시뮬레이션이 보여주는 흐름은 여기서 실제로 검증된다.
 
 - **단위** — `OmsServiceUnitTest` + `FakeEventPublisher`: 인프라 0, 비즈 로직만.
 - **계약** — `ContractCatalogTest`: 모든 `@EventContract` 유일성 + 토픽 유도(앞 두 마디) 규칙.
-- **왕복(Testcontainers)** — `EventBackboneIT`: Postgres+Kafka 실제 기동 → confirm→outbox→릴레이→Kafka 발행 확인 + oms.cmd 소비→주문 CANCELLED→**Inbox 멱등**(같은 eventId 재전송해도 1회만).
+- **왕복(Testcontainers)** — `EventBackboneIT`: Postgres+Kafka 실제 기동으로 ① 발행(confirm→outbox→릴레이→Kafka) ② 소비+**Inbox 멱등**(oms.cmd→주문 CANCELLED, 재전송해도 1회) ③ **DLT**(`poison_message_is_routed_to_DLT`: 손상 메시지→`oms.cmd.DLT`) 검증.
+- **크로스서비스 왕복(정상/보상)** — `docker compose up --build` 후 위 "실행" 섹션 골든패스 curl(order=CONFIRMED·saga=COMPLETED / amount=0 → CANCELLED·COMPENSATED).
 
 ```bash
 ./gradlew :oms-service:test        # 3층 전부 (Testcontainers = Docker 필요)

@@ -7,15 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -28,10 +27,16 @@ public class OutboxRelay {
 
     private static final Logger log = LoggerFactory.getLogger(OutboxRelay.class);
 
+    private static final String SELECT_UNPUBLISHED = """
+        SELECT event_id, event_type, version, occurred_at, aggregate_id, tenant_id, corp_id,
+               correlation_id, caused_by_event_id, payload::text AS payload
+        FROM outbox WHERE published_at IS NULL ORDER BY seq LIMIT ? FOR UPDATE SKIP LOCKED""";
+
     private final JdbcTemplate jdbc;
     private final KafkaTemplate<String, String> kafka;
     private final ObjectMapper mapper;
     private final int batchSize;
+    private final RowMapper<Envelope> envelopeMapper;
 
     public OutboxRelay(JdbcTemplate jdbc, KafkaTemplate<String, String> kafka, ObjectMapper mapper,
                        @Value("${platform.events.relay.batch-size:500}") int batchSize) {
@@ -39,44 +44,39 @@ public class OutboxRelay {
         this.kafka = kafka;
         this.mapper = mapper;
         this.batchSize = batchSize;
+        this.envelopeMapper = (rs, n) -> {
+            try {
+                return new Envelope(
+                        rs.getObject("event_id", UUID.class),
+                        rs.getString("event_type"),
+                        rs.getInt("version"),
+                        rs.getObject("occurred_at", OffsetDateTime.class),
+                        rs.getString("aggregate_id"),
+                        rs.getString("tenant_id"),
+                        rs.getString("corp_id"),
+                        rs.getString("correlation_id"),
+                        rs.getObject("caused_by_event_id", UUID.class),
+                        mapper.readTree(rs.getString("payload")));
+            } catch (Exception e) {
+                throw new IllegalStateException("outbox 행 매핑 실패", e);
+            }
+        };
     }
 
     @Scheduled(fixedDelayString = "${platform.events.relay.poll-interval-ms:200}")
     @Transactional
     public void relay() {
-        List<Map<String, Object>> rows = jdbc.queryForList(
-            "SELECT event_id, event_type, version, occurred_at, aggregate_id, tenant_id, corp_id, "
-          + "correlation_id, caused_by_event_id, payload::text AS payload "
-          + "FROM outbox WHERE published_at IS NULL ORDER BY seq LIMIT ? FOR UPDATE SKIP LOCKED",
-            batchSize);
-        for (Map<String, Object> r : rows) {
+        List<Envelope> batch = jdbc.query(SELECT_UNPUBLISHED, envelopeMapper, batchSize);
+        for (Envelope env : batch) {
             try {
-                String eventType = (String) r.get("event_type");
-                String topic = EventTypes.topicOf(eventType);
-                String key = (String) r.get("aggregate_id");
-                String envelopeJson = mapper.writeValueAsString(toEnvelope(r));
-                kafka.send(topic, key, envelopeJson).get();
-                jdbc.update("UPDATE outbox SET published_at = now() WHERE event_id = ?", r.get("event_id"));
-                log.debug("relay -> {} key={} type={}", topic, key, eventType);
+                String topic = EventTypes.topicOf(env.eventType());
+                kafka.send(topic, env.aggregateId(), mapper.writeValueAsString(env)).get();
+                jdbc.update("UPDATE outbox SET published_at = now() WHERE event_id = ?", env.eventId());
+                log.debug("relay -> {} key={} type={}", topic, env.aggregateId(), env.eventType());
             } catch (Exception e) {
-                log.warn("relay 실패, 다음 폴링에 재개: {}", r.get("event_id"), e);
+                log.warn("relay 실패, 다음 폴링에 재개: {}", env.eventId(), e);
                 break;
             }
         }
-    }
-
-    private Envelope toEnvelope(Map<String, Object> r) throws Exception {
-        return new Envelope(
-            (UUID) r.get("event_id"),
-            (String) r.get("event_type"),
-            ((Number) r.get("version")).intValue(),
-            ((Timestamp) r.get("occurred_at")).toInstant().atOffset(ZoneOffset.UTC),
-            (String) r.get("aggregate_id"),
-            (String) r.get("tenant_id"),
-            (String) r.get("corp_id"),
-            (String) r.get("correlation_id"),
-            (UUID) r.get("caused_by_event_id"),
-            mapper.readTree((String) r.get("payload"))
-        );
     }
 }
