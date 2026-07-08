@@ -24,6 +24,7 @@ server:
 
 platform:
   events:
+    consumer-group: saga
     relay: { poll-interval-ms: 200, batch-size: 500 }
     retry: { max-attempts: 3, backoff-ms: 1000 }
     saga:  { timeout-scan-ms: 1000, step-timeout-ms: 30000 }

@@ -8,7 +8,7 @@
 
 1. **이벤트/커맨드 정의** — `contracts`에 record + `@EventContract` 한 줄
 2. **발행** — 유스케이스 안에서 `events.publish(new MyEvent(...))`
-3. **소비** — `registry.register("<그룹>", MyEvent.class, this::onMyEvent)` + 핸들러 메소드
+3. **소비** — 핸들러 메소드에 `@EventHandler` 한 줄 (공통이 자동 등록)
 
 그게 전부다. 아래는 각각의 실제 예시.
 
@@ -46,22 +46,16 @@ public void confirm(String orderId, String customerId, String amount, String cur
 
 ## 3. 이벤트/커맨드 소비
 
-핸들러를 등록하고 메소드만 쓴다. `@KafkaListener`·멱등·트랜잭션은 서비스에 이미 배선돼 있다.
+메소드에 `@EventHandler`만 붙이면 **공통이 자동 등록**한다(이벤트 타입은 파라미터에서, 그룹은 서비스 설정 `platform.events.consumer-group`에서). 등록·`@KafkaListener`·멱등·트랜잭션은 전부 공통.
 
 ```java
-@PostConstruct
-void register() {
-    registry.register("tms", CreateTrip.class, this::onCreateTrip);
-}
-
+@EventHandler
 void onCreateTrip(CreateTrip cmd) {
-    // 비즈 로직만. 중복 방지·컨텍스트·트랜잭션은 공통이 처리.
+    // 비즈 로직만. 등록·중복 방지·컨텍스트·트랜잭션은 공통이 처리.
     trips.save(new Trip(...));
     events.publish(new TripDispatched(...));   // 후속 이벤트도 그냥 publish
 }
 ```
-
-- `"tms"` = 이 서비스의 컨슈머 그룹 이름.
 
 ## 4. 사가에 참여하려면 (step만)
 

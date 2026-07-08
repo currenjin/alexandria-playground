@@ -1,8 +1,8 @@
 package com.wemeet.eventbackbone.orchestrator.application;
 
 import com.wemeet.eventbackbone.common.context.FlowContext;
+import com.wemeet.eventbackbone.common.event.EventHandler;
 import com.wemeet.eventbackbone.common.event.EventPublisher;
-import com.wemeet.eventbackbone.common.event.HandlerRegistry;
 import com.wemeet.eventbackbone.common.saga.SagaStore;
 import com.wemeet.eventbackbone.contracts.OrderContracts.CancelOrder;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderConfirmed;
@@ -11,7 +11,6 @@ import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementSchedule
 import com.wemeet.eventbackbone.contracts.TripContracts.CreateTrip;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripCreationFailed;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripDispatched;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,25 +36,16 @@ public class OrderFulfillmentSaga {
 
     private final SagaStore store;
     private final EventPublisher events;
-    private final HandlerRegistry registry;
     private final long stepTimeoutMs;
 
-    public OrderFulfillmentSaga(SagaStore store, EventPublisher events, HandlerRegistry registry,
+    public OrderFulfillmentSaga(SagaStore store, EventPublisher events,
                                 @Value("${platform.events.saga.step-timeout-ms:30000}") long stepTimeoutMs) {
         this.store = store;
         this.events = events;
-        this.registry = registry;
         this.stepTimeoutMs = stepTimeoutMs;
     }
 
-    @PostConstruct
-    void register() {
-        registry.register("saga", OrderConfirmed.class, this::onOrderConfirmed);
-        registry.register("saga", TripDispatched.class, this::onTripDispatched);
-        registry.register("saga", TripCreationFailed.class, this::onTripCreationFailed);
-        registry.register("saga", SettlementScheduled.class, this::onSettlementScheduled);
-    }
-
+    @EventHandler
     void onOrderConfirmed(OrderConfirmed e) {
         Map<String, Object> state = new HashMap<>(Map.of(
                 "orderId", e.orderId(), "amount", e.amount(), "currency", e.currency()));
@@ -64,6 +54,7 @@ public class OrderFulfillmentSaga {
         log.info("[saga {}] STARTED -> CreateTrip({})", corr(), e.orderId());
     }
 
+    @EventHandler
     void onTripDispatched(TripDispatched e) {
         Map<String, Object> state = store.state(corr());
         state.put("tripId", e.tripId());
@@ -72,11 +63,13 @@ public class OrderFulfillmentSaga {
         log.info("[saga {}] DISPATCHED(trip={}) -> ScheduleSettlement", corr(), e.tripId());
     }
 
+    @EventHandler
     void onSettlementScheduled(SettlementScheduled e) {
         store.finish(corr(), "COMPLETED");
         log.info("[saga {}] COMPLETED (settlement={})", corr(), e.settlementId());
     }
 
+    @EventHandler
     void onTripCreationFailed(TripCreationFailed e) {
         store.advance(corr(), "COMPENSATING", "compensate", store.state(corr()), null);
         events.publish(new CancelOrder(e.orderId(), "배차 실패: " + e.reason()));

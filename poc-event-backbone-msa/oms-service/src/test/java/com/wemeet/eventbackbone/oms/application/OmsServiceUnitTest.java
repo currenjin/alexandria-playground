@@ -1,6 +1,5 @@
 package com.wemeet.eventbackbone.oms.application;
 
-import com.wemeet.eventbackbone.common.event.HandlerRegistry;
 import com.wemeet.eventbackbone.contracts.OrderContracts.CancelOrder;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderConfirmed;
@@ -19,7 +18,7 @@ class OmsServiceUnitTest {
 
     private final FakeEventPublisher events = new FakeEventPublisher();
     private final InMemoryOrderRepository orders = new InMemoryOrderRepository();
-    private final OmsService oms = new OmsService(orders, events, new HandlerRegistry());
+    private final OmsService oms = new OmsService(orders, events);
 
     @Test
     void confirm_saves_order_and_publishes_OrderConfirmed() {

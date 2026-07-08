@@ -68,7 +68,7 @@ POST /demo/orders (OMS)
 | §7.1.1 | envelope 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `common/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · common/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
 | §7.1.2 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig`+`event-topics.yml`(카탈로그) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
 | §7.1.3 | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `common/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `common/maintenance/RetentionCleaner` |
-| §7.1.4 | 폴링 릴레이·at-least-once·**outbox lag 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
+| §7.1.4 | 폴링 릴레이·at-least-once·**age of oldest message 감시** | `common/outbox/OutboxRelay` · `common/maintenance/RelayLagMonitor` |
 | §7.1.5 | 컨슈머 그룹·Inbox 멱등·같은 트랜잭션·7일 보존 | `common/event/EventConsumerSupport` + **`common/inbox/InboxRepository`**(ON CONFLICT) · `RetentionCleaner` |
 | §7.1.6 | 재시도→DLT·**지수 백오프 1s→4s→16s**·non-retryable 즉시 DLT | `common/event/EventInfraConfig`(DefaultErrorHandler + ExponentialBackOff + DeadLetterPublishingRecoverer) |
 | §7.1.7 | 사가 **step(도메인)/flow(중앙)** 분리·보상·타임아웃·계약 의존 한 방향 | **flow**: `orchestrator-service: application/OrderFulfillmentSaga` · **엔진**: `platform-core: common/saga/SagaStore·JdbcSagaStore` · **step**: 각 서비스 커맨드 핸들러(`OmsService·TmsService·BmsService`) · 계약: `contracts` |
@@ -78,7 +78,7 @@ POST /demo/orders (OMS)
 
 1. `contracts/`에 record + `@EventContract` + `ContractCatalog.ALL`에 등록
 2. 발행: 서비스 application 레이어에서 `events.publish(new MyEvent(...))`
-3. 소비: `registry.register("<group>", MyEvent.class, this::onMyEvent)` + 핸들러
+3. 소비: 핸들러 메소드에 `@EventHandler` 한 줄 (공통이 자동 등록 — 그룹=`platform.events.consumer-group`)
 4. 사가로 엮을 땐 비즈 개발자는 step(핸들러)만 만들고, **중앙 flow 조합은 orchestrator에서**(플랫폼 오너) — 비즈 서비스는 Saga를 모른다.
 
 ## 테스트 방법 (§7.1.8 3층)
@@ -97,7 +97,7 @@ POST /demo/orders (OMS)
 
 ## 확정 스펙 반영 (§7.1.x 그대로)
 
-`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(outbox lag) · `Kafka String (de)serializer 명시` · `컨텍스트 자동주입`(HTTP=`FlowContextFilter`/Kafka=리스너 — **비즈 코드는 컨텍스트를 모름**, JWT 파싱 지점은 필터에 표시).
+`eventId=UUIDv7`(시간순, `UuidV7`) · `DLT 지수 백오프 1s→4s→16s`(`ExponentialBackOff`) · `토픽 as-code 카탈로그`(`event-topics.yml` — 파티션 12·리텐션 선언) + `auto-create off` · `활성 트랜잭션 밖 publish=예외` · `보존 배치`(outbox/inbox 7일·DLT 30일) · `릴레이 지연 감시`(age of oldest message) · `Kafka String (de)serializer 명시` · `컨텍스트 자동주입`(HTTP=`FlowContextFilter`/Kafka=리스너 — **비즈 코드는 컨텍스트를 모름**, JWT 파싱 지점은 필터에 표시).
 
 ## 예제라서 여전히 단순화한 것
 

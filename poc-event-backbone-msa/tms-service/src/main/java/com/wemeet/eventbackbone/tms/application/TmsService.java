@@ -1,14 +1,13 @@
 package com.wemeet.eventbackbone.tms.application;
 
+import com.wemeet.eventbackbone.common.event.EventHandler;
 import com.wemeet.eventbackbone.common.event.EventPublisher;
-import com.wemeet.eventbackbone.common.event.HandlerRegistry;
 import com.wemeet.eventbackbone.contracts.TripContracts.CancelTrip;
 import com.wemeet.eventbackbone.contracts.TripContracts.CreateTrip;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripCreationFailed;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripDispatched;
 import com.wemeet.eventbackbone.tms.domain.Trip;
 import com.wemeet.eventbackbone.tms.domain.TripRepository;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 /**
- * 배차 유스케이스: 배차/취소 커맨드 처리(step). 사가를 모른다.
- * 데모에서 amount="0"이면 "차량 없음" 업무 실패로 보고 예외가 아니라 TripCreationFailed를 발행한다.
+ * 배차 유스케이스(step). 사가는 모른다. 데모에서 amount="0"이면 배차 실패로 보고 실패 이벤트를 낸다.
  */
 @Service
 public class TmsService {
@@ -26,20 +24,13 @@ public class TmsService {
 
     private final TripRepository trips;
     private final EventPublisher events;
-    private final HandlerRegistry registry;
 
-    public TmsService(TripRepository trips, EventPublisher events, HandlerRegistry registry) {
+    public TmsService(TripRepository trips, EventPublisher events) {
         this.trips = trips;
         this.events = events;
-        this.registry = registry;
     }
 
-    @PostConstruct
-    void register() {
-        registry.register("tms", CreateTrip.class, this::onCreateTrip);
-        registry.register("tms", CancelTrip.class, this::onCancelTrip);
-    }
-
+    @EventHandler
     void onCreateTrip(CreateTrip cmd) {
         if ("0".equals(cmd.amount())) {
             events.publish(new TripCreationFailed(cmd.orderId(), "NO_VEHICLE"));
@@ -52,6 +43,7 @@ public class TmsService {
         log.info("배차 완료 {} -> {}", cmd.orderId(), tripId);
     }
 
+    @EventHandler
     void onCancelTrip(CancelTrip cmd) {
         trips.updateStatus(cmd.tripId(), Trip.CANCELLED);
         log.info("배차 취소(보상) {}", cmd.tripId());

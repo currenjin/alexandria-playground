@@ -3,12 +3,12 @@ package com.wemeet.eventbackbone.common.outbox;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.event.Envelope;
 import com.wemeet.eventbackbone.common.event.EventTypes;
+import com.wemeet.eventbackbone.common.event.MessageTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Outbox 폴링 릴레이. 미발행 행을 seq 순서로 Kafka에 발행하고 마킹한다.
+ * Outbox 폴링 릴레이. 미발행 행을 seq 순서로 브로커에 발행하고 마킹한다.
+ * 전송은 {@link MessageTransport} 포트에만 의존한다 — 브로커(Kafka→SQS 등) 교체 지점.
  * {@code FOR UPDATE SKIP LOCKED}로 다중 인스턴스에서도 중복 발행이 없고, 발행-마킹 사이 크래시로 인한
  * 재발행은 소비 측 inbox가 흡수한다(at-least-once).
  */
@@ -33,15 +34,15 @@ public class OutboxRelay {
         FROM outbox WHERE published_at IS NULL ORDER BY seq LIMIT ? FOR UPDATE SKIP LOCKED""";
 
     private final JdbcTemplate jdbc;
-    private final KafkaTemplate<String, String> kafka;
+    private final MessageTransport transport;
     private final ObjectMapper mapper;
     private final int batchSize;
     private final RowMapper<Envelope> envelopeMapper;
 
-    public OutboxRelay(JdbcTemplate jdbc, KafkaTemplate<String, String> kafka, ObjectMapper mapper,
+    public OutboxRelay(JdbcTemplate jdbc, MessageTransport transport, ObjectMapper mapper,
                        @Value("${platform.events.relay.batch-size:500}") int batchSize) {
         this.jdbc = jdbc;
-        this.kafka = kafka;
+        this.transport = transport;
         this.mapper = mapper;
         this.batchSize = batchSize;
         this.envelopeMapper = (rs, n) -> {
@@ -70,7 +71,7 @@ public class OutboxRelay {
         for (Envelope env : batch) {
             try {
                 String topic = EventTypes.topicOf(env.eventType());
-                kafka.send(topic, env.aggregateId(), mapper.writeValueAsString(env)).get();
+                transport.send(topic, env.aggregateId(), mapper.writeValueAsString(env));
                 jdbc.update("UPDATE outbox SET published_at = now() WHERE event_id = ?", env.eventId());
                 log.debug("relay -> {} key={} type={}", topic, env.aggregateId(), env.eventType());
             } catch (Exception e) {
