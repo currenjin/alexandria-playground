@@ -1,8 +1,9 @@
-package com.wemeet.eventbackbone.oms.application;
+package com.wemeet.eventbackbone.orchestrator.application;
 
 import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.common.event.EventPublisher;
 import com.wemeet.eventbackbone.common.event.HandlerRegistry;
+import com.wemeet.eventbackbone.common.saga.SagaStore;
 import com.wemeet.eventbackbone.contracts.OrderContracts.CancelOrder;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderConfirmed;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.ScheduleSettlement;
@@ -10,7 +11,6 @@ import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementSchedule
 import com.wemeet.eventbackbone.contracts.TripContracts.CreateTrip;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripCreationFailed;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripDispatched;
-import com.wemeet.eventbackbone.oms.domain.saga.SagaStore;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 주문 이행 사가 = 중앙 flow (§7.1.7, application 레이어). 흐름 주인 도메인(OMS)이 소유.
- * 참여자(TMS·BMS)는 커맨드/이벤트만 다루고 이 흐름을 모른다. SagaStore 포트로 상태 관리.
+ * 주문 이행 사가 = 중앙 flow (§7.1.7). <b>플랫폼 오너가 소유</b>하고 중앙 orchestrator 서비스에 산다.
+ * 참여자(OMS·TMS·BMS)는 이 흐름을 모른 채 커맨드/이벤트만 다룬다. 사가 엔진(SagaStore)은 platform-core 공통.
  * 흐름: order.confirmed → CreateTrip → trip.dispatched → ScheduleSettlement → settlement.scheduled(완료)
  * 보상: trip.creation_failed → CancelOrder → COMPENSATED. 매칭 열쇠 = correlationId.
  */

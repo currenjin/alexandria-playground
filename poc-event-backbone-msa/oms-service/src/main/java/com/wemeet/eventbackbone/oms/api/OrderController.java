@@ -13,7 +13,8 @@ import java.util.UUID;
  * 데모 진입점 (api 레이어). 흐름 첫 진입점이 correlationId 발급(§7.1.1).
  *   POST /demo/orders?amount=1250000  → 정상 흐름
  *   POST /demo/orders?amount=0        → 배차 불가 → 사가 보상
- *   GET  /demo/state/{orderId}        → 흐름 결과(자기 서비스 DB의 order·saga만; trip/settlement는 각 서비스에)
+ *   GET  /demo/state/{orderId}        → 자기 서비스 DB의 order 상태만(진짜 MSA).
+ *                                       사가 상태는 중앙 orchestrator의 GET :8083/demo/saga/{orderId}로.
  */
 @RestController
 @RequestMapping("/demo")
@@ -46,11 +47,9 @@ public class OrderController {
     @GetMapping("/state/{orderId}")
     public Map<String, Object> state(@PathVariable String orderId) {
         List<Map<String, Object>> order = jdbc.queryForList("SELECT status FROM orders WHERE order_id=?", orderId);
-        List<Map<String, Object>> saga = jdbc.queryForList(
-                "SELECT status, current_step FROM saga_instance WHERE aggregate_id=?", orderId);
         return Map.of(
                 "orderId", orderId,
                 "order", order.isEmpty() ? Map.of() : order.get(0),
-                "saga", saga.isEmpty() ? Map.of() : saga.get(0));
+                "hint", "사가 상태는 orchestrator :8083/demo/saga/" + orderId);
     }
 }

@@ -2,14 +2,13 @@ package com.wemeet.eventbackbone.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
+import com.wemeet.eventbackbone.common.inbox.InboxRepository;
 import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -24,12 +23,12 @@ public class EventConsumerSupport {
     private static final Logger log = LoggerFactory.getLogger(EventConsumerSupport.class);
 
     private final ObjectMapper mapper;
-    private final JdbcTemplate jdbc;
+    private final InboxRepository inbox;
     private final HandlerRegistry registry;
 
-    public EventConsumerSupport(ObjectMapper mapper, JdbcTemplate jdbc, HandlerRegistry registry) {
+    public EventConsumerSupport(ObjectMapper mapper, InboxRepository inbox, HandlerRegistry registry) {
         this.mapper = mapper;
-        this.jdbc = jdbc;
+        this.inbox = inbox;
         this.registry = registry;
     }
 
@@ -43,11 +42,8 @@ public class EventConsumerSupport {
             throw new NonRetryableEventException("봉투 역직렬화 실패", e);
         }
 
-        // ② Inbox 멱등: 확인과 기록이 한 번의 INSERT (§7.1.5)
-        int inserted = jdbc.update(
-            "INSERT INTO inbox (consumer_group, event_id, processed_at) VALUES (?, ?, now()) ON CONFLICT DO NOTHING",
-            group, env.eventId());
-        if (inserted == 0) {
+        // ② Inbox 멱등: 확인과 기록이 한 번의 INSERT (§7.1.5) — InboxRepository로 위임
+        if (!inbox.recordIfNew(group, env.eventId())) {
             log.debug("중복 skip: group={} eventId={}", group, env.eventId());
             return;                         // 이미 처리 — 핸들러 안 태움
         }

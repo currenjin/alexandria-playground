@@ -28,6 +28,15 @@ services:
     volumes:
       - ./docker/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
 
+  orchestrator-service:
+    build: { context: ., args: { MODULE: orchestrator-service } }
+    ports: ["8083:8083"]
+    depends_on: [kafka, postgres]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/orchestrator
+      KAFKA: kafka:29092
+      PORT: 8083
+
   oms-service:
     build: { context: ., args: { MODULE: oms-service } }
     ports: ["8080:8080"]

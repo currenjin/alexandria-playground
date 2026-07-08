@@ -1,7 +1,6 @@
-package com.wemeet.eventbackbone.oms.infrastructure;
+package com.wemeet.eventbackbone.common.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wemeet.eventbackbone.oms.domain.saga.SagaStore;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/** saga_instance 어댑터 (infrastructure 레이어). */
+/**
+ * saga_instance 어댑터 (§7.1.7, 공통 엔진 구현). saga_instance 테이블은 중앙 orchestrator 서비스 DB에만 존재.
+ */
 @Repository
 public class JdbcSagaStore implements SagaStore {
 
