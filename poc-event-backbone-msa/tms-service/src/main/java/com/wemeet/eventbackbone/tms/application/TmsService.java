@@ -37,6 +37,17 @@ public class TmsService {
             log.info("배차 불가 {} -> creation_failed", cmd.orderId());
             return;
         }
+        var existing = trips.findByOrderId(cmd.orderId());
+        if (existing.isPresent()) {
+            Trip t = existing.get();
+            if (Trip.DISPATCHED.equals(t.status())) {
+                events.publish(new TripDispatched(t.tripId(), cmd.orderId(), t.carrierId()));
+                log.info("이미 배차됨(멱등) {} -> {} 재통지", cmd.orderId(), t.tripId());
+            } else {
+                log.info("기존 배차 비활성({}) — 재통지 생략 {}", t.status(), cmd.orderId());
+            }
+            return;
+        }
         String tripId = "TRIP-" + UUID.randomUUID().toString().substring(0, 8);
         trips.save(new Trip(tripId, cmd.orderId(), "CARR-1", Trip.DISPATCHED));
         events.publish(new TripDispatched(tripId, cmd.orderId(), "CARR-1"));

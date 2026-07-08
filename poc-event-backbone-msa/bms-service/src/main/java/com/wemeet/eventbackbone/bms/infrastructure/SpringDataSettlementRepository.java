@@ -4,6 +4,8 @@ import com.wemeet.eventbackbone.bms.domain.Settlement;
 import com.wemeet.eventbackbone.bms.domain.SettlementRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class SpringDataSettlementRepository implements SettlementRepository {
 
@@ -16,5 +18,10 @@ public class SpringDataSettlementRepository implements SettlementRepository {
     @Override
     public void save(Settlement settlement) {
         crud.save(settlement);
+    }
+
+    @Override
+    public Optional<Settlement> findByTripId(String tripId) {
+        return crud.findByTripId(tripId);
     }
 }

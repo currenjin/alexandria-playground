@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface SagaStore {
 
-    record TimedOut(String correlationId, String aggregateId) {}
+    record TimedOut(String correlationId, String aggregateId, String currentStep, String status) {}
 
     void start(String sagaType, String aggregateId, String correlationId,
                Map<String, Object> state, OffsetDateTime timeoutAt);
@@ -25,4 +25,7 @@ public interface SagaStore {
     Map<String, Object> state(String correlationId);
 
     List<TimedOut> findTimedOut();
+
+    /** 현재 상태(없으면 null). 종료상태 가드·멱등 보상에 쓴다. */
+    String status(String correlationId);
 }

@@ -30,6 +30,12 @@ public class BmsService {
 
     @EventHandler
     void onScheduleSettlement(ScheduleSettlement cmd) {
+        var existing = settlements.findByTripId(cmd.tripId());
+        if (existing.isPresent()) {
+            events.publish(new SettlementScheduled(existing.get().settlementId(), cmd.tripId()));
+            log.info("이미 정산예정(멱등) trip={} 재통지", cmd.tripId());
+            return;
+        }
         String settlementId = "STL-" + UUID.randomUUID().toString().substring(0, 8);
         settlements.save(new Settlement(settlementId, cmd.tripId(), cmd.amount(), Settlement.SCHEDULED));
         events.publish(new SettlementScheduled(settlementId, cmd.tripId()));

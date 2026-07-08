@@ -54,9 +54,17 @@ public class JdbcSagaStore implements SagaStore {
     @Override
     public List<TimedOut> findTimedOut() {
         return jdbc.query(
-            "SELECT correlation_id, aggregate_id FROM saga_instance "
+            "SELECT correlation_id, aggregate_id, current_step, status FROM saga_instance "
           + "WHERE status IN ('STARTED','DISPATCHED') AND timeout_at < now() FOR UPDATE SKIP LOCKED",
-            (rs, i) -> new TimedOut(rs.getString("correlation_id"), rs.getString("aggregate_id")));
+            (rs, i) -> new TimedOut(rs.getString("correlation_id"), rs.getString("aggregate_id"),
+                                    rs.getString("current_step"), rs.getString("status")));
+    }
+
+    @Override
+    public String status(String correlationId) {
+        return jdbc.query("SELECT status FROM saga_instance WHERE correlation_id=?",
+                (rs, i) -> rs.getString("status"), correlationId)
+                .stream().findFirst().orElse(null);
     }
 
     private String toJson(Map<String, Object> m) {
