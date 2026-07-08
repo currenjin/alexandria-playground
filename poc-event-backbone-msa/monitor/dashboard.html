@@ -93,6 +93,7 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
   <span class="spacer"></span>
   <button class="run" id="btn-normal" title="주문 생성 → 배차 → 정산까지 성공(COMPLETED)">▶ 정상 흐름</button>
   <button class="run ghost" id="btn-comp" title="주문 생성 → 배차 불가(amount=0) → 주문 취소(COMPENSATED)">▶ 보상 흐름</button>
+  <button class="run ghost" id="btn-poison" title="손상 메시지 주입 → 재시도 소진 → oms.cmd.DLT">☠ 독소</button>
   <span class="live"><span class="dot" id="livedot"></span><span id="stamp">연결 중…</span></span>
 </header>
 
@@ -114,6 +115,13 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
     <span class="hint">한 행 = 한 주문(correlationId) · 클릭하면 그 트랜잭션만 focus</span>
   </div>
   <div class="txlist" id="txlist"><div class="empty">아직 트랜잭션 없음 — 위 [정상 흐름] 버튼을 눌러보세요</div></div>
+
+  <div class="txhead" style="margin-top:24px">
+    <h2>DLT — 실패 격리</h2>
+    <span class="hint">독소 주입 → 「DLT 조회」 → 재주입(원본 토픽 재발행·inbox 멱등). Kafka 직접 읽기라 십여 초 걸림.</span>
+  </div>
+  <div style="margin:-4px 0 10px"><button class="run ghost" id="btn-dlt" style="padding:5px 12px;font-size:12px">🔄 DLT 조회</button></div>
+  <div id="dltbox"><div class="empty">「DLT 조회」를 눌러 현재 격리된 메시지를 확인하세요</div></div>
 
   <div class="legend">
     <span><span class="pubdot on"></span>발행됨(outbox→Kafka)</span>
@@ -260,13 +268,47 @@ async function runScenario(scenario,btn){
     const r=await fetch("/api/run?scenario="+scenario,{cache:"no-store"});
     const j=await r.json();
     if(j.error) toast("실행 실패: "+j.error);
+    else if(scenario==="poison"){ toast("☠ 독소 주입 → oms.cmd.DLT — 잠시 후 DLT 조회"); setTimeout(loadDlt,2500); }
     else { const desc=scenario==="comp"?"배차 불가 → 주문 취소":"주문 → 배차 → 정산"; toast("실행: "+j.orderId+" — "+desc); focusCorr=j.correlationId||null; }
     setTimeout(poll,250);
   }catch(e){ toast("실행 실패: "+e); }
   finally{ setTimeout(()=>btn.disabled=false,1200); }
 }
+async function loadDlt(){
+  const box=el("dltbox"); box.innerHTML='<div class="empty">DLT 읽는 중… (Kafka 직접 읽기, 십여 초)</div>';
+  try{
+    const d=((await (await fetch("/api/dlt",{cache:"no-store"})).json()).dlt)||[];
+    if(!d.length){ box.innerHTML='<div class="empty">DLT 비어있음 — ☠ 독소를 주입해보세요</div>'; return; }
+    box.innerHTML="";
+    for(const t of d){
+      const card=document.createElement("div"); card.className="card"; card.style.marginBottom="10px";
+      let rows="";
+      for(const m of t.messages.slice(0,12)){
+        const bad=(m.eventType||"").includes("손상");
+        rows+='<div class="row" style="border-left-color:'+(bad?"var(--bad)":"var(--mid)")+'">'
+          +'<span class="et">'+(m.eventType||"?")+'</span>'
+          +'<span class="agg">'+(m.aggregateId||"")+'</span>'
+          +(m.eventId?'<span class="ts">'+m.eventId+'</span>':"")+'</div>';
+      }
+      card.innerHTML='<h3>'+t.topic+' <span class="tag">'+t.count+'건</span>'
+        +'<button class="run ghost" style="padding:3px 9px;font-size:11px;margin-left:auto" data-redrive="'+t.topic+'">↩ 재주입</button></h3>'
+        +'<div class="rows">'+rows+'</div>';
+      box.appendChild(card);
+    }
+    box.querySelectorAll("[data-redrive]").forEach(b=>b.onclick=()=>redrive(b.getAttribute("data-redrive")));
+  }catch(e){ box.innerHTML='<div class="empty">DLT 조회 실패: '+e+'</div>'; }
+}
+async function redrive(topic){
+  toast("재주입 중: "+topic+" …");
+  try{ const j=await (await fetch("/api/dlt/redrive?topic="+encodeURIComponent(topic),{cache:"no-store"})).json();
+    toast(j.error?("재주입 실패: "+j.error):("재주입 "+j.redriven+"건 → "+j.to+" (원인 미수정 독소면 다시 DLT行)"));
+  }catch(e){ toast("재주입 실패: "+e); }
+  setTimeout(loadDlt,1800);
+}
 el("btn-normal").onclick=e=>runScenario("normal",e.currentTarget);
 el("btn-comp").onclick=e=>runScenario("comp",e.currentTarget);
+el("btn-poison").onclick=e=>runScenario("poison",e.currentTarget);
+el("btn-dlt").onclick=loadDlt;
 poll(); setInterval(poll,600);
 </script>
 </body>
