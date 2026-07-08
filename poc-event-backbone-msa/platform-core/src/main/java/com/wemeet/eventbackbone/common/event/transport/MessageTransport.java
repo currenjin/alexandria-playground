@@ -1,4 +1,4 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.transport;
 
 /**
  * 발행 전송 포트 — 브로커(Kafka / SQS / …) 교체 지점. 릴레이는 이 포트에만 의존한다.

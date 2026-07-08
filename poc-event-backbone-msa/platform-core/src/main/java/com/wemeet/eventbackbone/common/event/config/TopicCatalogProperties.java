@@ -1,4 +1,4 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

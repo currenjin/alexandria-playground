@@ -1,4 +1,4 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;

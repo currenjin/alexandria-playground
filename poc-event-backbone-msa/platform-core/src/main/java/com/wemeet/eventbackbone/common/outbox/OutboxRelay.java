@@ -3,7 +3,7 @@ package com.wemeet.eventbackbone.common.outbox;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.event.Envelope;
 import com.wemeet.eventbackbone.common.event.EventTypes;
-import com.wemeet.eventbackbone.common.event.MessageTransport;
+import com.wemeet.eventbackbone.common.event.transport.MessageTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

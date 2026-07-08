@@ -1,4 +1,6 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.config;
+
+import com.wemeet.eventbackbone.common.event.EventTypes;
 
 import com.wemeet.eventbackbone.contracts.ContractCatalog;
 import jakarta.annotation.PostConstruct;

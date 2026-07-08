@@ -305,9 +305,18 @@ async function redrive(topic){
   }catch(e){ toast("재주입 실패: "+e); }
   setTimeout(loadDlt,1800);
 }
+async function injectPoison(btn){
+  btn.disabled=true;
+  el("dltbox").innerHTML='<div class="empty">☠ 독소 주입 중… (Kafka 직접, 십여 초 걸립니다)</div>';
+  toast("☠ 독소 주입 중… (Kafka, 잠시)");
+  try{ await fetch("/api/run?scenario=poison",{cache:"no-store"}); toast("주입 완료 → DLT 읽는 중…"); }
+  catch(e){ toast("독소 주입 실패: "+e); }
+  await loadDlt();
+  btn.disabled=false;
+}
 el("btn-normal").onclick=e=>runScenario("normal",e.currentTarget);
 el("btn-comp").onclick=e=>runScenario("comp",e.currentTarget);
-el("btn-poison").onclick=e=>runScenario("poison",e.currentTarget);
+el("btn-poison").onclick=e=>injectPoison(e.currentTarget);
 el("btn-dlt").onclick=loadDlt;
 poll(); setInterval(poll,600);
 </script>

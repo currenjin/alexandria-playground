@@ -1,6 +1,7 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.transport;
 
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
  * (SQS로 갈 땐 이 자리에 SqsMessageTransport를 두면 된다.)
  */
 @Component
+@ConditionalOnProperty(name = "platform.events.broker", havingValue = "kafka", matchIfMissing = true)
 public class KafkaMessageTransport implements MessageTransport {
 
     private final KafkaTemplate<String, String> kafka;
