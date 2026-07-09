@@ -19,8 +19,9 @@
 `contracts` 모듈에 record로 선언한다. `@EventContract`의 type이 논리 이벤트명이다(토픽·직렬화는 이걸로 자동).
 
 ```java
-@EventContract(type = "oms.order.confirmed", version = 1)
-public record OrderConfirmed(String orderId, String customerId, String amount, String currency)
+@EventContract(type = "oms.order.created", version = 1)
+public record OrderCreated(String orderId, String shipperId, String origin, String destination,
+                           String amount, String currency)
         implements DomainEvent {
     @Override public String aggregateId() { return orderId; }   // 파티션 키 = "어느 건의 이벤트인가"
 }
@@ -35,9 +36,10 @@ application 레이어(유스케이스)에서 도메인 변경과 **같은 `@Tran
 
 ```java
 @Transactional
-public void confirm(String orderId, String customerId, String amount, String currency) {
-    orders.save(Order.confirm(orderId, customerId, amount, currency));
-    events.publish(new OrderConfirmed(orderId, customerId, amount, currency));
+public void create(String orderId, String shipperId, String origin, String destination,
+                   String amount, String currency) {
+    orders.save(Order.create(orderId, shipperId, origin, destination, amount, currency));
+    events.publish(new OrderCreated(orderId, shipperId, origin, destination, amount, currency));
 }
 ```
 
@@ -50,23 +52,31 @@ public void confirm(String orderId, String customerId, String amount, String cur
 
 ```java
 @EventHandler
-void onCreateTrip(CreateTrip cmd) {
+void onCreateSettlement(CreateSettlement cmd) {
     // 비즈 로직만. 등록·중복 방지·컨텍스트·트랜잭션은 공통이 처리.
-    trips.save(new Trip(...));
-    events.publish(new TripDispatched(...));   // 후속 이벤트도 그냥 publish
+    settlements.save(new Settlement(...));
+    events.publish(new SettlementCompleted(...));   // 후속 사실도 그냥 publish
 }
 ```
 
-## 4. 사가에 참여하려면 (step만)
+## 4. 흐름(사가)에 참여하려면
 
-당신은 **사가(Saga)를 몰라도 된다.** "할 일" 핸들러와 "되돌릴 일"(보상) 핸들러만 만들면, 흐름 조합은 중앙 orchestrator(플랫폼 오너)가 한다.
+당신은 **사가(Saga) 엔진을 몰라도 된다.** 두 가지 중 하나만 하면 흐름 조합은 중앙 orchestrator(플랫폼 오너)가 한다:
+
+- **자기 API로 행위하고 사실을 발행** — 예: TMS가 `/dispatches`로 배차하고 `DispatchCreated` 발행.
+- **orchestrator가 보낸 커맨드를 처리** — 예: OMS가 `MarkDispatched`를 받아 오더 상태를 DISPATCHED로.
 
 ```java
-void onCreateTrip(CreateTrip cmd) { /* 배차 */ }      // 할 일
-void onCancelTrip(CancelTrip cmd) { /* 배차 취소 */ }  // 되돌릴 일(보상)
+// 사실 발행 (TMS — 자기 API로 배차)
+public String dispatch(String orderId) { ... ; events.publish(new DispatchCreated(...)); }
+
+// 커맨드 처리 (OMS — orchestrator가 상태 맞추라고 보낸 것)
+@EventHandler void onMarkDispatched(MarkDispatched cmd) { orders.updateStatus(cmd.orderId(), DISPATCHED); }
 ```
 
-→ "이 두 커맨드가 한 흐름에 엮인다"만 플랫폼 오너에게 알려주면 끝.
+→ "어떤 사실에 어떤 후속이 이어진다"는 조합만 orchestrator에 정의하면 끝. 참여자는 자기가 어느 흐름에 속하는지 모른다.
+
+> **사가 클래스는 "프로세스(비즈 목적) 단위로 하나"** — 오더 이행은 `OrderFulfillmentSaga` 하나가 모든 경로(정상완주·배차취소→복귀·재배차·취소·거부)를 분기로 처리한다. 시나리오마다 쪼개지 않는다(한 오더의 상태를 여러 사가가 나눠 가지면 일관성이 깨짐). 별도 사가는 **다른 종류의 프로세스**(반품·클레임·정산마감 등)가 생길 때 각각 클래스로 추가한다.
 
 ## 신경 쓰지 않아도 되는 것
 
@@ -82,20 +92,21 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 ## 발행: publish() → outbox → relay → Kafka
 
 - `events.publish(e)` = `OutboxEventPublisher`가 envelope를 조립해 **같은 트랜잭션의 `outbox` 테이블에 INSERT**(§7.1.3). Kafka로 직접 안 쏜다.
-- `OutboxRelay`(@Scheduled 200ms)가 미발행 행을 `seq` 순서·`FOR UPDATE SKIP LOCKED`로 읽어 Kafka에 발행하고 `published_at` 마킹(§7.1.4). 배치 500.
+- `OutboxRelay`(@Scheduled 200ms)가 미발행 행을 `seq` 순서·`FOR UPDATE SKIP LOCKED`로 읽어 Kafka에 발행하고 `published_at` 마킹(§7.1.4). 배치 500. 발행은 `MessageTransport` 포트 경유(브로커 교체 지점).
 - eventId는 **UUIDv7**, 토픽은 eventType 앞 두 마디(`EventTypes.topicOf`).
 
 ## 소비: @KafkaListener → consume() → inbox → 핸들러
 
-- 각 서비스의 `*EventListener`(@KafkaListener, 그룹별)가 공통 `EventConsumerSupport.consume(group, envelope)`를 부른다.
+- 소비하는 서비스는 자기 `*EventListener`(@KafkaListener, 그룹별)가 공통 `EventConsumerSupport.consume(group, envelope)`를 부른다. (사실만 발행하고 커맨드를 안 받는 서비스는 리스너가 없다 — 예: TMS는 publish-only.)
 - consume이 envelope 파싱 → `InboxRepository`의 `INSERT … ON CONFLICT DO NOTHING`(중복이면 skip) → 컨텍스트 복원 → 등록된 핸들러 호출(§7.1.5).
 - **inbox 기록 + 당신의 도메인 쓰기 + 후속 publish가 한 트랜잭션.** 핸들러가 실패하면 통째 롤백돼 재처리된다.
 
 ## 사가: 중앙 orchestrator가 flow를 지휘
 
-- 참여자(당신)는 커맨드 핸들러(step)만. 흐름 정의(`OrderFulfillmentSaga`)는 orchestrator 서비스에 있다(§7.1.7).
-- orchestrator가 커맨드를 발행하고 참여자의 결과 이벤트를 받아 다음 단계로. 실패 이벤트나 타임아웃이면 보상 커맨드를 보낸다.
-- 한 흐름을 잇는 열쇠 = **correlationId**(운영자가 이거 하나로 전 여정 추적).
+- 참여자(당신)는 자기 API·핸들러만. 흐름 정의(`OrderFulfillmentSaga`)는 orchestrator 서비스에 있다(§7.1.7). orchestrator엔 컨트롤러가 없다 — 이벤트만 소비해 커맨드로 코디네이션한다.
+- orchestrator가 사실 이벤트를 받아 다음 단계 커맨드(`Mark*`·`CreateSettlement`)를 발행하며 상태를 진전시킨다. 되돌림은 자동 보상이 아니라 **취소 흐름**(배차취소→`MarkUndispatched`→오더 미배차 복귀)으로.
+- 한 흐름을 잇는 열쇠 = **orderId(업무 키)**. 배차·배송·취소가 여러 HTTP 요청으로 나뉘어도 orderId로 같은 프로세스에 붙는다. (요청별 correlationId는 추적용 별개.)
+- 가드: 프로세스가 기대 상태보다 **이전**이면 이벤트를 무시하지 않고 재시도(최종일관성 self-heal), **이후/종료**면 무시(중복·종료 방어).
 
 ## 컨텍스트: 진입점에서 자동 주입
 
