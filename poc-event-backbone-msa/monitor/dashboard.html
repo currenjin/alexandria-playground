@@ -74,6 +74,8 @@ button.run:hover:not(:disabled){filter:brightness(1.05)}
 .step{display:flex;align-items:center}
 .step .box{border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:#fbfbfe;min-width:112px;position:relative}
 .step .box.cmd{background:#f6f4ff;border-color:#ddd6f5}
+.step .box.http{background:var(--soft);border-color:#c9d3f2}
+.step .box.http .svc{color:var(--accent)}
 .step .svc{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:4px}
 .step .et{font-family:var(--mono);font-size:11px;color:var(--ink);margin-top:2px}
 .step .st{display:flex;gap:5px;margin-top:4px;align-items:center}
@@ -112,7 +114,11 @@ h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
 
 <main>
   <div class="scenbar">
-    <div class="t">시나리오 실행 — 오더 하나가 생성돼 흐름을 관통합니다 (버튼 누르면 그 오더가 focus)</div>
+    <div class="t">HTTP 액션 (개별 요청) — 컨트롤러 <code>@PostMapping</code> 자동 발견 · id 필요한 건 <b>선택(focus)한 오더</b> 기준 자동 채움. 오더를 클릭해 고른 뒤 하나씩 쏴보세요.</div>
+    <div class="scenbtns" id="actionbar"><span style="font-size:11px;color:var(--faint)">액션 불러오는 중…</span></div>
+  </div>
+  <div class="scenbar">
+    <div class="t">시나리오 (자동 전체흐름) — 버튼 하나로 여러 HTTP를 순서대로 실행하는 빠른 데모 (그 오더가 focus)</div>
     <div class="scenbtns">
       <button class="run solid" data-s="s1"><b>① 정상 완주</b><small>생성→배차→배송→정산</small></button>
       <button class="run" data-s="s2"><b>② 배차취소→복귀</b><small>배차 후 취소→미배차</small></button>
@@ -152,7 +158,7 @@ h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
   <div class="legend">
     <span><span class="pubdot on"></span>발행됨(outbox→Kafka)</span>
     <span><span class="pubdot"></span>미발행(릴레이 대기)</span>
-    <span>◈ 이벤트(사실)</span><span>⌘ 커맨드(지시)</span>
+    <span>🌐 HTTP 진입(액션)</span><span>◈ 이벤트(사실)</span><span>⌘ 커맨드(지시)</span>
     <span><i style="background:var(--ok)"></i>정산완료</span><span><i style="background:var(--bad)"></i>취소</span>
   </div>
 </main>
@@ -173,6 +179,7 @@ const SCENDESC={s1:"정상 완주",s2:"배차취소→미배차 복귀",s3:"배�
  s4:"미배차 오더 취소",s5:"배차된 오더 취소 거부",s6:"중복 이벤트 멱등"};
 const seenStep=new Set();
 let firstLoad=true, focusOrder=null, arrivalSeq=0; const arrivalIdx={};
+let lastSvcs={}; let ACTIONS=[];
 
 function orderColor(id){ if(!id) return "#9aa3b0"; let h=0; for(const c of id) h=(h*31+c.charCodeAt(0))%360; return "hsl("+h+" 60% 46%)"; }
 function statusClass(s){ s=(s||"").toUpperCase();
@@ -182,6 +189,16 @@ function statusClass(s){ s=(s||"").toUpperCase();
   return "b-info"; }
 function shortType(et){ return et.split(".").slice(2).join("."); }
 function isCmd(et){ return et.includes(".cmd."); }
+// 어떤 사실 이벤트가 외부 HTTP 액션으로 트리거되나 (진입점 가시화)
+const HTTP={
+ "oms.order.created":"POST /orders",
+ "tms.dispatch.created":"POST /dispatches",
+ "tms.dispatch.delivered":"POST /dispatches/{id}/deliver",
+ "tms.dispatch.cancelled":"POST /dispatches/{id}/cancel",
+ "oms.order.cancelled":"POST /orders/{id}/cancel",
+ "oms.order.cancel_rejected":"POST /orders/{id}/cancel"};
+const HTTPSVC={"oms.order.created":"OMS","tms.dispatch.created":"TMS","tms.dispatch.delivered":"TMS",
+ "tms.dispatch.cancelled":"TMS","oms.order.cancelled":"OMS","oms.order.cancel_rejected":"OMS"};
 function el(id){ return document.getElementById(id); }
 
 function renderTopo(svcs){
@@ -250,6 +267,11 @@ function renderOrders(list){
       if(!seenStep.has(key)){ seenStep.add(key); if(!firstLoad) cls+=" reveal"; }
       const cons=e.consumed.length?('<span class="consumed">✓ '+e.consumed.join(",")+'</span>'):'<span class="consumed no">—</span>';
       if(i>0) steps+='<span class="arrow">→</span>';
+      // 이 사실이 외부 HTTP 액션으로 시작됐다면 진입 마커를 앞에 붙인다
+      if(HTTP[e.event_type]){
+        steps+='<div class="step"><div class="box http"><div class="svc"><span>🌐</span>'+HTTPSVC[e.event_type]+' HTTP</div>'
+          +'<div class="et">'+HTTP[e.event_type]+'</div></div></div><span class="arrow">⇢</span>';
+      }
       steps+='<div class="step"><div class="'+cls+'" style="animation-delay:'+(newIdx*0.22)+'s">'
         +'<div class="svc"><span>'+(isCmd(e.event_type)?"⌘":"◈")+'</span>'+SVCNAME[e.service]+'</div>'
         +'<div class="et">'+shortType(e.event_type)+'</div>'
@@ -265,6 +287,63 @@ function renderOrders(list){
     card.innerHTML=head+steps;
     box.appendChild(card);
   }
+  renderActions();
+}
+
+// ── 개별 HTTP 액션 (컨트롤러 자동 발견 → focus 오더 기준 발사) ──
+function activeDispatchOf(oid){
+  const doms=(lastSvcs.tms&&lastSvcs.tms.domain)||[];
+  const d=doms.find(x=>x.ref===oid && x.status==="DISPATCHED");
+  return d?d.id:null;
+}
+function actionLabel(a){ const p=a.path;
+  if(p.endsWith("/orders")) return "오더 생성";
+  if(p.endsWith("/dispatches")) return "배차";
+  if(p.endsWith("/deliver")) return "배송완료";
+  if(p.includes("/dispatches/")&&p.endsWith("/cancel")) return "배차취소";
+  if(p.includes("/orders/")&&p.endsWith("/cancel")) return "오더취소";
+  return p; }
+function actionNeed(a){
+  if(a.pathVars.includes("dispatchId")) return "dispatch";
+  if(a.pathVars.includes("orderId")||a.reqParams.includes("orderId")) return "order";
+  return "none"; }
+async function loadActions(){
+  try{ ACTIONS=((await (await fetch("/api/actions",{cache:"no-store"})).json()).actions)||[]; }
+  catch(e){ ACTIONS=[]; }
+  renderActions();
+}
+function renderActions(){
+  const bar=el("actionbar"); if(!bar) return;
+  if(!ACTIONS.length){ bar.innerHTML='<span style="font-size:11px;color:var(--faint)">액션 없음 (모니터 재시작 필요)</span>'; return; }
+  bar.innerHTML="";
+  for(const a of ACTIONS){
+    const need=actionNeed(a); let ok=true, why="";
+    if(need==="order"){ ok=!!focusOrder; why="오더 선택"; }
+    if(need==="dispatch"){ ok=!!(focusOrder&&activeDispatchOf(focusOrder)); why="활성 배차 없음"; }
+    const b=document.createElement("button"); b.className="run"+(need==="none"?" solid":""); b.disabled=!ok;
+    b.innerHTML="<b>"+actionLabel(a)+"</b><small>"+a.method+" "+a.path.replace("/demo","")+(ok?"":" · "+why)+"</small>";
+    b.onclick=()=>fireAction(a);
+    bar.appendChild(b);
+  }
+}
+async function fireAction(a){
+  const need=actionNeed(a); let path=a.path;
+  if(need==="order"){
+    if(!focusOrder){ toast("먼저 오더를 클릭해 선택하세요"); return; }
+    path=path.replace("{orderId}",focusOrder);
+    if(a.reqParams.includes("orderId")) path+="?orderId="+focusOrder;
+  } else if(need==="dispatch"){
+    const did=focusOrder&&activeDispatchOf(focusOrder);
+    if(!did){ toast("선택한 오더에 활성 배차가 없어요"); return; }
+    path=path.replace("{dispatchId}",did);
+  }
+  const disp=a.method+" "+path.replace("/demo","");
+  try{
+    const r=await (await fetch("/api/fire?svc="+a.svc+"&path="+encodeURIComponent(path),{cache:"no-store"})).json();
+    if(r.error) toast("⚠ "+disp+" → "+(r.status||"")+" "+r.error);
+    else { toast(disp+" ✓"); if(r.orderId) focusOrder=r.orderId; }
+    setTimeout(poll,250);
+  }catch(e){ toast("발사 실패: "+e); }
 }
 
 let inflight=false, lastList=[];
@@ -272,6 +351,7 @@ async function poll(){
   if(inflight) return; inflight=true;
   try{
     const s=await (await fetch("/api/state",{cache:"no-store"})).json(); const svcs=s.services||{};
+    lastSvcs=svcs;
     renderTopo(svcs);
     lastList=buildOrders(svcs);
     renderOrders(lastList);
@@ -337,7 +417,7 @@ async function injectPoison(btn){
 document.querySelectorAll("button[data-s]").forEach(b=>b.onclick=e=>runScenario(b.getAttribute("data-s"),e.currentTarget));
 el("btn-poison").onclick=e=>injectPoison(e.currentTarget);
 el("btn-dlt").onclick=loadDlt;
-poll(); setInterval(poll,600);
+loadActions(); poll(); setInterval(poll,600);
 </script>
 </body>
 </html>

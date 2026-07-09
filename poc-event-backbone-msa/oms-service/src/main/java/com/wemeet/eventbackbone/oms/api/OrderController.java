@@ -1,6 +1,5 @@
 package com.wemeet.eventbackbone.oms.api;
 
-import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.oms.application.OmsService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +33,9 @@ public class OrderController {
                                            @RequestParam(defaultValue = "KRW") String currency) {
         String orderId = "ORD-" + UUID.randomUUID().toString().substring(0, 8);
         oms.create(orderId, shipperId, origin, destination, amount, currency);
+        // 프로세스는 orderId(업무 키)로 추적하므로 응답에 correlationId(요청별 추적값)를 실을 필요가 없다.
         return Map.of("orderId", orderId,
-                "correlationId", FlowContext.get().correlationId(),
-                "hint", "배차: POST :8083/demo/orders/" + orderId + "/dispatch");
+                "hint", "배차: POST :8081/demo/dispatches?orderId=" + orderId);
     }
 
     @PostMapping("/orders/{orderId}/cancel")
