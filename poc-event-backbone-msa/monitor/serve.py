@@ -2,8 +2,11 @@
 """이벤트 백본 라이브 대시보드 서버 — 루티프로 미들마일 흐름.
 
 실제 구동 중인 예제(docker compose)의 각 서비스 DB(oms/tms/bms/orchestrator)를
-psql로 폴링해 outbox/inbox/도메인/saga 스냅샷을 JSON으로 내려주고, 6개 시나리오
-실행(오더 생성 + orchestrator 액션들)을 백그라운드 스레드로 대신 돌린다. 표준 라이브러리만.
+psql로 폴링해 outbox/inbox/도메인 스냅샷을 JSON으로 내려주고, 6개 시나리오
+실행(오더 생성 + 각 액션들)을 백그라운드 스레드로 대신 돌린다. 표준 라이브러리만.
+
+오더 생애주기의 '권위'는 OMS 오더 애그리거트의 status다(액션별 사가는 무상태). 그래서
+진행 판정은 orchestrator saga가 아니라 OMS 오더 status(GET /demo/state)를 폴링한다.
 
 실행: python3 monitor/serve.py   (docker compose 가 떠 있어야 함)
       브라우저 http://localhost:8900
@@ -39,17 +42,16 @@ QUERIES = {
     "oms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
             ",'domain',(select coalesce(json_agg(x),'[]') from (select order_id as id, status, "
             "(origin||'→'||destination) as ref, to_char(updated_at,'HH24:MI:SS') as ts "
-            "from orders order by updated_at desc limit 10) x))"),
+            "from orders order by updated_at desc limit 20) x))"),
     "tms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
             ",'domain',(select coalesce(json_agg(x),'[]') from (select dispatch_id as id, order_id as ref, status, "
-            "to_char(updated_at,'HH24:MI:SS') as ts from dispatches order by updated_at desc limit 10) x))"),
+            "to_char(updated_at,'HH24:MI:SS') as ts from dispatches order by updated_at desc limit 20) x))"),
     "bms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
             ",'domain',(select coalesce(json_agg(x),'[]') from (select settlement_id as id, order_id as ref, status, "
             "to_char(updated_at,'HH24:MI:SS') as ts from settlements order by updated_at desc limit 10) x))"),
-    "orchestrator": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
-                     ",'saga',(select coalesce(json_agg(x),'[]') from (select aggregate_id, status, current_step, "
-                     "correlation_id, to_char(updated_at,'HH24:MI:SS') as ts "
-                     "from saga_instance order by updated_at desc limit 40) x))"),
+    # orchestrator는 무상태 코디네이터 — 이벤트를 받아 커맨드만 발행한다(outbox). saga_instance는
+    # 플랫폼 역량(상태형 사가 엔진)일 뿐, 이 액션별 사가는 상태를 남기지 않으므로 조회하지 않는다.
+    "orchestrator": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX + ")"),
 }
 
 
@@ -81,11 +83,12 @@ def _create_order():
     return _post(OMS + "/demo/orders?amount=1250000")["orderId"]
 
 
-def _saga_status(oid):
+def _order_status(oid):
+    """오더 생애주기의 권위 = OMS 오더 애그리거트 status (GET /demo/state)."""
     try:
-        req = urllib.request.Request(ORCH + "/demo/saga/" + oid, method="GET")
+        req = urllib.request.Request(OMS + "/demo/state/" + oid, method="GET")
         with urllib.request.urlopen(req, timeout=5) as r:
-            return (json.loads(r.read().decode()).get("saga") or {}).get("status")
+            return (json.loads(r.read().decode()).get("order") or {}).get("status")
     except Exception:  # noqa: BLE001
         return None
 
@@ -93,7 +96,7 @@ def _saga_status(oid):
 def _wait(oid, status, timeout=25):
     end = time.time() + timeout
     while time.time() < end:
-        if _saga_status(oid) == status:
+        if _order_status(oid) == status:
             return True
         time.sleep(0.4)
     return False

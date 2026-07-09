@@ -133,12 +133,13 @@ h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
   <div class="busbar">
     <span class="lab">Kafka 토픽</span>
     <span class="chip">oms.order</span><span class="chip">tms.dispatch</span><span class="chip">bms.settlement</span>
-    <span class="chip cmd">oms.cmd</span><span class="chip cmd">bms.cmd</span>
+    <span class="chip cmd">oms.cmd</span><span class="chip cmd">tms.cmd</span><span class="chip cmd">bms.cmd</span>
   </div>
   <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 14px;line-height:1.55">
     서비스는 <b>사실(◈ 이벤트)</b>을 발행하고 자기 <b>지시(⌘ 커맨드)</b>만 소비한다.
-    <b>orchestrator</b>가 이벤트를 받아 다음 커맨드를 발행하며 오더 생애주기를
-    <span class="badge b-mid">CREATED</span>→<span class="badge b-info">DISPATCHED</span>→<span class="badge b-info">DELIVERED</span>→<span class="badge b-ok">SETTLED</span>로 코디네이션한다.
+    <b>오더 애그리거트(OMS)가 생애주기의 단일 권위</b> — 낙관적 잠금으로 전이를 직렬화하고
+    <span class="badge b-mid">CREATED</span>→<span class="badge b-info">DISPATCHED</span>→<span class="badge b-info">DELIVERED</span>→<span class="badge b-ok">SETTLED</span> 사실을 발행한다(거부 시 <b>rejected</b> 사실).
+    <b>orchestrator</b>의 <b>액션별 사가</b>는 무상태로 사실을 받아 다음 지시를 발행하고, 전이가 거부되면 <b>보상</b>(배차취소)을 낸다.
   </div>
 
   <div class="txhead">
@@ -168,13 +169,15 @@ h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
 const SVC=["oms","tms","bms","orchestrator"];
 const SVCNAME={oms:"OMS",tms:"TMS",bms:"BMS",orchestrator:"ORCH"};
 // 오더 생애주기 흐름 순서(같은 초 내 tie-breaker; 주 정렬은 실제 ts)
+// 각 사가: 사실(◈) → 오더에 지시(⌘ oms.cmd) → 오더가 권위로 전이한 사실(◈ oms.order.*)
 const STEP={
  "oms.order.created":1,
- "tms.dispatch.created":2,"oms.cmd.mark_dispatched":3,
- "tms.dispatch.cancelled":4,"oms.cmd.mark_undispatched":5,
- "tms.dispatch.delivered":6,"oms.cmd.mark_delivered":7,
- "bms.cmd.create_settlement":8,"bms.settlement.completed":9,"oms.cmd.mark_settled":10,
- "oms.order.cancelled":11,"oms.order.cancel_rejected":11};
+ "tms.dispatch.created":2,"oms.cmd.dispatch_order":3,"oms.order.dispatched":4,
+ "oms.order.dispatch_rejected":5,"tms.cmd.cancel_dispatch":6,
+ "tms.dispatch.cancelled":7,"oms.cmd.undispatch_order":8,"oms.order.undispatched":9,
+ "tms.dispatch.delivered":10,"oms.cmd.deliver_order":11,"oms.order.delivered":12,
+ "bms.cmd.create_settlement":13,"bms.settlement.completed":14,"oms.cmd.settle_order":15,"oms.order.settled":16,
+ "oms.order.cancelled":17,"oms.order.cancel_rejected":17};
 const SCENDESC={s1:"정상 완주",s2:"배차취소→미배차 복귀",s3:"배차취소→재배차→완주",
  s4:"미배차 오더 취소",s5:"배차된 오더 취소 거부",s6:"중복 이벤트 멱등"};
 const seenStep=new Set();
@@ -207,7 +210,7 @@ function renderTopo(svcs){
     const d=svcs[k]||{}; const ob=d.outbox||[]; const ib=d.inbox||[];
     const pend=ob.filter(o=>!o.published).length;
     const div=document.createElement("div"); div.className="node";
-    const dom = k==="orchestrator" ? ("프로세스 "+((d.saga||[]).length)) : ((d.domain||[]).length+" rows");
+    const dom = k==="orchestrator" ? "무상태 사가(액션별)" : ((d.domain||[]).length+" rows");
     div.innerHTML='<h4>'+SVCNAME[k]+' <span class="tag">'+(k==="orchestrator"?"중앙 코디네이터":k)+'</span></h4>'
       +'<div class="kv"><span>outbox <b>'+ob.length+'</b>'+(pend?' <span class="pend">(대기 '+pend+')</span>':'')+'</span>'
       +'<span>inbox <b>'+ib.length+'</b></span></div>'
@@ -223,16 +226,14 @@ function buildOrders(svcs){
   for(const k of SVC){
     for(const o of (svcs[k]&&svcs[k].outbox)||[]){
       const oid=o.order_id; if(!oid) continue;
-      const t=orders[oid]||(orders[oid]={id:oid,events:{},saga:null,lastTs:"",route:""});
+      const t=orders[oid]||(orders[oid]={id:oid,events:{},status:null,lastTs:"",route:""});
       t.events[o.event_id]={...o,service:k,consumed:inboxBy[o.event_id]||[]};
       if(o.ts>t.lastTs) t.lastTs=o.ts;
       if(!(oid in arrivalIdx)) arrivalIdx[oid]=arrivalSeq++;
     }
   }
-  for(const g of (svcs.orchestrator&&svcs.orchestrator.saga)||[]){
-    const t=orders[g.aggregate_id]; if(t) t.saga=g;
-  }
-  for(const dm of (svcs.oms&&svcs.oms.domain)||[]){ const t=orders[dm.id]; if(t) t.route=dm.ref||""; }
+  // 생애주기 상태의 권위 = OMS 오더 애그리거트 status (saga가 아니라 오더가 권위)
+  for(const dm of (svcs.oms&&svcs.oms.domain)||[]){ const t=orders[dm.id]; if(t){ t.status=dm.status; t.route=dm.ref||""; } }
   const list=Object.values(orders);
   for(const t of list){
     t.steps=Object.values(t.events).sort((a,b)=>
@@ -250,7 +251,7 @@ function renderOrders(list){
   box.innerHTML="";
   for(const t of list.slice(0,15)){
     const color=orderColor(t.id);
-    const status=t.saga?t.saga.status:"…";
+    const status=t.status||"…";
     const card=document.createElement("div");
     card.className="tx"+(focusOrder===t.id?" focus":"");
     card.style.borderLeftColor=color;

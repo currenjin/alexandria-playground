@@ -61,22 +61,28 @@ void onCreateSettlement(CreateSettlement cmd) {
 
 ## 4. 흐름(사가)에 참여하려면
 
-당신은 **사가(Saga) 엔진을 몰라도 된다.** 두 가지 중 하나만 하면 흐름 조합은 중앙 orchestrator(플랫폼 오너)가 한다:
+당신은 **사가(Saga) 엔진을 몰라도 된다.** 두 가지 중 하나만 하면 흐름 조합은 중앙 orchestrator(플랫폼 오너)의 사가가 한다:
 
 - **자기 API로 행위하고 사실을 발행** — 예: TMS가 `/dispatches`로 배차하고 `DispatchCreated` 발행.
-- **orchestrator가 보낸 커맨드를 처리** — 예: OMS가 `MarkDispatched`를 받아 오더 상태를 DISPATCHED로.
+- **사가가 보낸 커맨드를 처리** — 단, **애그리거트를 가진 서비스는 시키는 대로 바꾸지 않고 자기 규칙으로 판정**한다. 예: OMS가 `DispatchOrder`를 받으면 현재 status가 CREATED일 때만 DISPATCHED로 전이하고, 아니면 거부 사실을 낸다.
 
 ```java
 // 사실 발행 (TMS — 자기 API로 배차)
 public String dispatch(String orderId) { ... ; events.publish(new DispatchCreated(...)); }
 
-// 커맨드 처리 (OMS — orchestrator가 상태 맞추라고 보낸 것)
-@EventHandler void onMarkDispatched(MarkDispatched cmd) { orders.updateStatus(cmd.orderId(), DISPATCHED); }
+// 커맨드 = 전이 "시도" (OMS = 오더 생애주기의 단일 권위 → 가드 + 낙관락으로 직렬 판정)
+@EventHandler void onDispatchOrder(DispatchOrder cmd) {
+    Order o = load(cmd.orderId());
+    if (o.status() == CREATED) { orders.save(o.withStatus(DISPATCHED)); events.publish(new OrderDispatched(...)); }
+    else                       { events.publish(new OrderDispatchRejected(...)); } // 사가가 이걸 받아 배차를 보상취소
+}
 ```
 
-→ "어떤 사실에 어떤 후속이 이어진다"는 조합만 orchestrator에 정의하면 끝. 참여자는 자기가 어느 흐름에 속하는지 모른다.
+→ "어떤 사실에 어떤 후속이 이어진다"는 조합만 사가에 정의하면 끝. 참여자는 자기가 어느 흐름에 속하는지 모른다.
 
-> **사가 클래스는 "프로세스(비즈 목적) 단위로 하나"** — 오더 이행은 `OrderFulfillmentSaga` 하나가 모든 경로(정상완주·배차취소→복귀·재배차·취소·거부)를 분기로 처리한다. 시나리오마다 쪼개지 않는다(한 오더의 상태를 여러 사가가 나눠 가지면 일관성이 깨짐). 별도 사가는 **다른 종류의 프로세스**(반품·클레임·정산마감 등)가 생길 때 각각 클래스로 추가한다.
+> **사가 클래스는 "크로스서비스 액션(트랜잭션 경계) 단위로 하나"** — 배차확정(`DispatchSaga`)·배차취소(`CancelDispatchSaga`)·배송완주(`DeliverSaga`)가 각각 별도 사가다. 한 액션 안에서 여러 서비스를 건드리므로, 실패 시 그 사가가 **보상**(예: 오더 전이 거부 → 배차를 `CancelDispatch`로 되돌림)한다.
+>
+> "한 오더 상태를 여러 사가가 나눠 가지면 일관성이 깨지지 않나?" — 안 깨진다. **오더 상태의 권위는 사가가 아니라 오더 애그리거트(OMS) 하나**이기 때문. 사가는 "시도"만 하고, 최종 판정·직렬화(낙관적 잠금)는 OMS가 독점한다. 그래서 배차확정과 오더취소가 동시에 와도 오더가 둘 중 하나로만 확정된다.
 
 ## 신경 쓰지 않아도 되는 것
 
@@ -101,12 +107,12 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 - consume이 envelope 파싱 → `InboxRepository`의 `INSERT … ON CONFLICT DO NOTHING`(중복이면 skip) → 컨텍스트 복원 → 등록된 핸들러 호출(§7.1.5).
 - **inbox 기록 + 당신의 도메인 쓰기 + 후속 publish가 한 트랜잭션.** 핸들러가 실패하면 통째 롤백돼 재처리된다.
 
-## 사가: 중앙 orchestrator가 flow를 지휘
+## 사가: 액션별 사가가 flow를 지휘, 오더가 권위
 
-- 참여자(당신)는 자기 API·핸들러만. 흐름 정의(`OrderFulfillmentSaga`)는 orchestrator 서비스에 있다(§7.1.7). orchestrator엔 컨트롤러가 없다 — 이벤트만 소비해 커맨드로 코디네이션한다.
-- orchestrator가 사실 이벤트를 받아 다음 단계 커맨드(`Mark*`·`CreateSettlement`)를 발행하며 상태를 진전시킨다. 되돌림은 자동 보상이 아니라 **취소 흐름**(배차취소→`MarkUndispatched`→오더 미배차 복귀)으로.
-- 한 흐름을 잇는 열쇠 = **orderId(업무 키)**. 배차·배송·취소가 여러 HTTP 요청으로 나뉘어도 orderId로 같은 프로세스에 붙는다. (요청별 correlationId는 추적용 별개.)
-- 가드: 프로세스가 기대 상태보다 **이전**이면 이벤트를 무시하지 않고 재시도(최종일관성 self-heal), **이후/종료**면 무시(중복·종료 방어).
+- 참여자(당신)는 자기 API·핸들러만. 사가(`DispatchSaga`·`CancelDispatchSaga`·`DeliverSaga`)는 orchestrator 서비스에 있다(§7.1.7). orchestrator엔 컨트롤러가 없다 — 이벤트만 소비해 커맨드로 코디네이션한다. **사가는 무상태**(자기 DB에 상태를 남기지 않음; 상관은 orderId).
+- 사가가 사실을 받아 다음 커맨드(`DispatchOrder`·`DeliverOrder`·`CreateSettlement`…)를 발행하며 흐름을 진전시킨다. **오더 상태 전이는 OMS 애그리거트가 가드+낙관락으로 판정**하고, 거부 사실(`OrderDispatchRejected`)이 오면 사가가 **보상**(`CancelDispatch`)한다. 되돌림도 취소 흐름(배차취소→`UndispatchOrder`→오더 미배차 복귀)으로.
+- 한 흐름을 잇는 열쇠 = **orderId(업무 키)**. 배차·배송·취소가 여러 HTTP 요청으로 나뉘어도 orderId로 같은 오더에 수렴한다. (요청별 correlationId는 추적용 별개.)
+- 가드: 오더가 기대 이전 상태보다 **뒤처져** 있으면(예: 배송완료가 DISPATCHED보다 먼저 도착) 무시하지 않고 재시도(최종일관성 self-heal), **이후/종료** 상태면 무시(중복·종료 방어). 이 판정은 전부 OMS 안에서.
 
 ## 컨텍스트: 진입점에서 자동 주입
 
