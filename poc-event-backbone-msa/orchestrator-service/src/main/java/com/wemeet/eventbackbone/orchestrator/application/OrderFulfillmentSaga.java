@@ -123,10 +123,19 @@ public class OrderFulfillmentSaga {
         return FlowContext.get().correlationId();
     }
 
-    /** 기대 상태가 아니면(종료·미존재·순서 어긋남·중복) 조용히 무시 — 멱등·가드. */
+    /**
+     * 기대 상태 가드. 두 가지를 구분한다:
+     *  - 프로세스 <b>미시작(status=null)</b> = OrderCreated가 아직 소비 전인 순서 역전 → 무시하지 말고
+     *    <b>retryable 예외</b>를 던져 백오프 재시도(§7.1.6)로 self-heal(잠시 뒤 프로세스 준비되면 성공).
+     *  - 프로세스가 있으나 <b>기대와 다른 (종료·중복·역전) 상태</b> → 조용히 무시(멱등·종료 가드).
+     */
     private boolean expect(String orderId, String expected, String evt) {
         String st = store.status(orderId);
         if (expected.equals(st)) return true;
+        if (st == null) {
+            throw new IllegalStateException(
+                    "[process " + orderId + "] 아직 시작 전(OrderCreated 미처리) — " + evt + " 재시도 대기");
+        }
         log.info("[process {}] 상태 {}(기대 {}) — {} 무시", orderId, st, expected, evt);
         return false;
     }
