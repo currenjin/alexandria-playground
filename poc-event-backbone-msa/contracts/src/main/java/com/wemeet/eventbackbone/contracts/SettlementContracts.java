@@ -9,14 +9,14 @@ public final class SettlementContracts {
 
     // ── 이벤트(사실) bms.settlement.* ──
     @EventContract(type = "bms.settlement.completed", version = 1)
-    public record SettlementCompleted(String settlementId, String tripId, String orderId, String amount)
+    public record SettlementCompleted(String settlementId, String dispatchId, String orderId, String amount)
             implements DomainEvent {
         @Override public String aggregateId() { return settlementId; }
     }
 
     // ── 커맨드(지시) bms.cmd.* — orchestrator 발행, BMS 소비 ──
     @EventContract(type = "bms.cmd.create_settlement", version = 1)
-    public record CreateSettlement(String tripId, String orderId, String amount) implements DomainEvent {
-        @Override public String aggregateId() { return tripId; }
+    public record CreateSettlement(String dispatchId, String orderId, String amount) implements DomainEvent {
+        @Override public String aggregateId() { return dispatchId; }
     }
 }

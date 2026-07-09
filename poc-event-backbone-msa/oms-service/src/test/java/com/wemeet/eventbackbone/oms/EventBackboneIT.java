@@ -84,7 +84,7 @@ class EventBackboneIT {
                 cmdEventId, "oms.cmd.mark_dispatched", 1,
                 OffsetDateTime.now(ZoneOffset.UTC), orderId, "dongsuh", "DS-GRP",
                 UUID.randomUUID().toString(), null,
-                mapper.valueToTree(new MarkDispatched(orderId, "TRIP-IT"))));
+                mapper.valueToTree(new MarkDispatched(orderId, "DISP-IT"))));
 
         kafka.send("oms.cmd", orderId, envelope).get();
         waitUntil(Duration.ofSeconds(20), () ->

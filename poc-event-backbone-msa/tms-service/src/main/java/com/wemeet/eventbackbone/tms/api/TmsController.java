@@ -8,11 +8,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Map;
 
 /**
- * 데모 진입점(TMS) — 배차 관련 액션은 TMS 자기 API로. 각 액션은 도메인 처리 후 사실(tms.trip.*)을 발행하고,
- * orchestrator가 그 사실을 받아 오더 상태 동기화·정산을 코디네이션한다.
- *   POST /demo/orders/{orderId}/dispatch     → 배차 (TripDispatched)
- *   POST /demo/orders/{orderId}/deliver      → 배송완료 (TripDelivered)
- *   POST /demo/orders/{orderId}/cancel-trip  → 배차취소 (TripCancelled)
+ * 데모 진입점(TMS) — 리소스 = <b>dispatch(배차)</b>. TMS는 자기 리소스만 노출하고(오더는 OMS 소유),
+ * 각 액션은 도메인 처리 후 사실(tms.dispatch.*)을 발행한다. orchestrator가 그 사실을 받아 코디네이션.
+ *   POST /demo/dispatches?orderId=            → 배차 생성 (DispatchCreated) · dispatchId 반환
+ *   POST /demo/dispatches/{dispatchId}/deliver → 배송완료 (DispatchDelivered)
+ *   POST /demo/dispatches/{dispatchId}/cancel  → 배차취소 (DispatchCancelled)
  */
 @RestController
 @RequestMapping("/demo")
@@ -24,30 +24,30 @@ public class TmsController {
         this.tms = tms;
     }
 
-    @PostMapping("/orders/{orderId}/dispatch")
-    public Map<String, Object> dispatch(@PathVariable String orderId) {
+    @PostMapping("/dispatches")
+    public Map<String, Object> create(@RequestParam String orderId) {
         try {
-            return Map.of("orderId", orderId, "tripId", tms.dispatch(orderId), "result", "배차 → TripDispatched");
+            return Map.of("orderId", orderId, "dispatchId", tms.dispatch(orderId), "result", "배차 → DispatchCreated");
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 
-    @PostMapping("/orders/{orderId}/deliver")
-    public Map<String, Object> deliver(@PathVariable String orderId) {
+    @PostMapping("/dispatches/{dispatchId}/deliver")
+    public Map<String, Object> deliver(@PathVariable String dispatchId) {
         try {
-            tms.deliver(orderId);
-            return Map.of("orderId", orderId, "result", "배송완료 → TripDelivered");
+            tms.deliver(dispatchId);
+            return Map.of("dispatchId", dispatchId, "result", "배송완료 → DispatchDelivered");
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 
-    @PostMapping("/orders/{orderId}/cancel-trip")
-    public Map<String, Object> cancelTrip(@PathVariable String orderId) {
+    @PostMapping("/dispatches/{dispatchId}/cancel")
+    public Map<String, Object> cancel(@PathVariable String dispatchId) {
         try {
-            tms.cancelTrip(orderId);
-            return Map.of("orderId", orderId, "result", "배차취소 → TripCancelled");
+            tms.cancelDispatch(dispatchId);
+            return Map.of("dispatchId", dispatchId, "result", "배차취소 → DispatchCancelled");
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }

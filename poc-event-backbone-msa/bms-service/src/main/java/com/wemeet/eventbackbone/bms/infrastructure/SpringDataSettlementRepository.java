@@ -21,7 +21,7 @@ public class SpringDataSettlementRepository implements SettlementRepository {
     }
 
     @Override
-    public Optional<Settlement> findByTripId(String tripId) {
-        return crud.findByTripId(tripId);
+    public Optional<Settlement> findByDispatchId(String dispatchId) {
+        return crud.findByDispatchId(dispatchId);
     }
 }

@@ -39,8 +39,8 @@ QUERIES = {
             "(origin||'→'||destination) as ref, to_char(updated_at,'HH24:MI:SS') as ts "
             "from orders order by updated_at desc limit 10) x))"),
     "tms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
-            ",'domain',(select coalesce(json_agg(x),'[]') from (select trip_id as id, order_id as ref, status, "
-            "to_char(updated_at,'HH24:MI:SS') as ts from trips order by updated_at desc limit 10) x))"),
+            ",'domain',(select coalesce(json_agg(x),'[]') from (select dispatch_id as id, order_id as ref, status, "
+            "to_char(updated_at,'HH24:MI:SS') as ts from dispatches order by updated_at desc limit 10) x))"),
     "bms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
             ",'domain',(select coalesce(json_agg(x),'[]') from (select settlement_id as id, order_id as ref, status, "
             "to_char(updated_at,'HH24:MI:SS') as ts from settlements order by updated_at desc limit 10) x))"),
@@ -97,29 +97,35 @@ def _wait(oid, status, timeout=25):
     return False
 
 
-def _action(oid, action):
-    # 각 모듈 자기 API: 배차/배송/배차취소 → TMS, 오더취소 → OMS.
-    base = OMS if action == "cancel" else TMS
+def _try(url):
     try:
-        return _post(base + "/demo/orders/" + oid + "/" + action)
+        return _post(url)
     except Exception as e:  # noqa: BLE001
         return {"error": str(e)}
 
 
-# 시나리오 정의: (라벨, 단계 시퀀스). 각 단계는 ('act', action) 또는 ('wait', status).
+def _dispatch(oid):
+    """배차 생성(TMS, 리소스=dispatch) → dispatchId 반환."""
+    r = _try(TMS + "/demo/dispatches?orderId=" + oid)
+    return (r or {}).get("dispatchId")
+
+
+def _deliver(did):
+    _try(TMS + "/demo/dispatches/" + did + "/deliver")
+
+
+def _cancel_dispatch(did):
+    _try(TMS + "/demo/dispatches/" + did + "/cancel")
+
+
+def _cancel_order(oid):
+    _try(OMS + "/demo/orders/" + oid + "/cancel")
+
+
+# 시나리오 라벨 (실행 로직은 _run_sequence — 배차는 dispatchId를 받아 이후 조작에 사용).
 SCENARIOS = {
-    "s1": ("정상 완주", [("wait", "CREATED"), ("act", "dispatch"), ("wait", "DISPATCHED"),
-                       ("act", "deliver")]),
-    "s2": ("배차취소→미배차 복귀", [("wait", "CREATED"), ("act", "dispatch"), ("wait", "DISPATCHED"),
-                             ("act", "cancel-trip")]),
-    "s3": ("배차취소→재배차→완주", [("wait", "CREATED"), ("act", "dispatch"), ("wait", "DISPATCHED"),
-                            ("act", "cancel-trip"), ("wait", "CREATED"), ("act", "dispatch"),
-                            ("wait", "DISPATCHED"), ("act", "deliver")]),
-    "s4": ("미배차 오더 취소", [("wait", "CREATED"), ("act", "cancel")]),
-    "s5": ("배차된 오더 취소 거부", [("wait", "CREATED"), ("act", "dispatch"), ("wait", "DISPATCHED"),
-                            ("act", "cancel")]),
-    "s6": ("중복 이벤트 멱등", [("wait", "CREATED"), ("act", "dispatch"), ("wait", "DISPATCHED"),
-                          ("dup", "tms.trip.dispatched")]),
+    "s1": "정상 완주", "s2": "배차취소→미배차 복귀", "s3": "배차취소→재배차→완주",
+    "s4": "미배차 오더 취소", "s5": "배차된 오더 취소 거부", "s6": "중복 이벤트 멱등",
 }
 
 
@@ -133,14 +139,19 @@ def _reproduce(oid, event_type):
 
 
 def _run_sequence(oid, scenario):
-    _label, steps = SCENARIOS[scenario]
-    for kind, arg in steps:
-        if kind == "wait":
-            _wait(oid, arg)
-        elif kind == "act":
-            _action(oid, arg)
-        elif kind == "dup":
-            _reproduce(oid, arg)
+    if scenario == "s1":
+        _wait(oid, "CREATED"); did = _dispatch(oid); _wait(oid, "DISPATCHED"); _deliver(did)
+    elif scenario == "s2":
+        _wait(oid, "CREATED"); did = _dispatch(oid); _wait(oid, "DISPATCHED"); _cancel_dispatch(did)
+    elif scenario == "s3":
+        _wait(oid, "CREATED"); did = _dispatch(oid); _wait(oid, "DISPATCHED"); _cancel_dispatch(did)
+        _wait(oid, "CREATED"); did2 = _dispatch(oid); _wait(oid, "DISPATCHED"); _deliver(did2)
+    elif scenario == "s4":
+        _wait(oid, "CREATED"); _cancel_order(oid)
+    elif scenario == "s5":
+        _wait(oid, "CREATED"); _dispatch(oid); _wait(oid, "DISPATCHED"); _cancel_order(oid)
+    elif scenario == "s6":
+        _wait(oid, "CREATED"); _dispatch(oid); _wait(oid, "DISPATCHED"); _reproduce(oid, "tms.dispatch.created")
 
 
 def run_scenario(scenario):
@@ -148,13 +159,13 @@ def run_scenario(scenario):
         return {"error": "unknown scenario: " + scenario}
     oid = _create_order()
     threading.Thread(target=_run_sequence, args=(oid, scenario), daemon=True).start()
-    return {"orderId": oid, "scenario": scenario, "label": SCENARIOS[scenario][0]}
+    return {"orderId": oid, "scenario": scenario, "label": SCENARIOS[scenario]}
 
 
 # ── DLT 운영 (§7.1.6): 독소 주입 · DLT 조회 · 재주입 ─────────────────────────
 KAFKA_BIN = "/opt/kafka/bin"
-DLT_TOPICS = ["oms.cmd.DLT", "tms.cmd.DLT", "bms.cmd.DLT",
-              "oms.order.DLT", "tms.trip.DLT", "bms.settlement.DLT"]
+DLT_TOPICS = ["oms.cmd.DLT", "bms.cmd.DLT",
+              "oms.order.DLT", "tms.dispatch.DLT", "bms.settlement.DLT"]
 
 
 def _kafka(args, input_text=None, timeout=20):

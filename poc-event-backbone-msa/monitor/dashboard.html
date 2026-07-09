@@ -126,8 +126,8 @@ h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
   <div class="topo" id="topo"></div>
   <div class="busbar">
     <span class="lab">Kafka 토픽</span>
-    <span class="chip">oms.order</span><span class="chip">tms.trip</span><span class="chip">bms.settlement</span>
-    <span class="chip cmd">oms.cmd</span><span class="chip cmd">tms.cmd</span><span class="chip cmd">bms.cmd</span>
+    <span class="chip">oms.order</span><span class="chip">tms.dispatch</span><span class="chip">bms.settlement</span>
+    <span class="chip cmd">oms.cmd</span><span class="chip cmd">bms.cmd</span>
   </div>
   <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 14px;line-height:1.55">
     서비스는 <b>사실(◈ 이벤트)</b>을 발행하고 자기 <b>지시(⌘ 커맨드)</b>만 소비한다.
@@ -164,11 +164,11 @@ const SVCNAME={oms:"OMS",tms:"TMS",bms:"BMS",orchestrator:"ORCH"};
 // 오더 생애주기 흐름 순서(같은 초 내 tie-breaker; 주 정렬은 실제 ts)
 const STEP={
  "oms.order.created":1,
- "oms.cmd.cancel_order":2,"oms.order.cancelled":3,"oms.order.cancel_rejected":3,
- "tms.cmd.create_trip":4,"tms.trip.dispatched":5,"oms.cmd.mark_dispatched":6,
- "tms.cmd.cancel_trip":7,"tms.trip.cancelled":8,"oms.cmd.mark_undispatched":9,
- "tms.cmd.complete_trip":10,"tms.trip.delivered":11,"oms.cmd.mark_delivered":12,
- "bms.cmd.create_settlement":13,"bms.settlement.completed":14,"oms.cmd.mark_settled":15};
+ "tms.dispatch.created":2,"oms.cmd.mark_dispatched":3,
+ "tms.dispatch.cancelled":4,"oms.cmd.mark_undispatched":5,
+ "tms.dispatch.delivered":6,"oms.cmd.mark_delivered":7,
+ "bms.cmd.create_settlement":8,"bms.settlement.completed":9,"oms.cmd.mark_settled":10,
+ "oms.order.cancelled":11,"oms.order.cancel_rejected":11};
 const SCENDESC={s1:"정상 완주",s2:"배차취소→미배차 복귀",s3:"배차취소→재배차→완주",
  s4:"미배차 오더 취소",s5:"배차된 오더 취소 거부",s6:"중복 이벤트 멱등"};
 const seenStep=new Set();

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 interface SettlementCrudRepository extends CrudRepository<Settlement, String> {
 
-    @Query("SELECT * FROM settlements WHERE trip_id = :tripId LIMIT 1")
-    Optional<Settlement> findByTripId(@Param("tripId") String tripId);
+    @Query("SELECT * FROM settlements WHERE dispatch_id = :dispatchId LIMIT 1")
+    Optional<Settlement> findByDispatchId(@Param("dispatchId") String dispatchId);
 }

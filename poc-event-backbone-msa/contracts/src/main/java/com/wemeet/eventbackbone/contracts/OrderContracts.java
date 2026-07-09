@@ -28,7 +28,7 @@ public final class OrderContracts {
 
     // ── 커맨드(지시) oms.cmd.* — orchestrator 발행, OMS 소비 (오더 상태 동기화) ──
     @EventContract(type = "oms.cmd.mark_dispatched", version = 1)
-    public record MarkDispatched(String orderId, String tripId) implements DomainEvent {
+    public record MarkDispatched(String orderId, String dispatchId) implements DomainEvent {
         @Override public String aggregateId() { return orderId; }
     }
 

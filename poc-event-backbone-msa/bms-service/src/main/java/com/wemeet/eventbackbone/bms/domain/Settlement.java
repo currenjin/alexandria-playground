@@ -9,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("settlements")
 public record Settlement(
         @Id @Column("settlement_id") String settlementId,
-        @Column("trip_id") String tripId,
+        @Column("dispatch_id") String dispatchId,
         @Column("order_id") String orderId,
         @Column("amount") String amount,
         @Column("status") String status

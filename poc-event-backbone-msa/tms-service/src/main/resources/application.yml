@@ -24,7 +24,7 @@ server:
 
 platform:
   events:
-    # TMS는 자기 API(배차·배송·배차취소)로 행위하고 사실(tms.trip.*)만 발행 — 소비(구독) 없음(publish-only).
+    # TMS는 자기 API(배차·배송·배차취소)로 행위하고 사실(tms.dispatch.*)만 발행 — 소비(구독) 없음(publish-only).
     relay: { poll-interval-ms: 200, batch-size: 500 }
     retry: { max-attempts: 3, backoff-ms: 1000 }
 

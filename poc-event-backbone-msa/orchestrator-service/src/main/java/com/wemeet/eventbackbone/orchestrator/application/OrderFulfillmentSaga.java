@@ -13,9 +13,9 @@ import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCreated;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.CreateSettlement;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementCompleted;
-import com.wemeet.eventbackbone.contracts.TripContracts.TripCancelled;
-import com.wemeet.eventbackbone.contracts.TripContracts.TripDelivered;
-import com.wemeet.eventbackbone.contracts.TripContracts.TripDispatched;
+import com.wemeet.eventbackbone.contracts.DispatchContracts.DispatchCancelled;
+import com.wemeet.eventbackbone.contracts.DispatchContracts.DispatchDelivered;
+import com.wemeet.eventbackbone.contracts.DispatchContracts.DispatchCreated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -65,23 +65,23 @@ public class OrderFulfillmentSaga {
 
     // ── 배차 확정 통지 → 오더 상태 동기화 ──
     @EventHandler
-    void onTripDispatched(TripDispatched e) {
-        if (!expect(e.orderId(), "CREATED", "TripDispatched")) return;
+    void onDispatchCreated(DispatchCreated e) {
+        if (!expect(e.orderId(), "CREATED", "DispatchCreated")) return;
         Map<String, Object> state = store.state(e.orderId());
-        state.put("tripId", e.tripId());
+        state.put("dispatchId", e.dispatchId());
         store.advance(e.orderId(), "DISPATCHED", "dispatched", state, null);
-        events.publish(new MarkDispatched(e.orderId(), e.tripId()));
-        log.info("[process {}] DISPATCHED(trip={}) -> MarkDispatched", e.orderId(), e.tripId());
+        events.publish(new MarkDispatched(e.orderId(), e.dispatchId()));
+        log.info("[process {}] DISPATCHED(dispatch={}) -> MarkDispatched", e.orderId(), e.dispatchId());
     }
 
     // ── 배송 완료 통지 → 오더 배송완료 + 정산 생성 지시 ──
     @EventHandler
-    void onTripDelivered(TripDelivered e) {
-        if (!expect(e.orderId(), "DISPATCHED", "TripDelivered")) return;
+    void onDispatchDelivered(DispatchDelivered e) {
+        if (!expect(e.orderId(), "DISPATCHED", "DispatchDelivered")) return;
         Map<String, Object> state = store.state(e.orderId());
         store.advance(e.orderId(), "DELIVERED", "delivered", state, null);
         events.publish(new MarkDelivered(e.orderId()));
-        events.publish(new CreateSettlement(e.tripId(), e.orderId(), (String) state.get("amount")));
+        events.publish(new CreateSettlement(e.dispatchId(), e.orderId(), (String) state.get("amount")));
         log.info("[process {}] DELIVERED -> MarkDelivered + CreateSettlement", e.orderId());
     }
 
@@ -96,10 +96,10 @@ public class OrderFulfillmentSaga {
 
     // ── 배차 취소 통지 → 오더 미배차 복귀 ──
     @EventHandler
-    void onTripCancelled(TripCancelled e) {
-        if (!expect(e.orderId(), "DISPATCHED", "TripCancelled")) return;
+    void onDispatchCancelled(DispatchCancelled e) {
+        if (!expect(e.orderId(), "DISPATCHED", "DispatchCancelled")) return;
         Map<String, Object> state = store.state(e.orderId());
-        state.remove("tripId");
+        state.remove("dispatchId");
         store.advance(e.orderId(), "CREATED", "created", state, null);
         events.publish(new MarkUndispatched(e.orderId()));
         log.info("[process {}] 배차취소 -> CREATED(미배차 복귀) -> MarkUndispatched", e.orderId());

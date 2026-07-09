@@ -6,9 +6,9 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 /** 배차 도메인 엔티티. 상태: DISPATCHED → DELIVERED, 그리고 CANCELLED(배송 전만). */
-@Table("trips")
-public record Trip(
-        @Id @Column("trip_id") String tripId,
+@Table("dispatches")
+public record Dispatch(
+        @Id @Column("dispatch_id") String dispatchId,
         @Column("order_id") String orderId,
         @Column("carrier_id") String carrierId,
         @Column("status") String status
@@ -20,7 +20,7 @@ public record Trip(
 
     @Override
     public String getId() {
-        return tripId;
+        return dispatchId;
     }
 
     @Override

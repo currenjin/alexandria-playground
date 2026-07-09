@@ -50,7 +50,7 @@ class OmsServiceUnitTest {
     @Test
     void cancel_when_dispatched_is_rejected_by_rule() {
         oms.create("ORD-3", "SHIPPER-1", "서울", "부산", "1000", "KRW");
-        oms.onMarkDispatched(new MarkDispatched("ORD-3", "TRIP-1"));   // 배차됨
+        oms.onMarkDispatched(new MarkDispatched("ORD-3", "DISP-1"));   // 배차됨
         events.published.clear();
 
         oms.cancelOrder("ORD-3", "고객 취소");

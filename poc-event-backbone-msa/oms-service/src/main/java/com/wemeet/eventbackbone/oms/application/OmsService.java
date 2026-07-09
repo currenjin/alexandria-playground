@@ -62,7 +62,7 @@ public class OmsService {
     @EventHandler
     void onMarkDispatched(MarkDispatched cmd) {
         orders.updateStatus(cmd.orderId(), Order.DISPATCHED);
-        log.info("오더 배차됨 {} (trip={})", cmd.orderId(), cmd.tripId());
+        log.info("오더 배차됨 {} (dispatch={})", cmd.orderId(), cmd.dispatchId());
     }
 
     @EventHandler

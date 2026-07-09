@@ -2,7 +2,7 @@ package com.wemeet.eventbackbone.contracts;
 
 import com.wemeet.eventbackbone.contracts.OrderContracts.*;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.*;
-import com.wemeet.eventbackbone.contracts.TripContracts.*;
+import com.wemeet.eventbackbone.contracts.DispatchContracts.*;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public final class ContractCatalog {
             OrderCreated.class, OrderCancelled.class, OrderCancelRejected.class,
             MarkDispatched.class, MarkDelivered.class, MarkSettled.class, MarkUndispatched.class,
             // TMS — 사실 이벤트 (커맨드 없음: 자기 API로 행위)
-            TripDispatched.class, TripDelivered.class, TripCancelled.class,
+            DispatchCreated.class, DispatchDelivered.class, DispatchCancelled.class,
             // BMS — 이벤트 + orchestrator→BMS 정산 생성 커맨드
             SettlementCompleted.class, CreateSettlement.class
     );

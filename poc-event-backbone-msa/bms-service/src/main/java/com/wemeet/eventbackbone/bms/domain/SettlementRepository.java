@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface SettlementRepository {
     void save(Settlement settlement);
-    Optional<Settlement> findByTripId(String tripId);
+    Optional<Settlement> findByDispatchId(String dispatchId);
 }
