@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 데모 진입점. POST /demo/orders 로 주문을 넣고(amount=0이면 배차 불가 → 보상 흐름),
- * GET /demo/state/{orderId} 로 이 서비스가 아는 주문 상태만 조회한다(사가 상태는 orchestrator :8083).
+ * 데모 진입점(OMS). 오더 생성만 여기서 — 이후 배차/배송/취소 액션은 orchestrator(:8083)가 코디네이션한다.
+ *   POST /demo/orders            → 오더 생성(OrderCreated → 프로세스 시작)
+ *   GET  /demo/state/{orderId}   → 이 서비스가 아는 오더 상태(사가 상태는 orchestrator :8083)
  */
 @RestController
 @RequestMapping("/demo")
@@ -26,14 +27,24 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public Map<String, String> createOrder(@RequestParam(defaultValue = "1250000") String amount,
-                                           @RequestParam(defaultValue = "CUST-1") String customerId,
+    public Map<String, String> createOrder(@RequestParam(defaultValue = "SHIPPER-1") String shipperId,
+                                           @RequestParam(defaultValue = "서울") String origin,
+                                           @RequestParam(defaultValue = "부산") String destination,
+                                           @RequestParam(defaultValue = "1250000") String amount,
                                            @RequestParam(defaultValue = "KRW") String currency) {
         String orderId = "ORD-" + UUID.randomUUID().toString().substring(0, 8);
-        oms.confirm(orderId, customerId, amount, currency);
+        oms.create(orderId, shipperId, origin, destination, amount, currency);
         return Map.of("orderId", orderId,
                 "correlationId", FlowContext.get().correlationId(),
-                "hint", "0".equals(amount) ? "배차 불가 → 보상 흐름" : "정상 흐름");
+                "hint", "배차: POST :8083/demo/orders/" + orderId + "/dispatch");
+    }
+
+    @PostMapping("/orders/{orderId}/cancel")
+    public Map<String, Object> cancel(@PathVariable String orderId,
+                                      @RequestParam(defaultValue = "고객 취소") String reason) {
+        oms.cancelOrder(orderId, reason);
+        return Map.of("orderId", orderId,
+                "result", "취소 요청 처리 — 결과는 OrderCancelled 또는 OrderCancelRejected(배차되면 거부)");
     }
 
     @GetMapping("/state/{orderId}")

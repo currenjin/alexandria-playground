@@ -48,6 +48,7 @@ services:
 
   tms-service:
     build: { context: ., args: { MODULE: tms-service } }
+    ports: ["8081:8081"]
     depends_on: [kafka, postgres]
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/tms

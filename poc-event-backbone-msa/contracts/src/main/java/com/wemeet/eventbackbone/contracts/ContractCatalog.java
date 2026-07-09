@@ -14,8 +14,12 @@ public final class ContractCatalog {
     private ContractCatalog() {}
 
     public static final List<Class<? extends DomainEvent>> ALL = List.of(
-            OrderConfirmed.class, OrderCancelled.class, CancelOrder.class,
-            CreateTrip.class, CancelTrip.class, TripDispatched.class, TripCreationFailed.class,
-            ScheduleSettlement.class, SettlementScheduled.class
+            // OMS — 이벤트 + orchestrator→OMS 상태 동기화 커맨드
+            OrderCreated.class, OrderCancelled.class, OrderCancelRejected.class,
+            MarkDispatched.class, MarkDelivered.class, MarkSettled.class, MarkUndispatched.class,
+            // TMS — 사실 이벤트 (커맨드 없음: 자기 API로 행위)
+            TripDispatched.class, TripDelivered.class, TripCancelled.class,
+            // BMS — 이벤트 + orchestrator→BMS 정산 생성 커맨드
+            SettlementCompleted.class, CreateSettlement.class
     );
 }

@@ -39,9 +39,9 @@ class ContractCatalogTest {
 
     @Test
     void topic_is_first_two_segments_of_type() {
-        assertThat(EventTypes.topicOf("oms.order.confirmed")).isEqualTo("oms.order");
+        assertThat(EventTypes.topicOf("oms.order.created")).isEqualTo("oms.order");
         assertThat(EventTypes.topicOf("tms.trip.dispatched")).isEqualTo("tms.trip");
-        assertThat(EventTypes.topicOf("bms.settlement.scheduled")).isEqualTo("bms.settlement");
+        assertThat(EventTypes.topicOf("bms.settlement.completed")).isEqualTo("bms.settlement");
         assertThat(EventTypes.topicOf("oms.cmd.cancel_order")).isEqualTo("oms.cmd");
     }
 }

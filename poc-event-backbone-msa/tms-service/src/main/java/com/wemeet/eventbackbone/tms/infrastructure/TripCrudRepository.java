@@ -14,6 +14,6 @@ interface TripCrudRepository extends CrudRepository<Trip, String> {
     @Query("UPDATE trips SET status = :status, updated_at = now() WHERE trip_id = :tripId")
     void updateStatus(@Param("tripId") String tripId, @Param("status") String status);
 
-    @Query("SELECT * FROM trips WHERE order_id = :orderId LIMIT 1")
-    Optional<Trip> findByOrderId(@Param("orderId") String orderId);
+    @Query("SELECT * FROM trips WHERE order_id = :orderId AND status = 'DISPATCHED' LIMIT 1")
+    Optional<Trip> findActiveByOrderId(@Param("orderId") String orderId);
 }

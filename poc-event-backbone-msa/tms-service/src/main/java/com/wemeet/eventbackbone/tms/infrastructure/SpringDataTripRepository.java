@@ -26,7 +26,12 @@ public class SpringDataTripRepository implements TripRepository {
     }
 
     @Override
-    public Optional<Trip> findByOrderId(String orderId) {
-        return crud.findByOrderId(orderId);
+    public Optional<Trip> findActiveByOrderId(String orderId) {
+        return crud.findActiveByOrderId(orderId);
+    }
+
+    @Override
+    public Optional<Trip> findById(String tripId) {
+        return crud.findById(tripId);
     }
 }

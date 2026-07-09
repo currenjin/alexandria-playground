@@ -4,6 +4,8 @@ import com.wemeet.eventbackbone.oms.domain.Order;
 import com.wemeet.eventbackbone.oms.domain.OrderRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /** 도메인 포트 어댑터 — Spring Data JDBC 리포지토리에 위임(생쿼리 없음). */
 @Repository
 public class SpringDataOrderRepository implements OrderRepository {
@@ -22,5 +24,10 @@ public class SpringDataOrderRepository implements OrderRepository {
     @Override
     public void updateStatus(String orderId, String status) {
         crud.updateStatus(orderId, status);
+    }
+
+    @Override
+    public Optional<Order> findById(String orderId) {
+        return crud.findById(orderId);
     }
 }

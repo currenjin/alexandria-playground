@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>이벤트 백본 · 라이브 대시보드</title>
+<title>이벤트 백본 · 라이브 대시보드 (루티프로 흐름)</title>
 <style>
 :root{
   --bg:#f5f7fb; --panel:#ffffff; --ink:#1c2330; --muted:#5b6472; --faint:#98a0ad;
   --accent:#2b4eb8; --soft:#eef1fb; --line:#e6e8ee;
-  --ok:#1a7f5a; --bad:#b5416a; --mid:#b8791f;
+  --ok:#1a7f5a; --bad:#b5416a; --mid:#b8791f; --info:#2b4eb8;
   --mono:"SF Mono",ui-monospace,Menlo,monospace;
   --sans:"Pretendard","Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
@@ -23,14 +23,23 @@ header .spacer{flex:1}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}
 .dot.off{background:var(--bad);animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(26,127,90,.45)}70%{box-shadow:0 0 0 7px rgba(26,127,90,0)}100%{box-shadow:0 0 0 0 rgba(26,127,90,0)}}
-button.run{border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 13px;border-radius:9px;cursor:pointer;font-family:var(--sans)}
-button.run.ghost{background:#fff;color:var(--accent)}
-button.run:disabled{opacity:.5;cursor:default}
-button.run:hover:not(:disabled){filter:brightness(1.06)}
-main{padding:16px 20px;max-width:1120px;margin:0 auto}
+main{padding:16px 20px;max-width:1160px;margin:0 auto}
 
-/* 토폴로지 스트립 — inbox/outbox 현황(정적 참조) */
-.topo{display:flex;gap:10px;align-items:stretch;margin-bottom:16px;flex-wrap:wrap}
+/* 시나리오 바 */
+.scenbar{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:14px}
+.scenbar .t{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px}
+.scenbtns{display:flex;gap:8px;flex-wrap:wrap}
+button.run{border:1px solid var(--accent);background:#fff;color:var(--accent);font-weight:700;font-size:12.5px;padding:7px 12px;border-radius:9px;cursor:pointer;font-family:var(--sans);text-align:left;line-height:1.25}
+button.run b{display:block;font-size:12.5px}
+button.run small{display:block;font-size:10px;color:var(--faint);font-weight:600;margin-top:1px}
+button.run.solid{background:var(--accent);color:#fff}
+button.run.solid small{color:#c9d3f2}
+button.run.warn{border-color:var(--bad);color:var(--bad)}
+button.run:disabled{opacity:.5;cursor:default}
+button.run:hover:not(:disabled){filter:brightness(1.05)}
+
+/* 토폴로지 스트립 */
+.topo{display:flex;gap:10px;align-items:stretch;margin-bottom:14px;flex-wrap:wrap}
 .node{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .node h4{margin:0 0 6px;font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:6px}
 .node .tag{font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:600}
@@ -40,8 +49,9 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
 .busbar{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px dashed #c9d3f2;border-radius:12px;padding:8px 12px;margin-bottom:16px;flex-wrap:wrap}
 .busbar .lab{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent)}
 .chip{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:#f3f5fb;border:1px solid var(--line);border-radius:20px;padding:2px 9px}
+.chip.cmd{background:#f6f4ff;border-color:#ddd6f5}
 
-/* 트랜잭션 리스트 */
+/* 오더(트랜잭션) 리스트 */
 .txhead{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
 .txhead h2{font-size:14px;margin:0;font-weight:800}
 .txhead .cnt{font-family:var(--mono);font-size:11px;color:var(--faint)}
@@ -51,23 +61,20 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
 .tx:hover{box-shadow:0 3px 14px rgba(0,0,0,.07)}
 .tx.focus{box-shadow:0 4px 18px rgba(43,78,184,.16)}
 .txlist.hasfocus .tx:not(.focus){opacity:.4}
-.tx-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.tx-head{display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap}
 .tx-head .agg{font-family:var(--mono);font-weight:800;font-size:13px}
-.tx-head .corr{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.tx-head .route{font-size:11px;color:var(--muted)}
 .tx-head .time{font-family:var(--mono);font-size:10px;color:var(--faint);margin-left:auto}
 .badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
 .b-ok{background:#e4f4ec;color:var(--ok)} .b-bad{background:#fbe6ee;color:var(--bad)}
 .b-mid{background:#fbf0dd;color:var(--mid)} .b-info{background:var(--soft);color:var(--accent)}
-.b-run{background:var(--soft);color:var(--accent)}
 
-/* 단계 흐름 (트랜잭션 내부, 순서대로) */
+/* 단계 흐름 */
 .steps{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
 .step{display:flex;align-items:center}
-.step .box{border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:#fbfbfe;min-width:104px;position:relative}
+.step .box{border:1px solid var(--line);border-radius:9px;padding:6px 9px;background:#fbfbfe;min-width:112px;position:relative}
 .step .box.cmd{background:#f6f4ff;border-color:#ddd6f5}
-.step .box.http{background:var(--soft);border-color:#c9d3f2}
 .step .svc{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:4px}
-.step .svc .k{color:var(--faint)}
 .step .et{font-family:var(--mono);font-size:11px;color:var(--ink);margin-top:2px}
 .step .st{display:flex;gap:5px;margin-top:4px;align-items:center}
 .pubdot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mid)}
@@ -75,7 +82,7 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
 .consumed{font-family:var(--mono);font-size:9px;color:var(--ok)}
 .consumed.no{color:var(--faint)}
 .arrow{color:var(--faint);font-size:15px;padding:0 7px;align-self:center}
-.step .end{display:flex;align-items:center;font-size:12px;font-weight:800}
+.step .end{display:flex;align-items:center;font-size:12px;font-weight:800;padding-left:6px}
 .reveal{animation:reveal .5s ease both}
 @keyframes reveal{from{opacity:0;transform:translateY(4px) scale(.96)}to{opacity:1;transform:none}}
 .empty{font-size:12px;color:var(--faint);font-style:italic;padding:20px;text-align:center}
@@ -84,50 +91,69 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:14px}
 .legend span{display:flex;align-items:center;gap:5px}
 .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+h3.dltt{font-size:14px;margin:24px 0 4px;font-weight:800}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.card h3{margin:0 0 6px;font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+.card .tag{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.rows{display:flex;flex-direction:column;gap:4px}
+.row{display:flex;gap:9px;align-items:center;border-left:3px solid var(--mid);padding:3px 8px;background:#fbfbfe;border-radius:6px}
+.row .et{font-family:var(--mono);font-size:11px}
+.row .agg{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.row .ts{font-family:var(--mono);font-size:9px;color:var(--faint);margin-left:auto}
 </style>
 </head>
 <body>
 <header>
   <h1>이벤트 백본 · <span style="color:var(--accent)">라이브</span> 대시보드</h1>
-  <span class="sub">실제 구동 예제 · 트랜잭션 단위</span>
+  <span class="sub">루티프로 미들마일 · orchestrator 코디네이션 · 오더 생애주기 단위</span>
   <span class="spacer"></span>
-  <button class="run" id="btn-normal" title="주문 생성 → 배차 → 정산까지 성공(COMPLETED)">▶ 정상 흐름</button>
-  <button class="run ghost" id="btn-comp" title="주문 생성 → 배차 불가(amount=0) → 주문 취소(COMPENSATED)">▶ 보상 흐름</button>
-  <button class="run ghost" id="btn-poison" title="손상 메시지 주입 → 재시도 소진 → oms.cmd.DLT">☠ 독소</button>
   <span class="live"><span class="dot" id="livedot"></span><span id="stamp">연결 중…</span></span>
 </header>
 
 <main>
+  <div class="scenbar">
+    <div class="t">시나리오 실행 — 오더 하나가 생성돼 흐름을 관통합니다 (버튼 누르면 그 오더가 focus)</div>
+    <div class="scenbtns">
+      <button class="run solid" data-s="s1"><b>① 정상 완주</b><small>생성→배차→배송→정산</small></button>
+      <button class="run" data-s="s2"><b>② 배차취소→복귀</b><small>배차 후 취소→미배차</small></button>
+      <button class="run" data-s="s3"><b>③ 재배차→완주</b><small>취소 후 다시 배차</small></button>
+      <button class="run" data-s="s4"><b>④ 미배차 취소</b><small>배차 전 오더취소</small></button>
+      <button class="run warn" data-s="s5"><b>⑤ 취소 거부</b><small>배차된 오더 취소불가</small></button>
+      <button class="run" data-s="s6"><b>⑥ 중복 멱등</b><small>같은 이벤트 재주입</small></button>
+    </div>
+  </div>
+
   <div class="topo" id="topo"></div>
   <div class="busbar">
     <span class="lab">Kafka 토픽</span>
-    <span class="chip">oms.order</span><span class="chip">tms.cmd</span><span class="chip">tms.trip</span>
-    <span class="chip">bms.cmd</span><span class="chip">bms.settlement</span><span class="chip">oms.cmd</span>
+    <span class="chip">oms.order</span><span class="chip">tms.trip</span><span class="chip">bms.settlement</span>
+    <span class="chip cmd">oms.cmd</span><span class="chip cmd">tms.cmd</span><span class="chip cmd">bms.cmd</span>
   </div>
   <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 14px;line-height:1.55">
-    <b>정상 흐름</b> = 주문 → 배차 → 정산 성공 <span class="badge b-ok">COMPLETED</span> &nbsp;·&nbsp;
-    <b>보상 흐름</b> = 배차 불가(amount=0) → 주문 취소 <span class="badge b-bad">COMPENSATED</span>.
-    버튼을 누르면 그 트랜잭션이 자동으로 <b>focus</b>됩니다.
+    서비스는 <b>사실(◈ 이벤트)</b>을 발행하고 자기 <b>지시(⌘ 커맨드)</b>만 소비한다.
+    <b>orchestrator</b>가 이벤트를 받아 다음 커맨드를 발행하며 오더 생애주기를
+    <span class="badge b-mid">CREATED</span>→<span class="badge b-info">DISPATCHED</span>→<span class="badge b-info">DELIVERED</span>→<span class="badge b-ok">SETTLED</span>로 코디네이션한다.
   </div>
 
   <div class="txhead">
-    <h2>트랜잭션</h2><span class="cnt" id="txcnt"></span>
-    <span class="hint">한 행 = 한 주문(correlationId) · 클릭하면 그 트랜잭션만 focus</span>
+    <h2>오더</h2><span class="cnt" id="txcnt"></span>
+    <span class="hint">한 행 = 한 오더(orderId) 생애주기 · 클릭하면 그 오더만 focus</span>
   </div>
-  <div class="txlist" id="txlist"><div class="empty">아직 트랜잭션 없음 — 위 [정상 흐름] 버튼을 눌러보세요</div></div>
+  <div class="txlist" id="txlist"><div class="empty">아직 오더 없음 — 위 [① 정상 완주] 버튼을 눌러보세요</div></div>
 
-  <div class="txhead" style="margin-top:24px">
-    <h2>DLT — 실패 격리</h2>
-    <span class="hint">독소 주입 → 「DLT 조회」 → 재주입(원본 토픽 재발행·inbox 멱등). Kafka 직접 읽기라 십여 초 걸림.</span>
+  <h3 class="dltt">DLT — 실패 격리 (데모)</h3>
+  <div style="font-size:11px;color:var(--faint);margin:2px 0 8px">독소 주입 → 「DLT 조회」 → 재주입(원본 토픽 재발행·inbox 멱등). Kafka 직접 읽기라 십여 초.</div>
+  <div style="margin:0 0 10px;display:flex;gap:8px">
+    <button class="run warn" id="btn-poison" style="padding:6px 12px">☠ 독소 주입</button>
+    <button class="run" id="btn-dlt" style="padding:6px 12px">🔄 DLT 조회</button>
   </div>
-  <div style="margin:-4px 0 10px"><button class="run ghost" id="btn-dlt" style="padding:5px 12px;font-size:12px">🔄 DLT 조회</button></div>
-  <div id="dltbox"><div class="empty">「DLT 조회」를 눌러 현재 격리된 메시지를 확인하세요</div></div>
+  <div id="dltbox"><div class="empty">「☠ 독소 주입」 후 「DLT 조회」로 격리된 메시지를 확인하세요</div></div>
 
   <div class="legend">
     <span><span class="pubdot on"></span>발행됨(outbox→Kafka)</span>
     <span><span class="pubdot"></span>미발행(릴레이 대기)</span>
     <span>◈ 이벤트(사실)</span><span>⌘ 커맨드(지시)</span>
-    <span><i style="background:var(--ok)"></i>완료</span><span><i style="background:var(--bad)"></i>보상/취소</span>
+    <span><i style="background:var(--ok)"></i>정산완료</span><span><i style="background:var(--bad)"></i>취소</span>
   </div>
 </main>
 <div id="toast"></div>
@@ -135,23 +161,26 @@ main{padding:16px 20px;max-width:1120px;margin:0 auto}
 <script>
 const SVC=["oms","tms","bms","orchestrator"];
 const SVCNAME={oms:"OMS",tms:"TMS",bms:"BMS",orchestrator:"ORCH"};
-const STEP={ // 트랜잭션 내부 흐름 순서
- "oms.order.confirmed":1,"tms.cmd.create_trip":2,"tms.trip.dispatched":3,
- "tms.trip.creation_failed":3,"bms.cmd.schedule_settlement":4,"bms.settlement.scheduled":5,
- "oms.cmd.cancel_order":4.5,"oms.order.cancelled":6};
-const arrivalIdx={};   // corr -> 최초 관측 순번(정렬용)
-let arrivalSeq=0;
-const seenStep=new Set();   // corr:event_id (reveal 1회)
-let firstLoad=true;
-let focusCorr=null;
+// 오더 생애주기 흐름 순서(같은 초 내 tie-breaker; 주 정렬은 실제 ts)
+const STEP={
+ "oms.order.created":1,
+ "oms.cmd.cancel_order":2,"oms.order.cancelled":3,"oms.order.cancel_rejected":3,
+ "tms.cmd.create_trip":4,"tms.trip.dispatched":5,"oms.cmd.mark_dispatched":6,
+ "tms.cmd.cancel_trip":7,"tms.trip.cancelled":8,"oms.cmd.mark_undispatched":9,
+ "tms.cmd.complete_trip":10,"tms.trip.delivered":11,"oms.cmd.mark_delivered":12,
+ "bms.cmd.create_settlement":13,"bms.settlement.completed":14,"oms.cmd.mark_settled":15};
+const SCENDESC={s1:"정상 완주",s2:"배차취소→미배차 복귀",s3:"배차취소→재배차→완주",
+ s4:"미배차 오더 취소",s5:"배차된 오더 취소 거부",s6:"중복 이벤트 멱등"};
+const seenStep=new Set();
+let firstLoad=true, focusOrder=null, arrivalSeq=0; const arrivalIdx={};
 
-function corrColor(cid){ if(!cid) return "#9aa3b0"; let h=0; for(const c of cid) h=(h*31+c.charCodeAt(0))%360; return "hsl("+h+" 66% 46%)"; }
+function orderColor(id){ if(!id) return "#9aa3b0"; let h=0; for(const c of id) h=(h*31+c.charCodeAt(0))%360; return "hsl("+h+" 60% 46%)"; }
 function statusClass(s){ s=(s||"").toUpperCase();
-  if(["CONFIRMED","DISPATCHED","SCHEDULED","COMPLETED"].includes(s)) return "b-ok";
-  if(["CANCELLED","COMPENSATED","FAILED"].includes(s)) return "b-bad";
-  if(["STARTED","COMPENSATING","ON_HOLD"].includes(s)) return "b-mid";
+  if(["SETTLED","COMPLETED"].includes(s)) return "b-ok";
+  if(s==="CANCELLED") return "b-bad";
+  if(s==="CREATED") return "b-mid";
   return "b-info"; }
-function shortType(et){ const p=et.split("."); return p.slice(2).join("."); }
+function shortType(et){ return et.split(".").slice(2).join("."); }
 function isCmd(et){ return et.includes(".cmd."); }
 function el(id){ return document.getElementById(id); }
 
@@ -161,8 +190,8 @@ function renderTopo(svcs){
     const d=svcs[k]||{}; const ob=d.outbox||[]; const ib=d.inbox||[];
     const pend=ob.filter(o=>!o.published).length;
     const div=document.createElement("div"); div.className="node";
-    const dom = k==="orchestrator" ? ("saga "+((d.saga||[]).length)) : ((d.domain||[]).length+" rows");
-    div.innerHTML='<h4>'+SVCNAME[k]+' <span class="tag">'+(k==="orchestrator"?"중앙 사가":k)+'</span></h4>'
+    const dom = k==="orchestrator" ? ("프로세스 "+((d.saga||[]).length)) : ((d.domain||[]).length+" rows");
+    div.innerHTML='<h4>'+SVCNAME[k]+' <span class="tag">'+(k==="orchestrator"?"중앙 코디네이터":k)+'</span></h4>'
       +'<div class="kv"><span>outbox <b>'+ob.length+'</b>'+(pend?' <span class="pend">(대기 '+pend+')</span>':'')+'</span>'
       +'<span>inbox <b>'+ib.length+'</b></span></div>'
       +'<div class="kv" style="margin-top:3px"><span>'+dom+'</span></div>';
@@ -170,73 +199,67 @@ function renderTopo(svcs){
   }
 }
 
-function buildTxns(svcs){
-  const inboxBy={};   // event_id -> [group...]
-  const txns={};
-  for(const k of SVC){
-    for(const i of (svcs[k]&&svcs[k].inbox)||[]) (inboxBy[i.event_id]=inboxBy[i.event_id]||[]).push(i.consumer_group);
-  }
+function buildOrders(svcs){
+  const inboxBy={};
+  for(const k of SVC) for(const i of (svcs[k]&&svcs[k].inbox)||[]) (inboxBy[i.event_id]=inboxBy[i.event_id]||[]).push(i.consumer_group);
+  const orders={};
   for(const k of SVC){
     for(const o of (svcs[k]&&svcs[k].outbox)||[]){
-      const c=o.correlation_id; if(!c) continue;
-      const t=txns[c]||(txns[c]={corr:c,events:{},agg:null,saga:null,lastTs:"",omsSeq:0});
+      const oid=o.order_id; if(!oid) continue;
+      const t=orders[oid]||(orders[oid]={id:oid,events:{},saga:null,lastTs:"",route:""});
       t.events[o.event_id]={...o,service:k,consumed:inboxBy[o.event_id]||[]};
       if(o.ts>t.lastTs) t.lastTs=o.ts;
-      if(k==="oms" && o.seq>t.omsSeq) t.omsSeq=o.seq;
-      if(!(c in arrivalIdx)) arrivalIdx[c]=arrivalSeq++;
+      if(!(oid in arrivalIdx)) arrivalIdx[oid]=arrivalSeq++;
     }
   }
   for(const g of (svcs.orchestrator&&svcs.orchestrator.saga)||[]){
-    const t=txns[g.correlation_id]; if(t){ t.saga=g; t.agg=g.aggregate_id; }
+    const t=orders[g.aggregate_id]; if(t) t.saga=g;
   }
-  const list=Object.values(txns);
+  for(const dm of (svcs.oms&&svcs.oms.domain)||[]){ const t=orders[dm.id]; if(t) t.route=dm.ref||""; }
+  const list=Object.values(orders);
   for(const t of list){
-    if(!t.agg){ const oc=Object.values(t.events).find(e=>e.event_type.startsWith("oms.order")); t.agg=oc?oc.aggregate_id:t.corr.slice(0,8); }
-    t.steps=Object.values(t.events).sort((a,b)=>((STEP[a.event_type]||9)-(STEP[b.event_type]||9))||(a.seq-b.seq));
+    t.steps=Object.values(t.events).sort((a,b)=>
+      (a.ts<b.ts?-1:a.ts>b.ts?1:0) || ((STEP[a.event_type]||99)-(STEP[b.event_type]||99)) || (a.seq-b.seq));
   }
-  list.sort((a,b)=>((b.omsSeq||0)-(a.omsSeq||0))||(a.lastTs<b.lastTs?1:-1));
+  list.sort((a,b)=>(b.lastTs<a.lastTs?-1:b.lastTs>a.lastTs?1:0) || (arrivalIdx[b.id]-arrivalIdx[a.id]));
   return list;
 }
 
-function renderTxns(list){
+function renderOrders(list){
   const box=el("txlist");
   el("txcnt").textContent="총 "+list.length+"건 (최근 15, 최신순)";
-  if(!list.length){ box.innerHTML='<div class="empty">아직 트랜잭션 없음 — 위 [정상 흐름] 버튼을 눌러보세요</div>'; return; }
-  box.classList.toggle("hasfocus", !!focusCorr);
+  if(!list.length){ box.innerHTML='<div class="empty">아직 오더 없음 — 위 [① 정상 완주] 버튼을 눌러보세요</div>'; return; }
+  box.classList.toggle("hasfocus", !!focusOrder);
   box.innerHTML="";
   for(const t of list.slice(0,15)){
-    const color=corrColor(t.corr);
-    const status=t.saga?t.saga.status:"IN-PROGRESS";
+    const color=orderColor(t.id);
+    const status=t.saga?t.saga.status:"…";
     const card=document.createElement("div");
-    card.className="tx"+(focusCorr===t.corr?" focus":"");
+    card.className="tx"+(focusOrder===t.id?" focus":"");
     card.style.borderLeftColor=color;
-    card.onclick=()=>{ focusCorr=(focusCorr===t.corr?null:t.corr); renderTxns(list); };
+    card.onclick=()=>{ focusOrder=(focusOrder===t.id?null:t.id); renderOrders(list); };
 
     let head='<div class="tx-head"><span class="badge '+statusClass(status)+'">'+status+'</span>'
-      +'<span class="agg">'+t.agg+'</span><span class="corr">corr '+t.corr.slice(0,8)+'</span>'
+      +'<span class="agg">'+t.id+'</span>'+(t.route?'<span class="route">'+t.route+'</span>':'')
       +'<span class="time">'+(t.lastTs||"")+'</span></div>';
 
-    // 단계 흐름 (순서대로; HTTP 진입 → 이벤트들; 새 단계만 reveal)
-    let newIdx=0;
-    let steps='<div class="steps">';
-    steps+='<div class="step"><div class="box http"><div class="svc"><span>🌐</span>HTTP</div>'
-      +'<div class="et">POST /demo/orders</div><div class="st"><span class="consumed" style="color:var(--accent)">진입점</span></div></div></div>';
+    let newIdx=0, steps='<div class="steps">';
     t.steps.forEach((e,i)=>{
-      const key=t.corr+":"+e.event_id;
+      const key=t.id+":"+e.event_id;
       let cls="box"+(isCmd(e.event_type)?" cmd":"");
-      if(!seenStep.has(key)){ seenStep.add(key); if(!firstLoad){ cls+=" reveal"; } }
+      if(!seenStep.has(key)){ seenStep.add(key); if(!firstLoad) cls+=" reveal"; }
       const cons=e.consumed.length?('<span class="consumed">✓ '+e.consumed.join(",")+'</span>'):'<span class="consumed no">—</span>';
-      steps+='<span class="arrow">→</span>';
-      steps+='<div class="step"><div class="'+cls+'" style="animation-delay:'+(newIdx*0.28)+'s">'
+      if(i>0) steps+='<span class="arrow">→</span>';
+      steps+='<div class="step"><div class="'+cls+'" style="animation-delay:'+(newIdx*0.22)+'s">'
         +'<div class="svc"><span>'+(isCmd(e.event_type)?"⌘":"◈")+'</span>'+SVCNAME[e.service]+'</div>'
         +'<div class="et">'+shortType(e.event_type)+'</div>'
         +'<div class="st"><span class="pubdot'+(e.published?' on':'')+'"></span>'+cons+'</div>'
         +'</div></div>';
       if(cls.includes("reveal")) newIdx++;
     });
-    // 종료 배지
-    if(status==="COMPLETED"||status==="COMPENSATED"){
-      steps+='<span class="arrow">→</span><div class="step"><div class="end" style="color:'+(status==="COMPLETED"?"var(--ok)":"var(--bad)")+'">'+(status==="COMPLETED"?"✓ 완료":"↩ 보상완료")+'</div></div>';
+    if(status==="SETTLED"||status==="CANCELLED"){
+      const ok=status==="SETTLED";
+      steps+='<span class="arrow">→</span><div class="step"><div class="end" style="color:'+(ok?"var(--ok)":"var(--bad)")+'">'+(ok?"✓ 정산완료":"✕ 취소")+'</div></div>';
     }
     steps+='</div>';
     card.innerHTML=head+steps;
@@ -248,11 +271,10 @@ let inflight=false, lastList=[];
 async function poll(){
   if(inflight) return; inflight=true;
   try{
-    const r=await fetch("/api/state",{cache:"no-store"});
-    const s=await r.json(); const svcs=s.services||{};
+    const s=await (await fetch("/api/state",{cache:"no-store"})).json(); const svcs=s.services||{};
     renderTopo(svcs);
-    lastList=buildTxns(svcs);
-    renderTxns(lastList);
+    lastList=buildOrders(svcs);
+    renderOrders(lastList);
     firstLoad=false;
     el("livedot").classList.remove("off");
     el("stamp").textContent="갱신 "+new Date().toLocaleTimeString("ko-KR");
@@ -261,21 +283,19 @@ async function poll(){
   }finally{ inflight=false; }
 }
 
-function toast(m){ const t=el("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3200); }
-async function runScenario(scenario,btn){
+function toast(m){ const t=el("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3400); }
+async function runScenario(s,btn){
   btn.disabled=true;
   try{
-    const r=await fetch("/api/run?scenario="+scenario,{cache:"no-store"});
-    const j=await r.json();
+    const j=await (await fetch("/api/run?scenario="+s,{cache:"no-store"})).json();
     if(j.error) toast("실행 실패: "+j.error);
-    else if(scenario==="poison"){ toast("☠ 독소 주입 → oms.cmd.DLT — 잠시 후 DLT 조회"); setTimeout(loadDlt,2500); }
-    else { const desc=scenario==="comp"?"배차 불가 → 주문 취소":"주문 → 배차 → 정산"; toast("실행: "+j.orderId+" — "+desc); focusCorr=j.correlationId||null; }
+    else { toast("실행 ["+ (SCENDESC[s]||s) +"]: "+j.orderId); focusOrder=j.orderId; }
     setTimeout(poll,250);
   }catch(e){ toast("실행 실패: "+e); }
-  finally{ setTimeout(()=>btn.disabled=false,1200); }
+  finally{ setTimeout(()=>btn.disabled=false,1500); }
 }
 async function loadDlt(){
-  const box=el("dltbox"); box.innerHTML='<div class="empty">DLT 읽는 중… (Kafka 직접 읽기, 십여 초)</div>';
+  const box=el("dltbox"); box.innerHTML='<div class="empty">DLT 읽는 중… (Kafka 직접, 십여 초)</div>';
   try{
     const d=((await (await fetch("/api/dlt",{cache:"no-store"})).json()).dlt)||[];
     if(!d.length){ box.innerHTML='<div class="empty">DLT 비어있음 — ☠ 독소를 주입해보세요</div>'; return; }
@@ -291,7 +311,7 @@ async function loadDlt(){
           +(m.eventId?'<span class="ts">'+m.eventId+'</span>':"")+'</div>';
       }
       card.innerHTML='<h3>'+t.topic+' <span class="tag">'+t.count+'건</span>'
-        +'<button class="run ghost" style="padding:3px 9px;font-size:11px;margin-left:auto" data-redrive="'+t.topic+'">↩ 재주입</button></h3>'
+        +'<button class="run" style="padding:3px 9px;font-size:11px;margin-left:auto" data-redrive="'+t.topic+'">↩ 재주입</button></h3>'
         +'<div class="rows">'+rows+'</div>';
       box.appendChild(card);
     }
@@ -301,21 +321,20 @@ async function loadDlt(){
 async function redrive(topic){
   toast("재주입 중: "+topic+" …");
   try{ const j=await (await fetch("/api/dlt/redrive?topic="+encodeURIComponent(topic),{cache:"no-store"})).json();
-    toast(j.error?("재주입 실패: "+j.error):("재주입 "+j.redriven+"건 → "+j.to+" (원인 미수정 독소면 다시 DLT行)"));
+    toast(j.error?("재주입 실패: "+j.error):("재주입 "+j.redriven+"건 → "+j.to));
   }catch(e){ toast("재주입 실패: "+e); }
   setTimeout(loadDlt,1800);
 }
 async function injectPoison(btn){
   btn.disabled=true;
-  el("dltbox").innerHTML='<div class="empty">☠ 독소 주입 중… (Kafka 직접, 십여 초 걸립니다)</div>';
+  el("dltbox").innerHTML='<div class="empty">☠ 독소 주입 중… (Kafka 직접, 십여 초)</div>';
   toast("☠ 독소 주입 중… (Kafka, 잠시)");
-  try{ await fetch("/api/run?scenario=poison",{cache:"no-store"}); toast("주입 완료 → DLT 읽는 중…"); }
+  try{ await fetch("/api/run?scenario=poison",{cache:"no-store"}); toast("주입 완료 → 「DLT 조회」로 확인"); }
   catch(e){ toast("독소 주입 실패: "+e); }
-  await loadDlt();
-  btn.disabled=false;
+  setTimeout(loadDlt,2500);
+  setTimeout(()=>btn.disabled=false,1500);
 }
-el("btn-normal").onclick=e=>runScenario("normal",e.currentTarget);
-el("btn-comp").onclick=e=>runScenario("comp",e.currentTarget);
+document.querySelectorAll("button[data-s]").forEach(b=>b.onclick=e=>runScenario(b.getAttribute("data-s"),e.currentTarget));
 el("btn-poison").onclick=e=>injectPoison(e.currentTarget);
 el("btn-dlt").onclick=loadDlt;
 poll(); setInterval(poll,600);

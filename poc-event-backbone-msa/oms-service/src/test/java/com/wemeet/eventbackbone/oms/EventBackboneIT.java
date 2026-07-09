@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.common.event.Envelope;
 import com.wemeet.eventbackbone.common.event.UuidV7;
-import com.wemeet.eventbackbone.contracts.OrderContracts.CancelOrder;
+import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDispatched;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Testcontainers 왕복 테스트(§7.1.8). Postgres + Kafka로 실제 백본을 관통한다.
  * 발행: confirm() → outbox INSERT → 릴레이 → Kafka(oms.order)에 envelope 도착.
- * 소비+멱등: oms.cmd로 CancelOrder → 주문 CANCELLED + inbox 기록, 같은 eventId 재전송해도 1회만 처리.
+ * 소비+멱등: oms.cmd로 MarkDispatched → 주문 DISPATCHED + inbox 기록, 같은 eventId 재전송해도 1회만 처리.
  */
 @SpringBootTest(classes = OmsApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Testcontainers
@@ -68,27 +68,27 @@ class EventBackboneIT {
 
         FlowContext.openEntry("dongsuh", "DS-GRP", null);
         try {
-            oms.confirm(orderId, "CUST-IT", "1250000", "KRW");
+            oms.create(orderId, "SHIPPER-IT", "서울", "부산", "1250000", "KRW");
         } finally {
             FlowContext.clear();
         }
         assertThat(jdbc.queryForObject("SELECT status FROM orders WHERE order_id=?", String.class, orderId))
-                .isEqualTo("CONFIRMED");
+                .isEqualTo("CREATED");
 
-        String confirmed = pollFor("oms.order", "reader-order",
-                v -> v.contains("\"oms.order.confirmed\"") && v.contains(orderId), Duration.ofSeconds(20));
-        assertThat(confirmed).contains("\"eventType\":\"oms.order.confirmed\"").contains(orderId);
+        String created = pollFor("oms.order", "reader-order",
+                v -> v.contains("\"oms.order.created\"") && v.contains(orderId), Duration.ofSeconds(20));
+        assertThat(created).contains("\"eventType\":\"oms.order.created\"").contains(orderId);
 
         UUID cmdEventId = UuidV7.generate();
         String envelope = mapper.writeValueAsString(new Envelope(
-                cmdEventId, "oms.cmd.cancel_order", 1,
+                cmdEventId, "oms.cmd.mark_dispatched", 1,
                 OffsetDateTime.now(ZoneOffset.UTC), orderId, "dongsuh", "DS-GRP",
                 UUID.randomUUID().toString(), null,
-                mapper.valueToTree(new CancelOrder(orderId, "IT 보상"))));
+                mapper.valueToTree(new MarkDispatched(orderId, "TRIP-IT"))));
 
         kafka.send("oms.cmd", orderId, envelope).get();
         waitUntil(Duration.ofSeconds(20), () ->
-                "CANCELLED".equals(jdbc.queryForObject("SELECT status FROM orders WHERE order_id=?", String.class, orderId)));
+                "DISPATCHED".equals(jdbc.queryForObject("SELECT status FROM orders WHERE order_id=?", String.class, orderId)));
 
         Integer inboxCount = jdbc.queryForObject(
                 "SELECT count(*) FROM inbox WHERE consumer_group='oms' AND event_id=?", Integer.class, cmdEventId);
@@ -100,7 +100,7 @@ class EventBackboneIT {
                 "SELECT count(*) FROM inbox WHERE consumer_group='oms' AND event_id=?", Integer.class, cmdEventId))
                 .isEqualTo(1);
         assertThat(jdbc.queryForObject("SELECT status FROM orders WHERE order_id=?", String.class, orderId))
-                .isEqualTo("CANCELLED");
+                .isEqualTo("DISPATCHED");
     }
 
     @Test

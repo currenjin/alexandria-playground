@@ -4,151 +4,130 @@ import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.common.event.EventHandler;
 import com.wemeet.eventbackbone.common.event.EventPublisher;
 import com.wemeet.eventbackbone.common.saga.SagaStore;
-import com.wemeet.eventbackbone.contracts.OrderContracts.CancelOrder;
-import com.wemeet.eventbackbone.contracts.OrderContracts.OrderConfirmed;
-import com.wemeet.eventbackbone.contracts.SettlementContracts.ScheduleSettlement;
-import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementScheduled;
-import com.wemeet.eventbackbone.contracts.TripContracts.CancelTrip;
-import com.wemeet.eventbackbone.contracts.TripContracts.CreateTrip;
-import com.wemeet.eventbackbone.contracts.TripContracts.TripCreationFailed;
+import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDelivered;
+import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.MarkSettled;
+import com.wemeet.eventbackbone.contracts.OrderContracts.MarkUndispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelRejected;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCreated;
+import com.wemeet.eventbackbone.contracts.SettlementContracts.CreateSettlement;
+import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementCompleted;
+import com.wemeet.eventbackbone.contracts.TripContracts.TripCancelled;
+import com.wemeet.eventbackbone.contracts.TripContracts.TripDelivered;
 import com.wemeet.eventbackbone.contracts.TripContracts.TripDispatched;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map;
 
 /**
- * 주문 이행 사가(flow). 플랫폼 오너가 소유하고 중앙 orchestrator에 산다 — 참여자(OMS·TMS·BMS)는 이 흐름을 모른다.
- * order.confirmed → CreateTrip → trip.dispatched → ScheduleSettlement → settlement.scheduled(완료),
- * 배차 실패 시 CancelOrder로 보상. 매칭 열쇠는 correlationId. 사가 엔진(SagaStore)은 platform-core 공통.
+ * 주문 이행 프로세스 매니저(중앙 orchestrator, 플랫폼 오너 소유) — 루티프로 미들마일 흐름.
+ *
+ * <p>참여자(OMS·TMS·BMS)는 이 흐름을 모른다. orchestrator가 서비스 <b>이벤트(사실)</b>를 소비해
+ * 다음 <b>커맨드(지시)</b>를 발행하고, 프로세스 상태를 {@link SagaStore}에 추적한다.
+ * 매칭 열쇠 = orderId(업무 키) — 배차/배송/취소 액션이 여러 번 나뉘어 들어와도 같은 프로세스에 붙는다.
+ *
+ * <p>상태: CREATED → DISPATCHED → DELIVERED → SETTLED / CANCELLED. 각 핸들러는 기대 상태 가드로
+ * 중복·순서 어긋남·종료 후 도착을 흡수한다(멱등). "배차된 오더 취소 불가" 규칙은 OMS 애그리거트가 판정하며,
+ * 여기서는 그 결과 사실(OrderCancelled / OrderCancelRejected)을 관측해 프로세스를 종료/유지한다.
  */
 @Component
 public class OrderFulfillmentSaga {
 
     private static final Logger log = LoggerFactory.getLogger(OrderFulfillmentSaga.class);
     private static final String TYPE = "order-fulfillment";
-    private static final Set<String> ACTIVE = Set.of("STARTED", "DISPATCHED");
 
     private final SagaStore store;
     private final EventPublisher events;
-    private final long stepTimeoutMs;
-    private final int maxStepRetries;
 
-    public OrderFulfillmentSaga(SagaStore store, EventPublisher events,
-                                @Value("${platform.events.saga.step-timeout-ms:30000}") long stepTimeoutMs,
-                                @Value("${platform.events.saga.max-step-retries:2}") int maxStepRetries) {
+    public OrderFulfillmentSaga(SagaStore store, EventPublisher events) {
         this.store = store;
         this.events = events;
-        this.stepTimeoutMs = stepTimeoutMs;
-        this.maxStepRetries = maxStepRetries;
     }
 
+    // ── 프로세스 시작 ──
     @EventHandler
-    void onOrderConfirmed(OrderConfirmed e) {
-        if (store.status(corr()) != null) {
-            log.info("[saga {}] 이미 시작됨 — 중복 OrderConfirmed 무시", corr());
+    void onOrderCreated(OrderCreated e) {
+        if (store.status(e.orderId()) != null) {
+            log.info("[process {}] 이미 존재 — 중복 OrderCreated 무시", e.orderId());
             return;
         }
-        Map<String, Object> state = new HashMap<>(Map.of(
-                "orderId", e.orderId(), "amount", e.amount(), "currency", e.currency()));
-        store.start(TYPE, e.orderId(), corr(), state, deadline());
-        events.publish(new CreateTrip(e.orderId(), e.amount(), e.currency()));
-        log.info("[saga {}] STARTED -> CreateTrip({})", corr(), e.orderId());
+        Map<String, Object> state = new HashMap<>();
+        state.put("orderId", e.orderId());
+        state.put("amount", e.amount());
+        state.put("currency", e.currency());
+        store.start(TYPE, e.orderId(), corr(), "CREATED", "created", state, null);
+        log.info("[process {}] CREATED", e.orderId());
     }
 
+    // ── 배차 확정 통지 → 오더 상태 동기화 ──
     @EventHandler
     void onTripDispatched(TripDispatched e) {
-        String st = store.status(corr());
-        if (!ACTIVE.contains(st)) {
-            if ("COMPENSATING".equals(st) || "COMPENSATED".equals(st)) {
-                events.publish(new CancelTrip(e.tripId()));
-                log.info("[saga {}] 보상된 흐름에 늦은 TripDispatched → CancelTrip({}) (orphan 보상)", corr(), e.tripId());
-            } else {
-                log.info("[saga {}] 활성 아님({}) — TripDispatched 무시", corr(), st);
-            }
-            return;
-        }
-        Map<String, Object> state = store.state(corr());
+        if (!expect(e.orderId(), "CREATED", "TripDispatched")) return;
+        Map<String, Object> state = store.state(e.orderId());
         state.put("tripId", e.tripId());
-        store.advance(corr(), "DISPATCHED", "settlement", state, deadline());
-        events.publish(new ScheduleSettlement(e.tripId(), (String) state.get("amount")));
-        log.info("[saga {}] DISPATCHED(trip={}) -> ScheduleSettlement", corr(), e.tripId());
+        store.advance(e.orderId(), "DISPATCHED", "dispatched", state, null);
+        events.publish(new MarkDispatched(e.orderId(), e.tripId()));
+        log.info("[process {}] DISPATCHED(trip={}) -> MarkDispatched", e.orderId(), e.tripId());
+    }
+
+    // ── 배송 완료 통지 → 오더 배송완료 + 정산 생성 지시 ──
+    @EventHandler
+    void onTripDelivered(TripDelivered e) {
+        if (!expect(e.orderId(), "DISPATCHED", "TripDelivered")) return;
+        Map<String, Object> state = store.state(e.orderId());
+        store.advance(e.orderId(), "DELIVERED", "delivered", state, null);
+        events.publish(new MarkDelivered(e.orderId()));
+        events.publish(new CreateSettlement(e.tripId(), e.orderId(), (String) state.get("amount")));
+        log.info("[process {}] DELIVERED -> MarkDelivered + CreateSettlement", e.orderId());
+    }
+
+    // ── 정산 완료 통지 → 오더 정산완료(종료) ──
+    @EventHandler
+    void onSettlementCompleted(SettlementCompleted e) {
+        if (!expect(e.orderId(), "DELIVERED", "SettlementCompleted")) return;
+        store.finish(e.orderId(), "SETTLED");
+        events.publish(new MarkSettled(e.orderId(), e.settlementId()));
+        log.info("[process {}] SETTLED (settlement={})", e.orderId(), e.settlementId());
+    }
+
+    // ── 배차 취소 통지 → 오더 미배차 복귀 ──
+    @EventHandler
+    void onTripCancelled(TripCancelled e) {
+        if (!expect(e.orderId(), "DISPATCHED", "TripCancelled")) return;
+        Map<String, Object> state = store.state(e.orderId());
+        state.remove("tripId");
+        store.advance(e.orderId(), "CREATED", "created", state, null);
+        events.publish(new MarkUndispatched(e.orderId()));
+        log.info("[process {}] 배차취소 -> CREATED(미배차 복귀) -> MarkUndispatched", e.orderId());
+    }
+
+    // ── 오더 취소 결과 관측 ──
+    @EventHandler
+    void onOrderCancelled(OrderCancelled e) {
+        if (store.status(e.orderId()) == null) return;
+        store.finish(e.orderId(), "CANCELLED");
+        log.info("[process {}] CANCELLED (사유={})", e.orderId(), e.reason());
     }
 
     @EventHandler
-    void onSettlementScheduled(SettlementScheduled e) {
-        if (!active()) { log.info("[saga {}] 활성 아님 — SettlementScheduled 무시", corr()); return; }
-        store.finish(corr(), "COMPLETED");
-        log.info("[saga {}] COMPLETED (settlement={})", corr(), e.settlementId());
-    }
-
-    @EventHandler
-    void onTripCreationFailed(TripCreationFailed e) {
-        if (!active()) { log.info("[saga {}] 활성 아님 — 보상 중복 무시", corr()); return; }
-        store.advance(corr(), "COMPENSATING", "compensate", store.state(corr()), null);
-        events.publish(new CancelOrder(e.orderId(), "배차 실패: " + e.reason()));
-        store.finish(corr(), "COMPENSATED");
-        log.info("[saga {}] COMPENSATING -> CancelOrder -> COMPENSATED", corr());
-    }
-
-    /** step 무응답(타임아웃) 감지 → 보상. 타임아웃은 실패가 아니므로 실무에선 재시도가 선행한다. */
-    @Scheduled(fixedDelayString = "${platform.events.saga.timeout-scan-ms:1000}")
-    @Transactional
-    public void scanTimeouts() {
-        for (SagaStore.TimedOut s : store.findTimedOut()) {
-            FlowContext.open(null, null, s.correlationId(), null);
-            try {
-                Map<String, Object> state = store.state(s.correlationId());
-                int retries = state.get("retries") == null ? 0 : ((Number) state.get("retries")).intValue();
-                if (retries < maxStepRetries) {
-                    state.put("retries", retries + 1);
-                    resendStepCommand(s.currentStep(), state);
-                    store.advance(s.correlationId(), s.status(), s.currentStep(), state, deadline());
-                    log.warn("[saga {}] 타임아웃 -> step 재시도 {}/{} (step={})",
-                            s.correlationId(), retries + 1, maxStepRetries, s.currentStep());
-                } else {
-                    store.advance(s.correlationId(), "COMPENSATING", "compensate", state, null);
-                    events.publish(new CancelOrder(s.aggregateId(), "step 타임아웃 (재시도 소진)"));
-                    if (state.get("tripId") != null) {
-                        events.publish(new CancelTrip((String) state.get("tripId")));
-                    }
-                    store.finish(s.correlationId(), "COMPENSATED");
-                    log.warn("[saga {}] 타임아웃 재시도 소진 -> 보상", s.correlationId());
-                }
-            } finally {
-                FlowContext.clear();
-            }
-        }
+    void onOrderCancelRejected(OrderCancelRejected e) {
+        // 규칙: 배차된 오더 취소 거부 — 프로세스 상태는 그대로 유지.
+        log.info("[process {}] 취소 거부(규칙): 현재 {} — {}", e.orderId(), e.currentStatus(), e.reason());
     }
 
     private String corr() {
         return FlowContext.get().correlationId();
     }
 
-    /** 진행 중(STARTED/DISPATCHED)인가 — 종료·미존재 사가면 false. */
-    private boolean active() {
-        return ACTIVE.contains(store.status(corr()));
-    }
-
-    /** 타임아웃 재시도 — 현재 step에 해당하는 커맨드를 재전송. 참여자 step은 aggregateId 멱등이라 중복 생성 없음. */
-    private void resendStepCommand(String step, Map<String, Object> state) {
-        if ("dispatch".equals(step)) {
-            events.publish(new CreateTrip((String) state.get("orderId"),
-                    (String) state.get("amount"), (String) state.get("currency")));
-        } else if ("settlement".equals(step)) {
-            events.publish(new ScheduleSettlement((String) state.get("tripId"), (String) state.get("amount")));
-        }
-    }
-
-    private OffsetDateTime deadline() {
-        return OffsetDateTime.now(ZoneOffset.UTC).plusNanos(stepTimeoutMs * 1_000_000);
+    /** 기대 상태가 아니면(종료·미존재·순서 어긋남·중복) 조용히 무시 — 멱등·가드. */
+    private boolean expect(String orderId, String expected, String evt) {
+        String st = store.status(orderId);
+        if (expected.equals(st)) return true;
+        log.info("[process {}] 상태 {}(기대 {}) — {} 무시", orderId, st, expected, evt);
+        return false;
     }
 }

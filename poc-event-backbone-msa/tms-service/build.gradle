@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':platform-core')
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'   // TMS도 자기 API(배차·배송·배차취소) 제공
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.flywaydb:flyway-core'
