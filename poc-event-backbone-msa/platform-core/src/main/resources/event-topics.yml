@@ -8,12 +8,14 @@ platform:
       - { name: oms.order,          partitions: 12, retention-ms: 604800000 }
       - { name: tms.dispatch,       partitions: 12, retention-ms: 604800000 }
       - { name: bms.settlement,     partitions: 12, retention-ms: 604800000 }
-      # 커맨드 토픽 (orchestrator → 참여자). TMS는 자기 API로 행위(publish-only)라 tms.cmd 없음.
+      # 커맨드 토픽 (사가 → 참여자). tms.cmd는 사가 보상(CancelDispatch)용.
       - { name: oms.cmd,            partitions: 12, retention-ms: 604800000 }
+      - { name: tms.cmd,            partitions: 12, retention-ms: 604800000 }
       - { name: bms.cmd,            partitions: 12, retention-ms: 604800000 }
       # DLT (소비되는 토픽마다, 30일 보존)
       - { name: oms.order.DLT,      partitions: 12, retention-ms: 2592000000 }
       - { name: tms.dispatch.DLT,       partitions: 12, retention-ms: 2592000000 }
       - { name: bms.settlement.DLT, partitions: 12, retention-ms: 2592000000 }
       - { name: oms.cmd.DLT,        partitions: 12, retention-ms: 2592000000 }
+      - { name: tms.cmd.DLT,        partitions: 12, retention-ms: 2592000000 }
       - { name: bms.cmd.DLT,        partitions: 12, retention-ms: 2592000000 }

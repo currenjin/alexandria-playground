@@ -1,14 +1,14 @@
 package com.wemeet.eventbackbone.contracts;
 
 /**
- * 공유 contracts — TMS 소유. 배차 = 오더에 차량/기사 배정 후 운송(상차→하차).
- * TMS는 자기 API(배차·배송완료·배차취소)로 행위하고 결과 <b>사실(tms.dispatch.*)</b>만 발행한다(커맨드 소비 없음).
- * orchestrator가 이 사실을 받아 오더 상태 동기화·정산 트리거를 코디네이션한다.
+ * 공유 contracts — TMS 소유. 배차(dispatch). TMS는 자기 API(배차·배송완료·배차취소)로 행위하고
+ * 결과 사실(tms.dispatch.*)을 발행한다. 커맨드는 하나뿐 — 사가 보상용 CancelDispatch(배차확정 사가가
+ * 오더 전이 거부를 받으면 배차를 되돌리려고 보냄).
  */
 public final class DispatchContracts {
     private DispatchContracts() {}
 
-    // ── 이벤트(사실) tms.dispatch.* ──
+    // ── 사실(fact) tms.dispatch.* ──
     @EventContract(type = "tms.dispatch.created", version = 1)
     public record DispatchCreated(String dispatchId, String orderId, String carrierId) implements DomainEvent {
         @Override public String aggregateId() { return dispatchId; }
@@ -21,6 +21,12 @@ public final class DispatchContracts {
 
     @EventContract(type = "tms.dispatch.cancelled", version = 1)
     public record DispatchCancelled(String dispatchId, String orderId) implements DomainEvent {
+        @Override public String aggregateId() { return dispatchId; }
+    }
+
+    // ── 커맨드(사가 보상) tms.cmd.* ──
+    @EventContract(type = "tms.cmd.cancel_dispatch", version = 1)
+    public record CancelDispatch(String dispatchId, String orderId) implements DomainEvent {
         @Override public String aggregateId() { return dispatchId; }
     }
 }

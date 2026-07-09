@@ -42,6 +42,6 @@ class ContractCatalogTest {
         assertThat(EventTypes.topicOf("oms.order.created")).isEqualTo("oms.order");
         assertThat(EventTypes.topicOf("tms.dispatch.created")).isEqualTo("tms.dispatch");
         assertThat(EventTypes.topicOf("bms.settlement.completed")).isEqualTo("bms.settlement");
-        assertThat(EventTypes.topicOf("oms.cmd.cancel_order")).isEqualTo("oms.cmd");
+        assertThat(EventTypes.topicOf("oms.cmd.dispatch_order")).isEqualTo("oms.cmd");
     }
 }

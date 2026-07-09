@@ -2,13 +2,18 @@ package com.wemeet.eventbackbone.oms.application;
 
 import com.wemeet.eventbackbone.common.event.EventHandler;
 import com.wemeet.eventbackbone.common.event.EventPublisher;
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDelivered;
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDispatched;
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkSettled;
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkUndispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.DeliverOrder;
+import com.wemeet.eventbackbone.contracts.OrderContracts.DispatchOrder;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelRejected;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCreated;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderDelivered;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderDispatchRejected;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderDispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderSettled;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderUndispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.SettleOrder;
+import com.wemeet.eventbackbone.contracts.OrderContracts.UndispatchOrder;
 import com.wemeet.eventbackbone.oms.domain.Order;
 import com.wemeet.eventbackbone.oms.domain.OrderRepository;
 import org.slf4j.Logger;
@@ -16,15 +21,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 /**
- * 주문 유스케이스. 오더 생성·취소는 OMS 자기 API(OrderController)로 직접 수행하고,
- * 오더 상태 전이(배차/배송/정산/미배차 복귀)는 orchestrator가 보내는 커맨드(oms.cmd.*)를
- * {@code @EventHandler}로 받아 동기화한다. "배차되면 취소 불가"는 애그리거트 불변식으로 여기서 판정한다.
+ * 오더 유스케이스 — 오더 생애주기의 <b>단일 권위</b>. 모든 상태 전이를 가드하고, 낙관적 잠금(@Version)으로
+ * 동시 전이를 직렬화한다. 사가 커맨드(oms.cmd.*)는 "전이 시도"이고, OMS가 현재 상태로 판정해
+ * <b>성공 사실</b>(OrderDispatched 등)이나 <b>거부 사실</b>(OrderDispatchRejected)을 발행한다.
+ * "배차된 오더는 취소 불가" 규칙도 여기서(권위 상태로) 판정 → 창 없이 지켜진다.
  */
 @Service
 public class OmsService {
 
     private static final Logger log = LoggerFactory.getLogger(OmsService.class);
+    private static final Map<String, Integer> RANK =
+            Map.of(Order.CREATED, 0, Order.DISPATCHED, 1, Order.DELIVERED, 2, Order.SETTLED, 3);
 
     private final OrderRepository orders;
     private final EventPublisher events;
@@ -34,7 +44,7 @@ public class OmsService {
         this.events = events;
     }
 
-    /** 오더 생성(진입점). → OrderCreated 로 orchestrator 프로세스가 시작된다. */
+    /** 오더 생성(진입점, 로컬 TX). */
     @Transactional
     public void create(String orderId, String shipperId, String origin, String destination,
                        String amount, String currency) {
@@ -43,43 +53,95 @@ public class OmsService {
         log.info("오더 생성 {} {}→{} amount={}", orderId, origin, destination, amount);
     }
 
-    /** 오더 취소(진입점) — 불변식 판정: CREATED만 취소 가능. 배차 이후면 거부(규칙). */
+    /** 오더 취소(사용자 액션, 로컬 TX) — CREATED만 취소, 배차 이후면 규칙상 거부. 낙관적 잠금으로 배차확정과 직렬화. */
     @Transactional
     public void cancelOrder(String orderId, String reason) {
-        String status = orders.findById(orderId).map(Order::status).orElse(null);
-        if (Order.CREATED.equals(status)) {
-            orders.updateStatus(orderId, Order.CANCELLED);
+        Order o = orders.findById(orderId).orElse(null);
+        if (o == null) { log.info("오더 취소 대상 없음 {}", orderId); return; }
+        if (Order.CREATED.equals(o.status())) {
+            orders.save(o.withStatus(Order.CANCELLED));
             events.publish(new OrderCancelled(orderId, reason));
             log.info("오더 취소 {} 사유={}", orderId, reason);
         } else {
-            events.publish(new OrderCancelRejected(orderId,
-                    "배차 이후 상태(" + status + ")는 취소 불가", status));
-            log.info("오더 취소 거부 {} — 현재 {} (배차된 오더는 취소 불가)", orderId, status);
+            events.publish(new OrderCancelRejected(orderId, reason, o.status()));
+            log.info("오더 취소 거부 {} — 현재 {} (배차된 오더는 취소 불가)", orderId, o.status());
         }
     }
 
-    // ── orchestrator 커맨드 소비 (오더 상태 동기화) ──
+    // ── 사가 커맨드: 가드된 전이(성공/거부 사실 발행) ──
+
+    /** 배차 확정 반영: CREATED→DISPATCHED. 불가(취소·정산 등)면 거부 → 배차확정 사가가 보상. */
     @EventHandler
-    void onMarkDispatched(MarkDispatched cmd) {
-        orders.updateStatus(cmd.orderId(), Order.DISPATCHED);
-        log.info("오더 배차됨 {} (dispatch={})", cmd.orderId(), cmd.dispatchId());
+    void onDispatchOrder(DispatchOrder cmd) {
+        Order o = load(cmd.orderId());
+        if (Order.CREATED.equals(o.status())) {
+            orders.save(o.withStatus(Order.DISPATCHED));
+            events.publish(new OrderDispatched(cmd.orderId(), cmd.dispatchId()));
+            log.info("오더 배차됨 {} (dispatch={})", cmd.orderId(), cmd.dispatchId());
+        } else if (Order.DISPATCHED.equals(o.status())) {
+            events.publish(new OrderDispatched(cmd.orderId(), cmd.dispatchId()));   // 멱등 재통지
+        } else {
+            events.publish(new OrderDispatchRejected(cmd.orderId(), cmd.dispatchId(), o.status()));
+            log.info("배차 반영 거부 {} — 현재 {} → 보상(배차취소) 유도", cmd.orderId(), o.status());
+        }
     }
 
+    /** 미배차 복귀(배차취소 사가): DISPATCHED→CREATED. 아니면 무시(보상으로 온 것 등). */
     @EventHandler
-    void onMarkDelivered(MarkDelivered cmd) {
-        orders.updateStatus(cmd.orderId(), Order.DELIVERED);
-        log.info("오더 배송완료 {}", cmd.orderId());
+    void onUndispatchOrder(UndispatchOrder cmd) {
+        Order o = orders.findById(cmd.orderId()).orElse(null);
+        if (o != null && Order.DISPATCHED.equals(o.status())) {
+            orders.save(o.withStatus(Order.CREATED));
+            events.publish(new OrderUndispatched(cmd.orderId()));
+            log.info("오더 미배차 복귀 {}", cmd.orderId());
+        } else {
+            log.info("미배차 복귀 무시 {} — 현재 {} (배차 상태 아님)", cmd.orderId(),
+                    o == null ? "없음" : o.status());
+        }
     }
 
+    /** 배송 완료 반영: DISPATCHED→DELIVERED. 아직 배차 전이면 재시도(순서 역전 self-heal). */
     @EventHandler
-    void onMarkSettled(MarkSettled cmd) {
-        orders.updateStatus(cmd.orderId(), Order.SETTLED);
-        log.info("오더 정산완료 {} (settlement={})", cmd.orderId(), cmd.settlementId());
+    void onDeliverOrder(DeliverOrder cmd) {
+        Order o = load(cmd.orderId());
+        if (Order.DISPATCHED.equals(o.status())) {
+            orders.save(o.withStatus(Order.DELIVERED));
+            events.publish(new OrderDelivered(cmd.orderId(), cmd.dispatchId(), o.amount()));
+            log.info("오더 배송완료 {} amount={}", cmd.orderId(), o.amount());
+        } else if (Order.DELIVERED.equals(o.status()) || Order.SETTLED.equals(o.status())) {
+            events.publish(new OrderDelivered(cmd.orderId(), cmd.dispatchId(), o.amount()));   // 멱등
+        } else {
+            requireCaughtUp(o, Order.DISPATCHED, cmd.orderId(), "DeliverOrder");
+            log.info("배송완료 반영 무시 {} — 현재 {}", cmd.orderId(), o.status());
+        }
     }
 
+    /** 정산 완료 반영: DELIVERED→SETTLED. 아직이면 재시도(순서 역전 self-heal). */
     @EventHandler
-    void onMarkUndispatched(MarkUndispatched cmd) {
-        orders.updateStatus(cmd.orderId(), Order.CREATED);
-        log.info("오더 미배차 복귀 {}", cmd.orderId());
+    void onSettleOrder(SettleOrder cmd) {
+        Order o = load(cmd.orderId());
+        if (Order.DELIVERED.equals(o.status())) {
+            orders.save(o.withStatus(Order.SETTLED));
+            events.publish(new OrderSettled(cmd.orderId(), cmd.settlementId()));
+            log.info("오더 정산완료 {} (settlement={})", cmd.orderId(), cmd.settlementId());
+        } else if (Order.SETTLED.equals(o.status())) {
+            events.publish(new OrderSettled(cmd.orderId(), cmd.settlementId()));   // 멱등
+        } else {
+            requireCaughtUp(o, Order.DELIVERED, cmd.orderId(), "SettleOrder");
+            log.info("정산완료 반영 무시 {} — 현재 {}", cmd.orderId(), o.status());
+        }
+    }
+
+    private Order load(String orderId) {
+        return orders.findById(orderId).orElseThrow(() -> new IllegalStateException(
+                "[order " + orderId + "] 아직 없음(OrderCreated 미처리) — 재시도 대기"));
+    }
+
+    /** 현재 상태가 기대 이전(프로세스가 아직 못 따라옴)이면 무시 말고 재시도(백오프 self-heal). */
+    private void requireCaughtUp(Order o, String expectedPrior, String orderId, String evt) {
+        if (RANK.getOrDefault(o.status(), 99) < RANK.get(expectedPrior)) {
+            throw new IllegalStateException("[order " + orderId + "] 상태 " + o.status()
+                    + "(기대 " + expectedPrior + " 이전) — " + evt + " 재시도 대기");
+        }
     }
 }

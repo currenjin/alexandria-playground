@@ -1,7 +1,8 @@
 package com.wemeet.eventbackbone.oms.application;
 
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.DispatchOrder;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelRejected;
+import com.wemeet.eventbackbone.contracts.OrderContracts.OrderDispatched;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCreated;
 import com.wemeet.eventbackbone.oms.domain.Order;
@@ -48,14 +49,26 @@ class OmsServiceUnitTest {
     }
 
     @Test
-    void cancel_when_dispatched_is_rejected_by_rule() {
+    void dispatch_order_transitions_created_to_dispatched() {
         oms.create("ORD-3", "SHIPPER-1", "서울", "부산", "1000", "KRW");
-        oms.onMarkDispatched(new MarkDispatched("ORD-3", "DISP-1"));   // 배차됨
         events.published.clear();
 
-        oms.cancelOrder("ORD-3", "고객 취소");
+        oms.onDispatchOrder(new DispatchOrder("ORD-3", "DISP-1"));   // 가드된 전이 CREATED→DISPATCHED
 
-        assertThat(orders.find("ORD-3").status()).isEqualTo(Order.DISPATCHED);   // 취소 안 됨
+        assertThat(orders.find("ORD-3").status()).isEqualTo(Order.DISPATCHED);
+        assertThat(events.first(OrderDispatched.class)).isPresent()
+                .get().satisfies(e -> assertThat(e.dispatchId()).isEqualTo("DISP-1"));
+    }
+
+    @Test
+    void cancel_when_dispatched_is_rejected_by_rule() {
+        oms.create("ORD-4", "SHIPPER-1", "서울", "부산", "1000", "KRW");
+        oms.onDispatchOrder(new DispatchOrder("ORD-4", "DISP-1"));   // 배차됨(권위 전이)
+        events.published.clear();
+
+        oms.cancelOrder("ORD-4", "고객 취소");
+
+        assertThat(orders.find("ORD-4").status()).isEqualTo(Order.DISPATCHED);   // 취소 안 됨(규칙)
         assertThat(events.first(OrderCancelRejected.class)).isPresent()
                 .get().satisfies(e -> assertThat(e.currentStatus()).isEqualTo(Order.DISPATCHED));
     }

@@ -24,7 +24,9 @@ server:
 
 platform:
   events:
-    # TMS는 자기 API(배차·배송·배차취소)로 행위하고 사실(tms.dispatch.*)만 발행 — 소비(구독) 없음(publish-only).
+    # TMS는 주로 자기 API로 행위(사실 발행)하되, 사가 보상 커맨드(CancelDispatch)만 tms.cmd로 소비한다.
+    consumer-group: tms
+    subscribe-topics: "tms.cmd"
     relay: { poll-interval-ms: 200, batch-size: 500 }
     retry: { max-attempts: 3, backoff-ms: 1000 }
 

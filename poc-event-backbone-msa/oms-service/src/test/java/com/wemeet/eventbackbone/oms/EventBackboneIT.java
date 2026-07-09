@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.common.event.Envelope;
 import com.wemeet.eventbackbone.common.event.UuidV7;
-import com.wemeet.eventbackbone.contracts.OrderContracts.MarkDispatched;
+import com.wemeet.eventbackbone.contracts.OrderContracts.DispatchOrder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -81,10 +81,10 @@ class EventBackboneIT {
 
         UUID cmdEventId = UuidV7.generate();
         String envelope = mapper.writeValueAsString(new Envelope(
-                cmdEventId, "oms.cmd.mark_dispatched", 1,
+                cmdEventId, "oms.cmd.dispatch_order", 1,
                 OffsetDateTime.now(ZoneOffset.UTC), orderId, "dongsuh", "DS-GRP",
                 UUID.randomUUID().toString(), null,
-                mapper.valueToTree(new MarkDispatched(orderId, "DISP-IT"))));
+                mapper.valueToTree(new DispatchOrder(orderId, "DISP-IT"))));
 
         kafka.send("oms.cmd", orderId, envelope).get();
         waitUntil(Duration.ofSeconds(20), () ->

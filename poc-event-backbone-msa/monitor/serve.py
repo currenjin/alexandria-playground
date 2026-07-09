@@ -214,7 +214,7 @@ def fire(svc, path):
 
 # ── DLT 운영 (§7.1.6): 독소 주입 · DLT 조회 · 재주입 ─────────────────────────
 KAFKA_BIN = "/opt/kafka/bin"
-DLT_TOPICS = ["oms.cmd.DLT", "bms.cmd.DLT",
+DLT_TOPICS = ["oms.cmd.DLT", "tms.cmd.DLT", "bms.cmd.DLT",
               "oms.order.DLT", "tms.dispatch.DLT", "bms.settlement.DLT"]
 
 
