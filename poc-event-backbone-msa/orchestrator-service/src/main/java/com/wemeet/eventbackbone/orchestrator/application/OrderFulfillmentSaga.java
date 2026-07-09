@@ -123,18 +123,24 @@ public class OrderFulfillmentSaga {
         return FlowContext.get().correlationId();
     }
 
+    /** 오더 생애주기 순서(정렬-인지 가드용). CANCELLED는 미포함(종료 → 항상 무시). */
+    private static final java.util.Map<String, Integer> RANK =
+            java.util.Map.of("CREATED", 0, "DISPATCHED", 1, "DELIVERED", 2, "SETTLED", 3);
+
     /**
-     * 기대 상태 가드. 두 가지를 구분한다:
-     *  - 프로세스 <b>미시작(status=null)</b> = OrderCreated가 아직 소비 전인 순서 역전 → 무시하지 말고
-     *    <b>retryable 예외</b>를 던져 백오프 재시도(§7.1.6)로 self-heal(잠시 뒤 프로세스 준비되면 성공).
-     *  - 프로세스가 있으나 <b>기대와 다른 (종료·중복·역전) 상태</b> → 조용히 무시(멱등·종료 가드).
+     * 정렬-인지(order-aware) 기대 상태 가드. 최종일관성이라 이벤트가 프로세스 진행보다 앞서 올 수 있다.
+     *  - 기대 상태와 같음 → 진행.
+     *  - <b>미시작(null)</b> 또는 <b>기대보다 이전 상태</b>(프로세스가 아직 못 따라옴) → 무시하지 말고
+     *    <b>retryable 예외</b>로 백오프 재시도(§7.1.6) → 곧 프로세스가 그 단계에 도달하면 성공(self-heal).
+     *  - 기대보다 <b>이후/종료(CANCELLED)</b> → 조용히 무시(중복·종료 가드).
      */
     private boolean expect(String orderId, String expected, String evt) {
         String st = store.status(orderId);
         if (expected.equals(st)) return true;
-        if (st == null) {
-            throw new IllegalStateException(
-                    "[process " + orderId + "] 아직 시작 전(OrderCreated 미처리) — " + evt + " 재시도 대기");
+        boolean behind = (st == null) || RANK.getOrDefault(st, 99) < RANK.get(expected);
+        if (behind) {
+            throw new IllegalStateException("[process " + orderId + "] 상태 "
+                    + (st == null ? "미시작" : st + "(기대 " + expected + " 이전)") + " — " + evt + " 재시도 대기");
         }
         log.info("[process {}] 상태 {}(기대 {}) — {} 무시", orderId, st, expected, evt);
         return false;
