@@ -88,6 +88,8 @@ public String dispatch(String orderId) { ... ; events.publish(new DispatchCreate
 
 outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · correlationId 전파 · tenant 컨텍스트 — **전부 `platform-core`가 강제**한다. 당신 코드에는 안 보인다.
 
+> **새 서비스에 백본을 붙일 때만** (기능 개발과 별개, 앱 세팅 1회): 앱에 `@EnableEventBackbone`을 붙이고, 소비할 토픽을 `platform.events.subscribe-topics`에 선언한다. 발행만 하는 서비스는 subscribe-topics 없이 발행 토픽만 소유하면 된다.
+
 ---
 ---
 
@@ -126,4 +128,4 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 
 ---
 
-더 깊은 근거·수치는 `design/framework/공통-확정.md §7.1`, 실제 흐름은 위키의 "🧪 코드 관통 시뮬레이션"에서.
+더 깊은 흐름·근거는 `README.md`와 예제 코드(`platform-core`)에서. (확정 스펙 전문은 사내 설계 문서 §7.1.)
