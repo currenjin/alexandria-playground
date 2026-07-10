@@ -1,6 +1,9 @@
 // 공통 이벤트 인프라 라이브러리 (§7.1.1~7.1.6): 봉투·발행자·릴레이·소비지원·DLT.
 // 각 서비스가 의존. 부팅 앱이 아니므로 spring-boot 플러그인 없음.
-plugins { id 'java-library' }
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+}
 
 dependencies {
     api 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -11,4 +14,9 @@ dependencies {
     // compileOnly — 라이브러리가 비-웹 서비스(TMS·BMS)에 web을 강제하지 않는다.
     compileOnly 'org.springframework:spring-web'
     compileOnly 'jakarta.servlet:jakarta.servlet-api'
+
+    // 라이브러리 자체 단위 테스트
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.assertj:assertj-core'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

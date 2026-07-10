@@ -6,7 +6,7 @@ import com.wemeet.eventbackbone.contracts.OrderContracts.OrderDispatched;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCancelled;
 import com.wemeet.eventbackbone.contracts.OrderContracts.OrderCreated;
 import com.wemeet.eventbackbone.oms.domain.Order;
-import com.wemeet.eventbackbone.oms.support.FakeEventPublisher;
+import com.wemeet.eventbackbone.testsupport.FakeEventPublisher;
 import com.wemeet.eventbackbone.oms.support.InMemoryOrderRepository;
 import org.junit.jupiter.api.Test;
 
