@@ -1,7 +1,5 @@
 package com.wemeet.eventbackbone.common.event;
 
-import com.wemeet.eventbackbone.contracts.DomainEvent;
-import com.wemeet.eventbackbone.contracts.EventContract;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +36,7 @@ public final class EventTypes {
         return c;
     }
 
-    /** 토픽 = eventType 앞 두 마디 (§7.1.2). oms.order.confirmed → oms.order */
+    /** 토픽 = eventType 앞 두 마디 (§7.1.2). a.b.created → a.b */
     public static String topicOf(String eventType) {
         String[] p = eventType.split("\\.");
         return p.length >= 2 ? p[0] + "." + p[1] : eventType;

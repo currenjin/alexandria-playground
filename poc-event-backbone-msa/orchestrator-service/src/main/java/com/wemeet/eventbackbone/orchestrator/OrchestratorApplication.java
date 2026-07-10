@@ -3,6 +3,9 @@ package com.wemeet.eventbackbone.orchestrator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import com.wemeet.eventbackbone.common.event.EventTypes;
+import com.wemeet.eventbackbone.contracts.ContractCatalog;
+import jakarta.annotation.PostConstruct;
 
 /**
  * Orchestrator 서비스 (독립 배포) — <b>플랫폼 오너 소유 "중앙 sagas"</b> (§7.1.7).
@@ -14,6 +17,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = "com.wemeet.eventbackbone")
 @EnableScheduling
 public class OrchestratorApplication {
+
+    // 이 앱이 사용하는 이벤트 계약을 기동 시 명시적으로 레지스트리에 등록(type↔class). 예제는 전체 카탈로그.
+    @PostConstruct
+    void registerContracts() {
+        ContractCatalog.ALL.forEach(EventTypes::register);
+    }
     public static void main(String[] args) {
         SpringApplication.run(OrchestratorApplication.class, args);
     }

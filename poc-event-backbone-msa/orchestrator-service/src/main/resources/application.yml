@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: "classpath:event-topics.yml"   # §7.1.2 공통 토픽 카탈로그(as-code)
   application: { name: orchestrator-service }
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/orchestrator}
@@ -24,6 +22,8 @@ server:
 
 platform:
   events:
+    # 오케스트레이터(사가)는 소유·생성하는 토픽이 없다. 타 서비스의 도메인 토픽(oms.order·tms.dispatch·
+    # bms.settlement)을 구독하고, 커맨드는 각 서비스 소유의 *.cmd 토픽으로 발행할 뿐이라 생성 책임은 소유 서비스에 있다.
     consumer-group: saga
     subscribe-topics: "oms.order,tms.dispatch,bms.settlement"
     relay: { poll-interval-ms: 200, batch-size: 500 }

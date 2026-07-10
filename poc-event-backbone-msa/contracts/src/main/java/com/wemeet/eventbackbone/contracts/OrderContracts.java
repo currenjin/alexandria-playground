@@ -1,5 +1,8 @@
 package com.wemeet.eventbackbone.contracts;
 
+import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.EventContract;
+
 /**
  * 공유 contracts — OMS 소유. 오더 = 화주 운송요청 + **생애주기 상태의 단일 권위(authority)**.
  * 오더 상태 전이는 OMS 애그리거트가 낙관적 잠금 + 가드로 판정한다 — 유효하면 성공 사실을, 아니면 거부 사실을 발행.

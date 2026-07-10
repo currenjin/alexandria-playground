@@ -1,6 +1,5 @@
 package com.wemeet.eventbackbone.common.event;
 
-import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

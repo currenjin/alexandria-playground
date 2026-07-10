@@ -3,7 +3,6 @@ package com.wemeet.eventbackbone.common.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
 import com.wemeet.eventbackbone.common.inbox.InboxRepository;
-import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

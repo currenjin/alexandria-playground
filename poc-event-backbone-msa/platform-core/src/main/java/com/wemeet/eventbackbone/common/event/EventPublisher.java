@@ -1,6 +1,5 @@
 package com.wemeet.eventbackbone.common.event;
 
-import com.wemeet.eventbackbone.contracts.DomainEvent;
 
 /**
  * 발행 포트 (§7.1.1). 개발자는 이 한 줄만: publish(event).

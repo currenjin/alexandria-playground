@@ -1,6 +1,5 @@
 package com.wemeet.eventbackbone.common.event;
 
-import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;

@@ -1,5 +1,8 @@
 package com.wemeet.eventbackbone.contracts;
 
+import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.EventContract;
+
 /**
  * 공유 contracts — BMS 소유. 배송 완료된 배차의 운임 정산. orchestrator의 CreateSettlement 커맨드를 소비해
  * 정산을 생성하고 SettlementCompleted 사실을 발행한다.

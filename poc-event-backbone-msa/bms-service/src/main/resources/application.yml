@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: "classpath:event-topics.yml"   # §7.1.2 공통 토픽 카탈로그(as-code)
   application: { name: bms-service }
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/bms}
@@ -26,6 +24,12 @@ platform:
   events:
     consumer-group: bms
     subscribe-topics: "bms.cmd"
+    # 이 서비스가 소유·생성하는 토픽 (§7.1.2 발행자 소유). 도메인·커맨드=7일, DLT=30일.
+    topics:
+      - { name: bms.settlement,     partitions: 12, retention-ms: 604800000 }
+      - { name: bms.cmd,            partitions: 12, retention-ms: 604800000 }
+      - { name: bms.settlement.DLT, partitions: 12, retention-ms: 2592000000 }
+      - { name: bms.cmd.DLT,        partitions: 12, retention-ms: 2592000000 }
     relay: { poll-interval-ms: 200, batch-size: 500 }
     retry: { max-attempts: 3, backoff-ms: 1000 }
 

@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':platform-core')
+    implementation project(':contracts')   // 이벤트 계약 record (예제)
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.kafka:spring-kafka'

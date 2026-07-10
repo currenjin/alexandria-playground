@@ -2,7 +2,6 @@ package com.wemeet.eventbackbone.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
-import com.wemeet.eventbackbone.contracts.DomainEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;

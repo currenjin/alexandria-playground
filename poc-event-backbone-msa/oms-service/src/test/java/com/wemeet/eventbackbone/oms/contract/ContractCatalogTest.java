@@ -2,8 +2,8 @@ package com.wemeet.eventbackbone.oms.contract;
 
 import com.wemeet.eventbackbone.common.event.EventTypes;
 import com.wemeet.eventbackbone.contracts.ContractCatalog;
-import com.wemeet.eventbackbone.contracts.DomainEvent;
-import com.wemeet.eventbackbone.contracts.EventContract;
+import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.EventContract;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

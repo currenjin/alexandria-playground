@@ -3,7 +3,6 @@
 plugins { id 'java-library' }
 
 dependencies {
-    api project(':contracts')
     api 'org.springframework.boot:spring-boot-starter-jdbc'
     api 'org.springframework.kafka:spring-kafka'
     api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'

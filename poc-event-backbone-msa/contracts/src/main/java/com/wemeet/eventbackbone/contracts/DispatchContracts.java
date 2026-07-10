@@ -1,5 +1,8 @@
 package com.wemeet.eventbackbone.contracts;
 
+import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.EventContract;
+
 /**
  * 공유 contracts — TMS 소유. 배차(dispatch). TMS는 자기 API(배차·배송완료·배차취소)로 행위하고
  * 결과 사실(tms.dispatch.*)을 발행한다. 커맨드는 하나뿐 — 사가 보상용 CancelDispatch(배차확정 사가가

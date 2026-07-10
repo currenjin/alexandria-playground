@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':platform-core')   // 사가 엔진(common.saga)·공통 인프라 포함
+    implementation project(':contracts')   // 이벤트 계약 record (예제)
     implementation 'org.springframework.boot:spring-boot-starter-web'   // 데모 사가 상태 조회
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.kafka:spring-kafka'
