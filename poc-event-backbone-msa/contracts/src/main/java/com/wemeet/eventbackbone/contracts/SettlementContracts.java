@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.contracts;
 
-import com.wemeet.eventbackbone.common.event.DomainEvent;
-import com.wemeet.eventbackbone.common.event.EventContract;
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.EventContract;
 
 /**
  * 공유 contracts — BMS 소유. 배송 완료된 배차의 운임 정산. orchestrator의 CreateSettlement 커맨드를 소비해

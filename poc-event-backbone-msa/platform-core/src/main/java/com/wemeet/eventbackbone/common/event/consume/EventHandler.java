@@ -1,4 +1,5 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.consume;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

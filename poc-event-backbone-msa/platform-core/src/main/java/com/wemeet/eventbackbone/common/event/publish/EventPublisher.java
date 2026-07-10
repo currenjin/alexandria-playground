@@ -1,4 +1,6 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.publish;
+
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
 
 
 /**

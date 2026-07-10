@@ -1,8 +1,8 @@
 package com.wemeet.eventbackbone.common.outbox;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wemeet.eventbackbone.common.event.Envelope;
-import com.wemeet.eventbackbone.common.event.EventTypes;
+import com.wemeet.eventbackbone.common.event.contract.Envelope;
+import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 import com.wemeet.eventbackbone.common.event.transport.MessageTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

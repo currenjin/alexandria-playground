@@ -1,4 +1,7 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.consume;
+
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 
 import org.springframework.stereotype.Component;
 

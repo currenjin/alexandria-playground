@@ -1,4 +1,8 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.consume;
+
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.Envelope;
+import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;

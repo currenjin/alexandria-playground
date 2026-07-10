@@ -2,8 +2,8 @@ package com.wemeet.eventbackbone.oms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.context.FlowContext;
-import com.wemeet.eventbackbone.common.event.Envelope;
-import com.wemeet.eventbackbone.common.event.UuidV7;
+import com.wemeet.eventbackbone.common.event.contract.Envelope;
+import com.wemeet.eventbackbone.common.event.contract.UuidV7;
 import com.wemeet.eventbackbone.contracts.OrderContracts.DispatchOrder;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

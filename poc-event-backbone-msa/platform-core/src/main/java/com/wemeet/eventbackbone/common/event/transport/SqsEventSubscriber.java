@@ -1,6 +1,6 @@
 package com.wemeet.eventbackbone.common.event.transport;
 
-import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
+import com.wemeet.eventbackbone.common.event.consume.EventConsumerSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

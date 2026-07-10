@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.contracts;
 
-import com.wemeet.eventbackbone.common.event.DomainEvent;
-import com.wemeet.eventbackbone.common.event.EventContract;
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.EventContract;
 
 /**
  * 공유 contracts — OMS 소유. 오더 = 화주 운송요청 + **생애주기 상태의 단일 권위(authority)**.

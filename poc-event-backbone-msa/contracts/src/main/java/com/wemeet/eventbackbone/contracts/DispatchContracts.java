@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.contracts;
 
-import com.wemeet.eventbackbone.common.event.DomainEvent;
-import com.wemeet.eventbackbone.common.event.EventContract;
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.EventContract;
 
 /**
  * 공유 contracts — TMS 소유. 배차(dispatch). TMS는 자기 API(배차·배송완료·배차취소)로 행위하고

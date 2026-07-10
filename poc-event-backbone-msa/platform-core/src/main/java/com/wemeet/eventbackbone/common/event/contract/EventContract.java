@@ -1,4 +1,4 @@
-package com.wemeet.eventbackbone.common.event;
+package com.wemeet.eventbackbone.common.event.contract;
 
 import java.lang.annotation.*;
 

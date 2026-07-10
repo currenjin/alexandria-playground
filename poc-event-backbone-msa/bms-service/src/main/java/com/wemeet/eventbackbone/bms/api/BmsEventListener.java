@@ -1,6 +1,6 @@
 package com.wemeet.eventbackbone.bms.api;
 
-import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
+import com.wemeet.eventbackbone.common.event.consume.EventConsumerSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.kafka.annotation.KafkaListener;

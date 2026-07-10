@@ -1,6 +1,6 @@
 package com.wemeet.eventbackbone.common.event.transport;
 
-import com.wemeet.eventbackbone.common.event.EventConsumerSupport;
+import com.wemeet.eventbackbone.common.event.consume.EventConsumerSupport;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;

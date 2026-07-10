@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.bms.application;
 
-import com.wemeet.eventbackbone.common.event.EventHandler;
-import com.wemeet.eventbackbone.common.event.EventPublisher;
+import com.wemeet.eventbackbone.common.event.consume.EventHandler;
+import com.wemeet.eventbackbone.common.event.publish.EventPublisher;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.CreateSettlement;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.SettlementCompleted;
 import com.wemeet.eventbackbone.bms.domain.Settlement;

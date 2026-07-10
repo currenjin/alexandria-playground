@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.oms.support;
 
-import com.wemeet.eventbackbone.common.event.EventPublisher;
-import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.publish.EventPublisher;
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
 
 import java.util.ArrayList;
 import java.util.List;

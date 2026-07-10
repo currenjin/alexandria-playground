@@ -1,7 +1,7 @@
 package com.wemeet.eventbackbone.orchestrator.application;
 
-import com.wemeet.eventbackbone.common.event.EventHandler;
-import com.wemeet.eventbackbone.common.event.EventPublisher;
+import com.wemeet.eventbackbone.common.event.consume.EventHandler;
+import com.wemeet.eventbackbone.common.event.publish.EventPublisher;
 import com.wemeet.eventbackbone.contracts.DispatchContracts.CancelDispatch;
 import com.wemeet.eventbackbone.contracts.DispatchContracts.DispatchCreated;
 import com.wemeet.eventbackbone.contracts.OrderContracts.DispatchOrder;

@@ -1,6 +1,6 @@
 package com.wemeet.eventbackbone.contracts;
 
-import com.wemeet.eventbackbone.common.event.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
 
 import com.wemeet.eventbackbone.contracts.OrderContracts.*;
 import com.wemeet.eventbackbone.contracts.SettlementContracts.*;
