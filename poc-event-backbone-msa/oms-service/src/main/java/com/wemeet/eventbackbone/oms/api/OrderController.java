@@ -52,6 +52,6 @@ public class OrderController {
         return Map.of(
                 "orderId", orderId,
                 "order", order.isEmpty() ? Map.of() : order.get(0),
-                "hint", "사가 상태는 orchestrator :8083/demo/saga/" + orderId);
+                "hint", "사가는 무상태(상관 키=orderId) — 진행은 orchestrator 로그에서 correlationId로 추적");
     }
 }

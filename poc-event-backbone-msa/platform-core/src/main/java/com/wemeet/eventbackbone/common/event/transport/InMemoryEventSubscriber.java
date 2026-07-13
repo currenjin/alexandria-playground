@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 /**
- * 인메모리 수신 어댑터 (broker=inmemory) — {@link KafkaEventSubscriber}와 대칭.
+ * 인메모리 수신 어댑터 (broker=inmemory) — Kafka 경로(각 서비스의 {@code @KafkaListener} 리스너)와 대칭.
  * 설정(consumer-group / subscribe-topics)의 토픽을 버스에서 구독해 공통 소비 파이프라인으로 넘긴다.
  */
 @Component
