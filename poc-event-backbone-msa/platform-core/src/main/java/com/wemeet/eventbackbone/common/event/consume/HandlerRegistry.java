@@ -21,7 +21,14 @@ public class HandlerRegistry {
 
     public <T extends DomainEvent> void register(String group, Class<T> type, Consumer<T> handler) {
         EventTypes.register(type);
-        handlers.put(key(group, EventTypes.typeOf(type)), handler);
+        String key = key(group, EventTypes.typeOf(type));
+        Consumer<?> existing = handlers.putIfAbsent(key, handler);
+        if (existing != null) {
+            // 조용히 덮어쓰면 먼저 등록된 핸들러가 무경고로 사라진다 — 기동 시점에 실패시켜 드러낸다.
+            throw new IllegalStateException(
+                    "중복 @EventHandler: group=%s, eventType=%s — 같은 그룹에서 같은 이벤트의 핸들러는 하나만 허용"
+                            .formatted(group, EventTypes.typeOf(type)));
+        }
     }
 
     @SuppressWarnings("unchecked")

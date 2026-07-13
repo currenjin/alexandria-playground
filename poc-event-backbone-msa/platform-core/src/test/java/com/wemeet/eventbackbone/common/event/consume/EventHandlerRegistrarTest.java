@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class EventHandlerRegistrarTest {
 
@@ -42,5 +43,17 @@ class EventHandlerRegistrarTest {
         HandlerRegistry registry = new HandlerRegistry();
         new EventHandlerRegistrar(registry, "oms").postProcessAfterInitialization(new OrderConsumer(), "c");
         assertThat(registry.lookup("tms", "oms.order.created")).isNull();
+    }
+
+    @Test
+    void 같은_그룹에_같은_이벤트_핸들러가_둘이면_기동_시점에_실패한다() {
+        HandlerRegistry registry = new HandlerRegistry();
+        EventHandlerRegistrar registrar = new EventHandlerRegistrar(registry, "oms");
+        registrar.postProcessAfterInitialization(new OrderConsumer(), "first");
+
+        // 조용한 덮어쓰기(먼저 등록된 핸들러 무경고 소실) 대신 fail-fast
+        assertThatThrownBy(() -> registrar.postProcessAfterInitialization(new OrderConsumer(), "second"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("중복 @EventHandler");
     }
 }
