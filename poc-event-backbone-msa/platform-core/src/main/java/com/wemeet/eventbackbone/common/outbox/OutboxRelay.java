@@ -2,6 +2,7 @@ package com.wemeet.eventbackbone.common.outbox;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wemeet.eventbackbone.common.event.contract.Envelope;
+import com.wemeet.eventbackbone.common.event.contract.EventJson;
 import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 import com.wemeet.eventbackbone.common.event.transport.MessageTransport;
 import org.slf4j.Logger;
@@ -35,15 +36,14 @@ public class OutboxRelay {
 
     private final JdbcTemplate jdbc;
     private final MessageTransport transport;
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper = EventJson.mapper();
     private final int batchSize;
     private final RowMapper<Envelope> envelopeMapper;
 
-    public OutboxRelay(JdbcTemplate jdbc, MessageTransport transport, ObjectMapper mapper,
+    public OutboxRelay(JdbcTemplate jdbc, MessageTransport transport,
                        @Value("${platform.events.relay.batch-size:500}") int batchSize) {
         this.jdbc = jdbc;
         this.transport = transport;
-        this.mapper = mapper;
         this.batchSize = batchSize;
         this.envelopeMapper = (rs, n) -> {
             try {

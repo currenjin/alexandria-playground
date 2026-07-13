@@ -2,6 +2,7 @@ package com.wemeet.eventbackbone.common.event.consume;
 
 import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
 import com.wemeet.eventbackbone.common.event.contract.Envelope;
+import com.wemeet.eventbackbone.common.event.contract.EventJson;
 import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,12 +25,11 @@ public class EventConsumerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(EventConsumerSupport.class);
 
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper = EventJson.mapper();
     private final InboxRepository inbox;
     private final HandlerRegistry registry;
 
-    public EventConsumerSupport(ObjectMapper mapper, InboxRepository inbox, HandlerRegistry registry) {
-        this.mapper = mapper;
+    public EventConsumerSupport(InboxRepository inbox, HandlerRegistry registry) {
         this.inbox = inbox;
         this.registry = registry;
     }

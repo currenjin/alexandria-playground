@@ -1,6 +1,7 @@
 package com.wemeet.eventbackbone.common.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wemeet.eventbackbone.common.event.contract.EventJson;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -17,11 +18,10 @@ import java.util.UUID;
 public class JdbcSagaStore implements SagaStore {
 
     private final JdbcTemplate jdbc;
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper = EventJson.mapper();
 
-    public JdbcSagaStore(JdbcTemplate jdbc, ObjectMapper mapper) {
+    public JdbcSagaStore(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.mapper = mapper;
     }
 
     @Override

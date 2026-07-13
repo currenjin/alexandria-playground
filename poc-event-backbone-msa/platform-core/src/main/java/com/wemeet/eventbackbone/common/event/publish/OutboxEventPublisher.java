@@ -1,6 +1,7 @@
 package com.wemeet.eventbackbone.common.event.publish;
 
 import com.wemeet.eventbackbone.common.event.contract.DomainEvent;
+import com.wemeet.eventbackbone.common.event.contract.EventJson;
 import com.wemeet.eventbackbone.common.event.contract.EventTypes;
 import com.wemeet.eventbackbone.common.event.contract.UuidV7;
 
@@ -22,11 +23,10 @@ import java.util.UUID;
 public class OutboxEventPublisher implements EventPublisher {
 
     private final JdbcTemplate jdbc;
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper = EventJson.mapper();
 
-    public OutboxEventPublisher(JdbcTemplate jdbc, ObjectMapper mapper) {
+    public OutboxEventPublisher(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.mapper = mapper;
     }
 
     @Override
