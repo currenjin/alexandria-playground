@@ -1,7 +1,8 @@
 .gradle/
-build/
-*/build/
+**/build/
 !gradle/wrapper/gradle-wrapper.jar
 .idea/
 *.iml
 *.log
+__pycache__/
+.DS_Store

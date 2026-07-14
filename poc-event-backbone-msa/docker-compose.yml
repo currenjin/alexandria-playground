@@ -1,5 +1,5 @@
 # MSA 한 방 실행: docker compose up --build
-# Kafka(KRaft) + PostgreSQL(4 DB: oms/tms/bms/orchestrator) + 독립 배포 서비스 4개.
+# Kafka(KRaft) + PostgreSQL(5 DB: oms/tms/bms/orchestrator/cms) + 독립 배포 서비스 5개.
 services:
   kafka:
     image: apache/kafka:3.8.0
@@ -29,7 +29,7 @@ services:
       - ./docker/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
 
   orchestrator-service:
-    build: { context: ., args: { MODULE: orchestrator-service } }
+    build: { context: ., args: { MODULE: platforms/orchestrator } }
     ports: ["8083:8083"]
     depends_on: [kafka, postgres]
     environment:
@@ -38,7 +38,7 @@ services:
       PORT: 8083
 
   oms-service:
-    build: { context: ., args: { MODULE: oms-service } }
+    build: { context: ., args: { MODULE: services/oms } }
     ports: ["8080:8080"]
     depends_on: [kafka, postgres]
     environment:
@@ -47,7 +47,7 @@ services:
       PORT: 8080
 
   tms-service:
-    build: { context: ., args: { MODULE: tms-service } }
+    build: { context: ., args: { MODULE: services/tms } }
     ports: ["8081:8081"]
     depends_on: [kafka, postgres]
     environment:
@@ -56,9 +56,18 @@ services:
       PORT: 8081
 
   bms-service:
-    build: { context: ., args: { MODULE: bms-service } }
+    build: { context: ., args: { MODULE: services/bms } }
     depends_on: [kafka, postgres]
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/bms
       KAFKA: kafka:29092
       PORT: 8082
+
+  ems-service:
+    build: { context: ., args: { MODULE: services/ems } }
+    ports: ["8084:8084"]
+    depends_on: [kafka, postgres]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/cms
+      KAFKA: kafka:29092
+      PORT: 8084

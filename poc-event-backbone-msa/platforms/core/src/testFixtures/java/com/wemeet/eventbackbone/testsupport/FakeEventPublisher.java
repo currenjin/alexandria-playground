@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * 소비 앱용 테스트 하네스 — 인프라(Kafka·DB) 없이 "무엇이 발행됐나"만 검증하는 {@link EventPublisher} 더블.
  * 비즈 로직 단위 테스트에서 실제 발행자(OutboxEventPublisher) 대신 주입한다.
- * 사용: {@code testImplementation testFixtures(project(':platform-core'))}
+ * 사용: {@code testImplementation testFixtures(project(':platforms:core'))}
  */
 public class FakeEventPublisher implements EventPublisher {
 

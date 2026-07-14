@@ -23,7 +23,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EXAMPLE_DIR = os.path.dirname(HERE)
+EXAMPLE_DIR = os.path.dirname(os.path.dirname(HERE))  # platforms/monitor/ → 예제 루트 (2단계 위)
 PORT = int(os.environ.get("MONITOR_PORT", "8900"))
 OMS = os.environ.get("OMS_URL", "http://localhost:8080")
 TMS = os.environ.get("TMS_URL", "http://localhost:8081")
@@ -169,8 +169,8 @@ def run_scenario(scenario):
 
 # ── 개별 HTTP 액션: 컨트롤러의 @PostMapping을 자동 파싱해 버튼을 만든다 ────────────────
 CONTROLLERS = [
-    ("oms", "oms-service/src/main/java/com/wemeet/eventbackbone/oms/api/OrderController.java"),
-    ("tms", "tms-service/src/main/java/com/wemeet/eventbackbone/tms/api/TmsController.java"),
+    ("oms", "services/oms/src/main/java/com/wemeet/eventbackbone/oms/api/OrderController.java"),
+    ("tms", "services/tms/src/main/java/com/wemeet/eventbackbone/tms/api/TmsController.java"),
 ]
 
 

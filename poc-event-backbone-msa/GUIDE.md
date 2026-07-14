@@ -1,12 +1,12 @@
 # 비즈니스 개발자 가이드
 
-이 백본 위에서 기능을 만들 때 **당신이 할 일은 아주 적다.** 발행·소비의 안전장치(outbox·inbox·재시도·DLT·컨텍스트·토픽)는 전부 공통(`platform-core`)이 처리한다.
+이 백본 위에서 기능을 만들 때 **당신이 할 일은 아주 적다.** 발행·소비의 안전장치(outbox·inbox·재시도·DLT·컨텍스트·토픽)는 전부 공통(`platforms/core`)이 처리한다.
 
 ---
 
 ## TL;DR — 당신이 하는 일은 이 셋
 
-1. **이벤트/커맨드 정의** — `contracts`에 record + `@EventContract` 한 줄
+1. **이벤트/커맨드 정의** — `platforms/contract`에 record + `@EventContract` 한 줄
 2. **발행** — 유스케이스 안에서 `events.publish(new MyEvent(...))`
 3. **소비** — 핸들러 메소드에 `@EventHandler` 한 줄 (공통이 자동 등록)
 
@@ -14,9 +14,9 @@
 
 ---
 
-## 1. 이벤트 정의 (contracts)
+## 1. 이벤트 정의 (platforms/contract)
 
-`contracts` 모듈에 record로 선언한다. `@EventContract`의 type이 논리 이벤트명이다(토픽·직렬화는 이걸로 자동).
+`platforms/contract` 모듈에 record로 선언한다. `@EventContract`의 type이 논리 이벤트명이다(토픽·직렬화는 이걸로 자동).
 
 ```java
 @EventContract(type = "oms.order.created", version = 1)
@@ -86,7 +86,7 @@ public String dispatch(String orderId) { ... ; events.publish(new DispatchCreate
 
 ## 신경 쓰지 않아도 되는 것
 
-outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · correlationId 전파 · tenant 컨텍스트 — **전부 `platform-core`가 강제**한다. 당신 코드에는 안 보인다.
+outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · correlationId 전파 · tenant 컨텍스트 — **전부 `platforms/core`가 강제**한다. 당신 코드에는 안 보인다.
 
 > **새 서비스에 백본을 붙일 때** (기능 개발과 별개, 앱 세팅 1회) — 체크리스트 5개:
 >
@@ -94,7 +94,7 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 > 2. **계약 등록** — `@PostConstruct`에서 `ContractCatalog.ALL.forEach(EventTypes::register)`. 빠뜨리면 **첫 publish에서 런타임 예외**(미등록 타입)가 난다
 > 3. 발행 토픽 소유 선언 — 자기 `application.yml`의 `platform.events.topics`에 자기 네임스페이스 토픽만
 > 4. 소비하려면 둘 다 — `platform.events.subscribe-topics` 선언 + 자기 `*EventListener` 클래스(@KafkaListener, 그룹별). 발행 전용 서비스는 이 단계 생략
-> 5. **Flyway 번호 규칙** — outbox/inbox `V1__outbox_inbox.sql`은 platform-core가 제공하므로 앱 마이그레이션은 **V2부터** 쓴다(V1을 또 만들면 충돌). saga_instance DDL은 orchestrator만
+> 5. **Flyway 번호 규칙** — outbox/inbox `V1__outbox_inbox.sql`은 platforms/core가 제공하므로 앱 마이그레이션은 **V2부터** 쓴다(V1을 또 만들면 충돌). saga_instance DDL은 orchestrator만
 
 ---
 ---
@@ -134,4 +134,4 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 
 ---
 
-더 깊은 흐름·근거는 `README.md`와 예제 코드(`platform-core`)에서. (확정 스펙 전문은 사내 설계 문서 §7.1.)
+더 깊은 흐름·근거는 `README.md`와 예제 코드(`platforms/core`)에서. (확정 스펙 전문은 사내 설계 문서 §7.1.)

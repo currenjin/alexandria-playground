@@ -4,5 +4,5 @@ plugins { id 'java-library' }
 
 dependencies {
     // 예제 계약은 계약 메커니즘(@EventContract·DomainEvent)만 라이브러리에서 가져다 쓴다.
-    api project(':platform-core')
+    api project(':platforms:core')
 }

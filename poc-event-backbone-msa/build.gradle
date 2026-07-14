@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
     id 'org.springframework.boot' version '3.3.5' apply false
     id 'io.spring.dependency-management' version '1.1.6' apply false
@@ -13,7 +15,7 @@ subprojects {
     repositories { mavenCentral() }
 
     dependencyManagement {
-        imports { mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES }
+        imports { mavenBom SpringBootPlugin.BOM_COORDINATES }
     }
 
     tasks.withType(Test).configureEach { useJUnitPlatform() }
