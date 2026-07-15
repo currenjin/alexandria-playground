@@ -1,5 +1,6 @@
 rootProject.name = 'event-backbone-example'
-include ':platforms:core',
+include ':platforms:common',
+        ':platforms:core',
         ':platforms:contract',
         ':platforms:orchestrator',
         ':services:oms',

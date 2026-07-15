@@ -1,21 +1,18 @@
-plugins {
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
-}
-
+// 정산증빙(EMS) 서비스. 부팅 앱 — spring-boot 플러그인은 root 앱 그룹에서 적용.
 dependencies {
     implementation project(':platforms:core')
-    implementation project(':platforms:contract')
+    implementation project(':platforms:contract')   // 이벤트 계약 record (예제)
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-//    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'
 
+    // 통합 테스트(Testcontainers) — Spring 테스트 umbrella는 유지(spring-test·jsonpath 등 포함).
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation testFixtures(project(':platforms:core'))
     testImplementation 'org.testcontainers:junit-jupiter'
-//    testImplementation 'org.testcontainers:kafka'
+    testImplementation 'org.testcontainers:kafka'
     testImplementation 'org.testcontainers:postgresql'
 }

@@ -1,14 +1,17 @@
 # 모듈·패키지 구조
 
-- `platforms/contract` — 이벤트·커맨드 record + `@EventContract`. 서비스끼리 서로 의존하지 않고 이 모듈에만 의존한다.
-- `platforms/core` — 백본 라이브러리(도메인 흔적 0).
-  - `common/event/contract` — `DomainEvent`·`EventContract`·`Envelope`·`EventTypes`·`UuidV7` (계약·공유 어휘)
-  - `common/event/publish` — `EventPublisher`·`OutboxEventPublisher`
-  - `common/event/consume` — `EventConsumerSupport`·`@EventHandler`·`EventHandlerRegistrar`·`HandlerRegistry`
-  - `common/event/config`·`transport` — 토픽 카탈로그, 브로커 어댑터(kafka/inmemory/sqs)
-  - `common/{outbox,inbox,saga,context,maintenance}`
-- `services/oms`·`services/tms`·`services/bms`·`services/ems` — 도메인 서비스. 레이어드(`api`·`application`·`domain`·`infrastructure`).
-- `platforms/orchestrator` — 중앙 사가(프로세스 매니저). 컨트롤러 없음, `saga_instance`로 흐름 추적.
+> 패키지 루트는 모두 `com.wemeet.*`다(중간 `eventbackbone` 레벨 없음). core는 `common` 레벨 없이 `com.wemeet.core` 바로 아래로 평탄하다.
+
+- `platforms/common` (`com.wemeet.common`) — 순수 유틸 모듈(placeholder). 도메인·프레임워크 의존 0. 지금은 `package-info`만.
+- `platforms/contract` (`com.wemeet.contract`) — 이벤트·커맨드 record + `@EventContract`. 서비스끼리 서로 의존하지 않고 이 모듈에만 의존한다.
+- `platforms/core` (`com.wemeet.core`) — 백본 라이브러리(도메인 흔적 0). 루트에 `@EnableEventBackbone`·`EventBackboneConfig`.
+  - `core/event/contract` — `DomainEvent`·`EventContract`·`Envelope`·`EventTypes`·`UuidV7` (계약·공유 어휘)
+  - `core/event/publish` — `EventPublisher`·`OutboxEventPublisher`
+  - `core/event/consume` — `EventConsumerSupport`·`@EventHandler`·`EventHandlerRegistrar`·`HandlerRegistry`
+  - `core/event/config`·`transport` — 토픽 카탈로그, 브로커 어댑터(kafka/inmemory/sqs)
+  - `core/{outbox,inbox,saga,context,maintenance}`
+- `services/oms`·`services/tms`·`services/bms`·`services/ems` (`com.wemeet.{oms,tms,bms,ems}`) — 도메인 서비스. 레이어드(`presentation`·`application`·`domain`·`infrastructure`).
+- `platforms/orchestrator` (`com.wemeet.orchestrator`) — 중앙 사가(프로세스 매니저). 컨트롤러 없음, `saga_instance`로 흐름 추적.
 
 ## 활성화
 
@@ -22,9 +25,9 @@
 
 | 레이어 | 역할 | 허용 의존 | 금지 |
 | --- | --- | --- | --- |
-| `api` | Controller·EventListener(진입점) | `application` | `domain`·`infrastructure` 직접 호출 |
+| `presentation` | Controller·EventListener(진입점) | `application` | `domain`·`infrastructure` 직접 호출 |
 | `application` | Service(유스케이스) | `domain`, 도메인 포트 | 다른 서비스 직접 호출 |
 | `domain` | 애그리거트·값·포트 인터페이스 | (없음, 순수) | 상위 레이어·Spring 의존 |
-| `infrastructure` | 포트 구현(리포지토리 등) | `domain` | `application`·`api` |
+| `infrastructure` | 포트 구현(리포지토리 등) | `domain` | `application`·`presentation` |
 
 - 크로스서비스는 레이어가 아니라 이벤트/커맨드(`platforms/contract`)로만 넘나든다.

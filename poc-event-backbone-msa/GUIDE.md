@@ -1,6 +1,33 @@
-# 비즈니스 개발자 가이드
+# 이벤트 백본 — 개발자 가이드
 
-이 백본 위에서 기능을 만들 때 **당신이 할 일은 아주 적다.** 발행·소비의 안전장치(outbox·inbox·재시도·DLT·컨텍스트·토픽)는 전부 공통(`platforms/core`)이 처리한다.
+공통 **이벤트 백본** 위에서 도메인 기능을 개발하는 방법. MSA에서 주문→배차→정산이 여러 서비스에 걸쳐 **"전부 성공 or 전부 보상"**되게 하는 정합성 장치(outbox·inbox·재시도·DLT·컨텍스트·토픽)는 전부 공통(`platforms/core`)이 처리한다 — **당신이 짜는 건 정의·발행·소비 3줄뿐.**
+
+> 구조: 도메인 서비스는 `services/{oms,tms,bms,…}`, 공통 골격은 `platforms/core`, 이벤트·커맨드 계약은 `platforms/contract`. 자세한 모듈·레이어 규칙은 `.claude/rules/structure.md`.
+
+---
+
+## 🎯 한눈에 (1분 요약)
+
+- **무엇**: MSA에서 주문→배차→정산처럼 여러 서비스에 걸친 업무를 **"전부 성공 아니면 전부 보상"**으로 지켜주는 공통 이벤트 백본(Outbox·Inbox·사가·DLT).
+- **왜 중요**: 분산 환경의 이중 쓰기·유실·중복·부분 실패는 정합성을 깨뜨린다. 이 백본이 그걸 **구조로** 막아, 도메인 개발자는 정합성 걱정 없이 비즈 로직만 짠다.
+- **준비 상태**: M0~M3 완료 · 21테스트 GREEN · `docker compose up` 부팅 + 골든패스 왕복·동시성 검증 · 새 구조(`services`/`platforms`) 재편 완료. 남은 것은 §7 하드닝(투명 공개).
+- **개발자가 하는 일**: 이벤트 **정의·발행·소비 3줄.** 나머지(발행 안전·멱등·재시도·DLT·컨텍스트 전파)는 공통이 강제한다.
+
+## ⚡ 5분 퀵스타트
+
+```bash
+# 1. 예제 실행 — Kafka·PostgreSQL·서비스 5개 한 번에
+docker compose up --build
+
+# 2. 골든패스 — 주문 → 배차 → 배송완료 → 정산까지 사가가 자동 진행
+curl -X POST localhost:8080/demo/orders                       # OMS: 주문 생성 → orderId
+curl -X POST 'localhost:8081/demo/dispatches?orderId=<id>'    # TMS: 배차
+curl -X POST localhost:8081/demo/dispatches/<dispatchId>/deliver  # 배송 완료
+curl localhost:8080/demo/state/<id>                           # → SETTLED
+```
+
+- 포트: oms 8080 · tms 8081 · bms 8082 · orchestrator 8083 · ems 8084.
+- **실패 주입 체험**은 사내 위키 인터랙티브 시뮬레이터(`saga-outbox-inbox`)로 — 커밋 전 크래시·중복·배차 거절을 버튼으로 넣어 "**깨져도 정합성이 지켜지는 것**"을 눈으로 본다.
 
 ---
 

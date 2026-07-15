@@ -1,5 +1,5 @@
 # MSA 한 방 실행: docker compose up --build
-# Kafka(KRaft) + PostgreSQL(5 DB: oms/tms/bms/orchestrator/cms) + 독립 배포 서비스 5개.
+# Kafka(KRaft) + PostgreSQL(5 DB: oms/tms/bms/orchestrator/ems) + 독립 배포 서비스 5개.
 services:
   kafka:
     image: apache/kafka:3.8.0
@@ -68,6 +68,6 @@ services:
     ports: ["8084:8084"]
     depends_on: [kafka, postgres]
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/cms
+      DB_URL: jdbc:postgresql://postgres:5432/ems
       KAFKA: kafka:29092
       PORT: 8084

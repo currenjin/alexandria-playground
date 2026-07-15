@@ -1,0 +1,16 @@
+# 백본 Kafka 공통 기본값. 각 앱은 spring.config.import로 이 파일을 가져온다.
+# config.import 규칙상 이 파일이 앱 application.yml보다 우선(=강제)한다 —
+# acks:all·enable.idempotence:true 등 effectively-once 필수값을 앱이 못 바꾸게 하는 의도.
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties: { enable.idempotence: true }

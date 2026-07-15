@@ -1,7 +1,7 @@
 // 공통 이벤트 인프라 라이브러리 (§7.1.1~7.1.6): 봉투·발행자·릴레이·소비지원·DLT.
 // 각 서비스가 의존. 부팅 앱이 아니므로 spring-boot 플러그인 없음.
+// java-library 플러그인은 root 라이브러리 그룹에서 적용된다.
 plugins {
-    id 'java-library'
     id 'java-test-fixtures'
 }
 
@@ -15,8 +15,8 @@ dependencies {
     compileOnly 'org.springframework:spring-web'
     compileOnly 'jakarta.servlet:jakarta.servlet-api'
 
-    // 라이브러리 자체 단위 테스트
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.assertj:assertj-core'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // compileOnly인 web 의존을 테스트(FlowContextFilter 단위 테스트)에서는 쓸 수 있게 한다.
+    // (JUnit5·AssertJ·Mockito·launcher는 root subprojects 공통)
+    testImplementation 'org.springframework:spring-web'
+    testImplementation 'jakarta.servlet:jakarta.servlet-api'
 }

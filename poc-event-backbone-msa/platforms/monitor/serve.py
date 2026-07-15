@@ -169,8 +169,8 @@ def run_scenario(scenario):
 
 # ── 개별 HTTP 액션: 컨트롤러의 @PostMapping을 자동 파싱해 버튼을 만든다 ────────────────
 CONTROLLERS = [
-    ("oms", "services/oms/src/main/java/com/wemeet/eventbackbone/oms/api/OrderController.java"),
-    ("tms", "services/tms/src/main/java/com/wemeet/eventbackbone/tms/api/TmsController.java"),
+    ("oms", "services/oms/src/main/java/com/wemeet/oms/presentation/OrderController.java"),
+    ("tms", "services/tms/src/main/java/com/wemeet/tms/presentation/TmsController.java"),
 ]
 
 

@@ -3,11 +3,17 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id 'org.springframework.boot' version '3.3.5' apply false
     id 'io.spring.dependency-management' version '1.1.6' apply false
+    id 'com.diffplug.spotless' version '6.25.0' apply false
 }
 
+// ── 전 모듈 공통 ──────────────────────────────────────────────────────────
+// Java 21 · Spring BOM(버전관리) · 공통 test 스택(JUnit5·AssertJ·Mockito) · jacoco.
+// 여기 모은 항목은 각 모듈 build.gradle에서 반복하지 않는다.
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.diffplug.spotless'
 
     group = 'com.wemeet'
     version = '0.1.0'
@@ -18,5 +24,84 @@ subprojects {
         imports { mavenBom SpringBootPlugin.BOM_COORDINATES }
     }
 
-    tasks.withType(Test).configureEach { useJUnitPlatform() }
+    jacoco { toolVersion = '0.8.12' }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.assertj:assertj-core'
+        testImplementation 'org.mockito:mockito-core'
+        testImplementation 'org.mockito:mockito-junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+
+    // 포맷 도구는 붙이되(apply-only) 검사는 강제하지 않는다. spotless 플러그인이 기본으로
+    // check→spotlessCheck를 연결하므로, 기존 소스 포맷 때문에 `build`가 깨지지 않도록
+    // spotlessCheck 태스크를 비활성화한다(존재는 하되 no-op). 포맷 정렬은 `./gradlew spotlessApply` 수동 실행.
+    spotless {
+        java {
+            target 'src/**/*.java'
+            googleJavaFormat()
+        }
+    }
+    tasks.matching { it.name in ['spotlessCheck', 'spotlessJavaCheck'] }
+            .configureEach { enabled = false }
+}
+
+// ── 애플리케이션 그룹 (부팅 앱) ────────────────────────────────────────────
+// 각자 독립 Spring Boot 앱. bootJar 활성(기본값) — 실행 가능한 fat jar가 필요.
+configure(subprojects.findAll {
+    it.path in [
+            ':services:oms',
+            ':services:tms',
+            ':services:bms',
+            ':services:ems',
+            ':platforms:orchestrator',
+    ]
+}) {
+    apply plugin: 'org.springframework.boot'
+}
+
+// ── 라이브러리 그룹 ────────────────────────────────────────────────────────
+// core·contract·common은 다른 모듈이 의존하는 라이브러리. Spring Boot 플러그인 미적용
+// (bootJar 불필요 — 라이브러리는 실행 진입점이 없다). java-library로 api/implementation 분리.
+configure(subprojects.findAll {
+    it.path in [
+            ':platforms:core',
+            ':platforms:contract',
+            ':platforms:common',
+    ]
+}) {
+    apply plugin: 'java-library'
+}
+
+// ── jacoco 제외 (백본 핵심 모듈) ──────────────────────────────────────────
+// 라인 커버리지는 백본 핵심(core·orchestrator)만 의미 있게 본다.
+// Spring 설정/부팅 클래스는 단위로 못 덮으므로(컨텍스트 기동 필요, 통합 테스트 관장) 제외.
+configure([project(':platforms:core'), project(':platforms:orchestrator')]) {
+    jacocoTestReport {
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        'com/wemeet/core/EventBackboneConfig*',
+                        'com/wemeet/core/event/config/**',
+                        'com/wemeet/core/context/WebContextConfig*',
+                        'com/wemeet/orchestrator/OrchestratorApplication*',
+                        'com/wemeet/orchestrator/api/**',
+                ])
+            }))
+        }
+    }
 }
