@@ -10,7 +10,7 @@
 
 - **무엇**: MSA에서 주문→배차→정산처럼 여러 서비스에 걸친 업무를 **"전부 성공 아니면 전부 보상"**으로 지켜주는 공통 이벤트 백본(Outbox·Inbox·사가·DLT).
 - **왜 중요**: 분산 환경의 이중 쓰기·유실·중복·부분 실패는 정합성을 깨뜨린다. 이 백본이 그걸 **구조로** 막아, 도메인 개발자는 정합성 걱정 없이 비즈 로직만 짠다.
-- **준비 상태**: M0~M3 완료 · 21테스트 GREEN · `docker compose up` 부팅 + 골든패스 왕복·동시성 검증 · 새 구조(`services`/`platforms`) 재편 완료. 남은 것은 §7 하드닝(투명 공개).
+- **준비 상태**: M0~M3 완료 · **96 테스트 GREEN**(core·orchestrator 단위 커버리지 ~98%/100%) · `docker compose up` 부팅 + 골든패스 왕복·동시성 검증 · 새 구조(`services`/`platforms`, `com.wemeet.*`·presentation 레이어) 재편 완료. 남은 것은 §7 하드닝(투명 공개).
 - **개발자가 하는 일**: 이벤트 **정의·발행·소비 3줄.** 나머지(발행 안전·멱등·재시도·DLT·컨텍스트 전파)는 공통이 강제한다.
 
 ## ⚡ 5분 퀵스타트
@@ -113,13 +113,13 @@ public String dispatch(String orderId) { ... ; events.publish(new DispatchCreate
 
 ## 신경 쓰지 않아도 되는 것
 
-outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · correlationId 전파 · tenant 컨텍스트 — **전부 `platforms/core`가 강제**한다. 당신 코드에는 안 보인다.
+outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · **Kafka 직렬화·acks·idempotence** · correlationId 전파 · tenant 컨텍스트 — **전부 `platforms/core`가 강제**한다. 당신 코드에는 안 보인다.
 
 > **새 서비스에 백본을 붙일 때** (기능 개발과 별개, 앱 세팅 1회) — 체크리스트 5개:
 >
 > 1. 앱 클래스에 `@EnableEventBackbone` (마스터 스위치 — 없으면 백본 빈 0)
 > 2. **계약 등록** — `@PostConstruct`에서 `ContractCatalog.ALL.forEach(EventTypes::register)`. 빠뜨리면 **첫 publish에서 런타임 예외**(미등록 타입)가 난다
-> 3. 발행 토픽 소유 선언 — 자기 `application.yml`의 `platform.events.topics`에 자기 네임스페이스 토픽만
+> 3. **`application.yml` 세팅** — ① `spring.config.import: "classpath:platform-kafka.yml"` 한 줄(Kafka 직렬화·`acks:all`·idempotence 공통값 — core 제공) ② `platform.events.topics`에 자기 네임스페이스 발행 토픽만 소유 선언. relay·retry·retention은 core 기본값이라 안 써도 됨
 > 4. 소비하려면 둘 다 — `platform.events.subscribe-topics` 선언 + 자기 `*EventListener` 클래스(@KafkaListener, 그룹별). 발행 전용 서비스는 이 단계 생략
 > 5. **Flyway 번호 규칙** — outbox/inbox `V1__outbox_inbox.sql`은 platforms/core가 제공하므로 앱 마이그레이션은 **V2부터** 쓴다(V1을 또 만들면 충돌). saga_instance DDL은 orchestrator만
 
@@ -157,7 +157,7 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 ## 실패: 재시도 → DLT
 
 - 핸들러 예외는 인메모리 **지수 백오프(1s→4s→16s)** 후 소진되면 `<원본>.DLT`로 격리(§7.1.6). 컨슈머가 직접 produce.
-- 역직렬화 실패처럼 재시도가 무의미한 건 즉시 DLT.
+- envelope·payload 역직렬화처럼 재시도가 무의미한 것(데이터가 깨진 경우)은 즉시 DLT.
 
 ---
 

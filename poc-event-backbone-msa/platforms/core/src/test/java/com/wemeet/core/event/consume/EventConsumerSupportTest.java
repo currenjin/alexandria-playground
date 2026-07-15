@@ -106,6 +106,23 @@ class EventConsumerSupportTest {
     }
 
     @Test
+    void payload_역직렬화_실패도_재시도없는_NonRetryable로_던진다() throws Exception {
+        UUID eventId = UUID.randomUUID();
+        when(inbox.recordIfNew(any(), any())).thenReturn(true);
+        registry.register("oms", OrderCreated.class, e -> {});   // 핸들러는 있어야 payload 역직렬화 단계에 도달
+        // eventType은 등록된 타입인데 payload가 그 타입 구조가 아님(배열) → treeToValue 실패
+        Envelope broken = new Envelope(eventId, "oms.order.created", 1,
+                OffsetDateTime.now(ZoneOffset.UTC), "ORD-B",
+                "dongsuh", "DS-GRP", "corr-1", null, mapper.readTree("[1,2,3]"));
+
+        assertThatThrownBy(() -> support.consume("oms", mapper.writeValueAsString(broken)))
+                .isInstanceOf(NonRetryableEventException.class)
+                .hasMessageContaining("payload 역직렬화 실패");
+
+        assertThat(FlowContext.get()).isNull();   // 실패해도 finally clear
+    }
+
+    @Test
     void 핸들러가_던진_예외는_RuntimeException으로_감싸_재시도되게_한다() throws Exception {
         UUID eventId = UUID.randomUUID();
         when(inbox.recordIfNew(any(), any())).thenReturn(true);

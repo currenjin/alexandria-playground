@@ -56,8 +56,14 @@ public class EventConsumerSupport {
 
         FlowContext.open(env.tenantId(), env.corpId(), env.correlationId(), env.eventId());
         try {
-            Class<?> clazz = EventTypes.classOf(env.eventType());
-            DomainEvent event = (DomainEvent) mapper.treeToValue(env.payload(), clazz);
+            DomainEvent event;
+            try {
+                Class<?> clazz = EventTypes.classOf(env.eventType());
+                event = (DomainEvent) mapper.treeToValue(env.payload(), clazz);
+            } catch (Exception e) {
+                // payload가 깨졌거나 미지 타입 → 재시도해도 소용없다. envelope 파싱 실패와 동일하게 즉시 DLT.
+                throw new NonRetryableEventException("payload 역직렬화 실패: " + env.eventType(), e);
+            }
             handler.accept(event);
         } catch (NonRetryableEventException e) {
             throw e;

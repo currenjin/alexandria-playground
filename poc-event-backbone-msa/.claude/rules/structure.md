@@ -1,5 +1,7 @@
 # 모듈·패키지 구조
 
+> **이 저장소는 확정 이벤트 백본의 실행 가능한 MSA 참조 구현(데모)이다.** 도메인(오더 → 배차 → 배송 → 정산)은 백본을 실증하는 **수단**이지 실제 제품의 OMS/TMS/BMS 설계가 아니다 — 도메인 모델을 여기서 가져다 쓰지 말 것.
+
 > 패키지 루트는 모두 `com.wemeet.*`다(중간 `eventbackbone` 레벨 없음). core는 `common` 레벨 없이 `com.wemeet.core` 바로 아래로 평탄하다.
 
 - `platforms/common` (`com.wemeet.common`) — 순수 유틸 모듈(placeholder). 도메인·프레임워크 의존 0. 지금은 `package-info`만.
