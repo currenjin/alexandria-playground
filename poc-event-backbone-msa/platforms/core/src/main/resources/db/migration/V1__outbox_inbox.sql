@@ -1,5 +1,5 @@
--- §7.1.3 Outbox · §7.1.5 Inbox — 모든 서비스가 자기 DB에 갖는 공통 테이블 (platform-core 제공).
--- MSA: 서비스마다 자기 DB. (모놀리식이면 공통 스키마 모듈별 — §7.1.3)
+-- Outbox · Inbox — 모든 서비스가 자기 DB에 갖는 공통 테이블 (platform-core 제공).
+-- MSA: 서비스마다 자기 DB. (모놀리식이면 공통 스키마 모듈별)
 
 CREATE TABLE outbox (
     event_id           UUID PRIMARY KEY,

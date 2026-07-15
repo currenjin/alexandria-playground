@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * §7.1.8 테스트 3층 — 계약 테스트. 모든 이벤트/커맨드가 @EventContract를 갖고,
- * 논리 타입명이 유일하며, 토픽 유도(§7.1.2 앞 두 마디)가 규칙대로인지 강제.
+ * 테스트 3층 — 계약 테스트. 모든 이벤트/커맨드가 @EventContract를 갖고,
+ * 논리 타입명이 유일하며, 토픽 유도(앞 두 마디)가 규칙대로인지 강제.
  * (실무의 CI 게이트를 예제 테스트로 축소.)
  */
 class ContractCatalogTest {

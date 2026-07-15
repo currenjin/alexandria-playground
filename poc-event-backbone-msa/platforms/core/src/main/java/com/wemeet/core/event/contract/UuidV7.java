@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
- * UUIDv7 생성기(§7.1.1). 앞 48비트가 Unix ms 타임스탬프라 시간순 정렬이 되고, outbox event_id 인덱스의
+ * UUIDv7 생성기. 앞 48비트가 Unix ms 타임스탬프라 시간순 정렬이 되고, outbox event_id 인덱스의
  * B-tree 지역성이 랜덤 v4보다 좋다. 예제용 최소 구현이며 실무는 검증된 라이브러리 사용을 권한다.
  */
 public final class UuidV7 {

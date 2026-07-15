@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * @EventHandler 자동 등록 (§7.1.8). 모든 빈을 훑어 @EventHandler 메소드를 찾아, 파라미터 타입에서
+ * @EventHandler 자동 등록. 모든 빈을 훑어 @EventHandler 메소드를 찾아, 파라미터 타입에서
  * 이벤트 타입을 유도하고 서비스의 컨슈머 그룹으로 HandlerRegistry에 등록한다.
  * 비즈 개발자가 registry.register/@PostConstruct 보일러플레이트를 쓰지 않게 한다.
  */

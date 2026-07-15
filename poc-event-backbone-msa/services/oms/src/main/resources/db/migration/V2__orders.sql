@@ -4,7 +4,7 @@ CREATE TABLE orders (
     shipper_id   VARCHAR(64) NOT NULL,   -- 화주
     origin       VARCHAR(64) NOT NULL,   -- 상차지
     destination  VARCHAR(64) NOT NULL,   -- 하차지
-    amount       VARCHAR(32) NOT NULL,   -- 운임=문자열+currency (§7.1.1)
+    amount       VARCHAR(32) NOT NULL,   -- 운임=문자열+currency
     currency     VARCHAR(8)  NOT NULL,
     status       VARCHAR(32) NOT NULL,   -- CREATED / DISPATCHED / DELIVERED / SETTLED / CANCELLED
     version      BIGINT      NOT NULL DEFAULT 0,   -- @Version 낙관적 잠금(동시 전이 직렬화)

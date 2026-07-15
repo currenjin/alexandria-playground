@@ -1,6 +1,6 @@
 # 코드 수정 규칙
 
-> 이 rules는 예제(백본 데모)용 코드 규칙이다. **제품 표준 전체**(디렉토리·브랜치·커밋·훅·테스트·DB·CI·API 문서화)는 `design/framework/개발-컨벤션-표준.md`가 정본.
+> 이 rules는 이 예제의 코드 규칙이다.
 
 - 서비스끼리 직접 의존·직접 DB 접근 금지. 크로스서비스는 이벤트/커맨드(`platforms/contract`)로만.
 - 발행 = `eventPublisher.publish(event)` 한 줄, 반드시 `@Transactional` 안(= Outbox INSERT). 소비 = `@EventHandler` 메소드 하나.

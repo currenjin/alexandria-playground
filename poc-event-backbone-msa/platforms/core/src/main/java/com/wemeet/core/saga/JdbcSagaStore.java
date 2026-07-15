@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * saga_instance 어댑터 (§7.1.7, 공통 엔진 구현). saga_instance 테이블은 중앙 orchestrator 서비스 DB에만 존재.
+ * saga_instance 어댑터 (공통 엔진 구현). saga_instance 테이블은 중앙 orchestrator 서비스 DB에만 존재.
  * 조회·갱신 열쇠 = aggregate_id(업무 키, 예: orderId). correlation_id는 추적용.
  */
 @Repository

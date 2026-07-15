@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** 인메모리 리포지토리 더블 (§7.1.8 1층). save는 version을 흉내로 증가(단위 테스트엔 동시성 없음). */
+/** 인메모리 리포지토리 더블 (1층). save는 version을 흉내로 증가(단위 테스트엔 동시성 없음). */
 public class InMemoryOrderRepository implements OrderRepository {
 
     public final Map<String, Order> store = new HashMap<>();

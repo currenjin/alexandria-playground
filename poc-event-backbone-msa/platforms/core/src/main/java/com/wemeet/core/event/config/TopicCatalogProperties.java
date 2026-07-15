@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 토픽 카탈로그 (§7.1.2) — 토픽 이름·파티션·리텐션을 <b>as-code(yaml)로 선언</b>.
+ * 토픽 카탈로그 — 토픽 이름·파티션·리텐션을 <b>as-code(yaml)로 선언</b>.
  * 각 앱 `application.yml`의 `platform.events.topics`에서 바인딩된다 — 토픽은 발행 서비스가 자기 네임스페이스를 소유하고, 소비자는 구독만 한다.
- * 운영 클러스터는 auto-create를 끄고(§7.1.2) 이 선언만으로 토픽이 생성된다.
+ * 운영 클러스터는 auto-create를 끄고 이 선언만으로 토픽이 생성된다.
  */
 @ConfigurationProperties(prefix = "platform.events")
 public class TopicCatalogProperties {

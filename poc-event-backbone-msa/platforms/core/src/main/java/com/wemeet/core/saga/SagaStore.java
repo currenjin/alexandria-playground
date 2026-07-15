@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 사가/프로세스 인스턴스 저장 포트 (§7.1.7, <b>공통·중앙 엔진</b>). 구현은 JdbcSagaStore.
+ * 사가/프로세스 인스턴스 저장 포트 (<b>공통·중앙 엔진</b>). 구현은 JdbcSagaStore.
  *
  * <p>매칭 열쇠 = <b>aggregateId(업무 키, 예: orderId)</b>. 프로세스가 여러 HTTP 액션(배차·배송·취소)으로
  * 나뉘어 진행돼도, 각 액션·이벤트가 지닌 aggregateId로 같은 인스턴스에 매칭된다(correlationId는 요청별로 달라지므로

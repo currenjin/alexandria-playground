@@ -15,7 +15,7 @@ platform:
   events:
     consumer-group: ems
     subscribe-topics: "ems.cmd"
-    # 이 서비스가 소유·생성하는 토픽 (§7.1.2 발행자 소유). 도메인·커맨드=7일, DLT=30일.
+    # 이 서비스가 소유·생성하는 토픽 (발행자 소유). 도메인·커맨드=7일, DLT=30일.
     topics:
       - { name: ems.example,     partitions: 12, retention-ms: 604800000 }
       - { name: ems.cmd,       partitions: 12, retention-ms: 604800000 }

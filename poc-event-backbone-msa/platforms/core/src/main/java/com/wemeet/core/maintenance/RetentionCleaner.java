@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 보존 배치 (§7.1.3 / §7.1.5) — 발행 완료 outbox 7일·처리 완료 inbox 7일 후 삭제.
- * 미발행 outbox(published_at null)는 무기한 보존(§7.1.3). 영구 감사는 이벤트 스토어의 몫이지 여기 아님.
+ * 보존 배치 — 발행 완료 outbox 7일·처리 완료 inbox 7일 후 삭제.
+ * 미발행 outbox(published_at null)는 무기한 보존. 영구 감사는 이벤트 스토어의 몫이지 여기 아님.
  */
 @Component
 public class RetentionCleaner {

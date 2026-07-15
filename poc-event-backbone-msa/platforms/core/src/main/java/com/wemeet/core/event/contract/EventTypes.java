@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 이벤트 타입 레지스트리 (§7.1.1 계약 레지스트리의 예제판).
- * class ↔ eventType 양방향 매핑 + 토픽 유도(§7.1.2: 앞 두 마디).
+ * 이벤트 타입 레지스트리 (계약 레지스트리의 예제판).
+ * class ↔ eventType 양방향 매핑 + 토픽 유도(앞 두 마디).
  * 예제는 명시 등록. 실제는 contracts 모듈 스캔 + CI 게이트.
  */
 public final class EventTypes {
@@ -36,7 +36,7 @@ public final class EventTypes {
         return c;
     }
 
-    /** 토픽 = eventType 앞 두 마디 (§7.1.2). a.b.created → a.b */
+    /** 토픽 = eventType 앞 두 마디. a.b.created → a.b */
     public static String topicOf(String eventType) {
         String[] p = eventType.split("\\.");
         return p.length >= 2 ? p[0] + "." + p[1] : eventType;

@@ -10,7 +10,7 @@
 
 - **무엇**: MSA에서 주문→배차→정산처럼 여러 서비스에 걸친 업무를 **"전부 성공 아니면 전부 보상"**으로 지켜주는 공통 이벤트 백본(Outbox·Inbox·사가·DLT).
 - **왜 중요**: 분산 환경의 이중 쓰기·유실·중복·부분 실패는 정합성을 깨뜨린다. 이 백본이 그걸 **구조로** 막아, 도메인 개발자는 정합성 걱정 없이 비즈 로직만 짠다.
-- **준비 상태**: M0~M3 완료 · **96 테스트 GREEN**(core·orchestrator 단위 커버리지 ~98%/100%) · `docker compose up` 부팅 + 골든패스 왕복·동시성 검증 · 새 구조(`services`/`platforms`, `com.wemeet.*`·presentation 레이어) 재편 완료. 남은 것은 §7 하드닝(투명 공개).
+- **준비 상태**: M0~M3 완료 · **96 테스트 GREEN**(core·orchestrator 단위 커버리지 ~98%/100%) · `docker compose up` 부팅 + 골든패스 왕복·동시성 검증 · 새 구조(`services`/`platforms`, `com.wemeet.*`·presentation 레이어) 재편 완료. 남은 것은 하드닝(투명 공개).
 - **개발자가 하는 일**: 이벤트 **정의·발행·소비 3줄.** 나머지(발행 안전·멱등·재시도·DLT·컨텍스트 전파)는 공통이 강제한다.
 
 ## ⚡ 5분 퀵스타트
@@ -27,7 +27,6 @@ curl localhost:8080/demo/state/<id>                           # → SETTLED
 ```
 
 - 포트: oms 8080 · tms 8081 · bms 8082 · orchestrator 8083 · ems 8084.
-- **실패 주입 체험**은 사내 위키 인터랙티브 시뮬레이터(`saga-outbox-inbox`)로 — 커밋 전 크래시·중복·배차 거절을 버튼으로 넣어 "**깨져도 정합성이 지켜지는 것**"을 눈으로 본다.
 
 ---
 
@@ -132,19 +131,19 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 
 ## 발행: publish() → outbox → relay → Kafka
 
-- `events.publish(e)` = `OutboxEventPublisher`가 envelope를 조립해 **같은 트랜잭션의 `outbox` 테이블에 INSERT**(§7.1.3). Kafka로 직접 안 쏜다.
-- `OutboxRelay`(@Scheduled 200ms)가 미발행 행을 `seq` 순서·`FOR UPDATE SKIP LOCKED`로 읽어 Kafka에 발행하고 `published_at` 마킹(§7.1.4). 배치 500. 발행은 `MessageTransport` 포트 경유(브로커 교체 지점).
+- `events.publish(e)` = `OutboxEventPublisher`가 envelope를 조립해 **같은 트랜잭션의 `outbox` 테이블에 INSERT**한다. Kafka로 직접 안 쏜다.
+- `OutboxRelay`(@Scheduled 200ms)가 미발행 행을 `seq` 순서·`FOR UPDATE SKIP LOCKED`로 읽어 Kafka에 발행하고 `published_at` 마킹. 배치 500. 발행은 `MessageTransport` 포트 경유(브로커 교체 지점).
 - eventId는 **UUIDv7**, 토픽은 eventType 앞 두 마디(`EventTypes.topicOf`).
 
 ## 소비: @KafkaListener → consume() → inbox → 핸들러
 
 - 소비하는 서비스는 자기 `*EventListener`(@KafkaListener, 그룹별)가 공통 `EventConsumerSupport.consume(group, envelope)`를 부른다. 발행만 하고 아무것도 구독하지 않는 서비스는 리스너가 없다(이 예제에선 TMS도 보상 커맨드 `CancelDispatch`를 받으므로 `tms.cmd`를 구독한다).
-- consume이 envelope 파싱 → `InboxRepository`의 `INSERT … ON CONFLICT DO NOTHING`(중복이면 skip) → 컨텍스트 복원 → 등록된 핸들러 호출(§7.1.5).
+- consume이 envelope 파싱 → `InboxRepository`의 `INSERT … ON CONFLICT DO NOTHING`(중복이면 skip) → 컨텍스트 복원 → 등록된 핸들러 호출.
 - **inbox 기록 + 당신의 도메인 쓰기 + 후속 publish가 한 트랜잭션.** 핸들러가 실패하면 통째 롤백돼 재처리된다.
 
 ## 사가: 액션별 사가가 flow를 지휘, 오더가 권위
 
-- 참여자(당신)는 자기 API·핸들러만. 사가(`DispatchSaga`·`CancelDispatchSaga`·`DeliverSaga`)는 orchestrator 서비스에 있다(§7.1.7). orchestrator엔 컨트롤러가 없다 — 이벤트만 소비해 커맨드로 코디네이션한다. **사가는 무상태**(자기 DB에 상태를 남기지 않음; 상관은 orderId).
+- 참여자(당신)는 자기 API·핸들러만. 사가(`DispatchSaga`·`CancelDispatchSaga`·`DeliverSaga`)는 orchestrator 서비스에 있다. orchestrator엔 컨트롤러가 없다 — 이벤트만 소비해 커맨드로 코디네이션한다. **사가는 무상태**(자기 DB에 상태를 남기지 않음; 상관은 orderId).
 - 사가가 이벤트를 받아 다음 커맨드(`DispatchOrder`·`DeliverOrder`·`CreateSettlement`…)를 발행하며 흐름을 진전시킨다. **오더 상태 전이는 OMS 애그리거트가 가드+낙관락으로 판정**하고, 거부 이벤트(`OrderDispatchRejected`)가 오면 사가가 **보상**(`CancelDispatch`)한다. 되돌림도 취소 흐름(배차취소→`UndispatchOrder`→오더 미배차 복귀)으로.
 - 한 흐름을 잇는 열쇠 = **orderId(업무 키)**. 배차·배송·취소가 여러 HTTP 요청으로 나뉘어도 orderId로 같은 오더에 수렴한다. (요청별 correlationId는 추적용 별개.)
 - 가드: 오더가 기대 이전 상태보다 **뒤처져** 있으면(예: 배송완료가 DISPATCHED보다 먼저 도착) 무시하지 않고 재시도(최종일관성 self-heal), **이후/종료** 상태면 무시(중복·종료 방어). 이 판정은 전부 OMS 안에서.
@@ -156,9 +155,9 @@ outbox · relay · inbox 멱등 · 재시도/DLT · 토픽 이름·파티션 · 
 
 ## 실패: 재시도 → DLT
 
-- 핸들러 예외는 인메모리 **지수 백오프(1s→4s→16s)** 후 소진되면 `<원본>.DLT`로 격리(§7.1.6). 컨슈머가 직접 produce.
+- 핸들러 예외는 인메모리 **지수 백오프(1s→4s→16s)** 후 소진되면 `<원본>.DLT`로 격리. 컨슈머가 직접 produce.
 - envelope·payload 역직렬화처럼 재시도가 무의미한 것(데이터가 깨진 경우)은 즉시 DLT.
 
 ---
 
-더 깊은 흐름·근거는 `README.md`와 예제 코드(`platforms/core`)에서. (확정 스펙 전문은 사내 설계 문서 §7.1.)
+더 깊은 흐름·근거는 `README.md`와 예제 코드(`platforms/core`)에서.

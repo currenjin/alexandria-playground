@@ -1,6 +1,6 @@
 # event-backbone-example
 
-확정된 **이벤트 백본**(`design/framework/공통-확정.md §7.1.1~7.1.8`)을 MSA로 구현한 실행 가능한 예제.
+**이벤트 백본**을 MSA로 구현한 실행 가능한 예제.
 도메인은 **미들마일 물류 흐름**(오더 → 배차 → 배송 → 정산)을 본떴다.
 **OMS·TMS·BMS는 각각 독립 배포되는 비즈 서비스로 자기 API·리소스를 소유**하고, **orchestrator는 플랫폼 오너 소유의 액션별 사가**(컨트롤러 없이 이벤트를 소비해 커맨드로 코디네이션·보상)다. 이 예제의 핵심은 **2PC 없이 크로스서비스 정합성**을 지키는 것 — **오더 애그리거트(OMS)가 생애주기의 단일 권위**로 낙관적 잠금 위에서 전이를 직렬 판정하고, 각 액션은 **자기 사가**로 묶여 실패 시 **보상**한다. 모두 Kafka로만 통신하고, 각 서비스는 **레이어드 아키텍처**(presentation / application / domain / infrastructure).
 
@@ -14,7 +14,7 @@ event-backbone-example/
 │   ├── common/            # 순수 유틸 모듈(placeholder): com.wemeet.common. 도메인·프레임워크 의존 0
 │   ├── contract/          # 공유 계약: 이벤트·커맨드 record + @EventContract (Spring 무의존)
 │   ├── core/              # 공통 인프라(라이브러리): envelope·EventPublisher·Outbox 릴레이·Inbox 멱등·DLT·사가 엔진(core/saga)
-│   ├── orchestrator/      # ★ 액션별 사가(플랫폼 오너 소유): DispatchSaga·CancelDispatchSaga·DeliverSaga. 무상태(이벤트→커맨드/보상). 컨트롤러 없음. DB=orchestrator (§7.1.7)
+│   ├── orchestrator/      # ★ 액션별 사가(플랫폼 오너 소유): DispatchSaga·CancelDispatchSaga·DeliverSaga. 무상태(이벤트→커맨드/보상). 컨트롤러 없음. DB=orchestrator
 │   └── monitor/           # 라이브 대시보드(표준 라이브러리 서버) — Gradle 모듈 아님
 └── services/
     ├── oms/               # 오더 = 생애주기 단일 권위. 자기 API(/orders): 생성·취소(규칙 판정). 전이는 가드+낙관적 잠금(@Version)으로 직렬 판정. DB=oms
@@ -23,7 +23,7 @@ event-backbone-example/
     └── ems/               # 이벤트/알림 데모 서비스. DB=ems
 ```
 
-- **오더 애그리거트 = 단일 권위(§7.1.7)**: 오더 상태를 바꾸는 건 오직 OMS다. 사가가 `DispatchOrder`·`DeliverOrder` 같은 **전이 시도 커맨드**를 보내면, OMS가 현재 status를 보고 **가드된 전이**를 낙관적 잠금(`@Version`) 위에서 판정 → 성공하면 성공 이벤트(`OrderDispatched`…), 규칙 위반이면 거부 이벤트(`OrderDispatchRejected`·`OrderCancelRejected`)을 발행한다. 이래서 "배차확정과 오더취소가 동시에 와도" 락으로 직렬화되어 정합성이 깨지지 않는다.
+- **오더 애그리거트 = 단일 권위**: 오더 상태를 바꾸는 건 오직 OMS다. 사가가 `DispatchOrder`·`DeliverOrder` 같은 **전이 시도 커맨드**를 보내면, OMS가 현재 status를 보고 **가드된 전이**를 낙관적 잠금(`@Version`) 위에서 판정 → 성공하면 성공 이벤트(`OrderDispatched`…), 규칙 위반이면 거부 이벤트(`OrderDispatchRejected`·`OrderCancelRejected`)을 발행한다. 이래서 "배차확정과 오더취소가 동시에 와도" 락으로 직렬화되어 정합성이 깨지지 않는다.
 - **액션별 사가**: 각 크로스서비스 액션(배차확정·배차취소·배송완주)이 **자기 사가 클래스**다. 무상태로 이벤트를 받아 다음 커맨드를 내고, 전이가 거부되면 앞 단계를 **보상**한다(예: 배차확정 사가는 오더전이 거부 시 `CancelDispatch`로 배차를 되돌림). 상관은 **orderId**로 붙는다(배차·배송·취소가 여러 HTTP로 나뉘어도 같은 오더에 수렴).
 - **의존 방향**: 모든 서비스 → `platforms/core` → `platforms/contract`. **서비스끼리는 서로 의존하지 않는다.** 사가가 `DispatchCreated`를 참조해도 TMS 모듈이 아니라 공유 `platforms/contract`에 의존.
 - 각 서비스 = 독립 Spring Boot 앱 + **자기 DB**(DB-per-service) + 자기 outbox/inbox. 통신은 Kafka로만.
@@ -120,7 +120,7 @@ curl "http://localhost:8080/demo/state/$OID"
 - **잘못된 순서** — 배송완료/배차취소를 활성 배차가 없을 때 호출하면 `409 CONFLICT`(TMS가 자기 상태로 거부).
 - **취소된/정산된 오더 배차** — OMS가 기대 상태(CREATED)가 아니면 `DispatchOrder`를 거부(`OrderDispatchRejected`) → 배차확정 사가가 배차를 보상취소(orphan 배차 없음).
 - **중복 이벤트** — 같은 `eventId`가 재전달돼도 소비 측 inbox(ON CONFLICT)가 1회만 처리(상태 재전이 없음).
-- **순서 역전 self-heal** — 배송완료가 오더 DISPATCHED보다 먼저 도착하면, OMS가 무시하지 않고 **재시도**(§7.1.6 백오프)로 오더가 따라잡은 뒤 반영한다.
+- **순서 역전 self-heal** — 배송완료가 오더 DISPATCHED보다 먼저 도착하면, OMS가 무시하지 않고 **재시도**(백오프)로 오더가 따라잡은 뒤 반영한다.
 
 ## 실시간 관찰 — 라이브 대시보드 (`platforms/monitor/`)
 
@@ -136,7 +136,7 @@ python3 platforms/monitor/serve.py       # 표준 라이브러리만 — 별도 
 - **시나리오 버튼** — 위 1~6 흐름을 자동으로 순서 실행하는 빠른 데모.
 - 각 흐름 스텝 앞에 🌐 **HTTP 진입 마커**(그 이벤트를 트리거한 액션)와, ◈ 이벤트 / ⌘ 커맨드 구분 표시.
 
-> 시뮬레이션(위키)이 "코드 관통"을 짜인 데이터로 보여준다면, 이 대시보드는 **실제 DB를 읽어 실동작**을 보여준다. (둘 다 시연용 — 확정 설계 아님. 실운영 관측은 별도 APM.)
+> 이 대시보드는 **실제 DB를 읽어 실동작**을 보여준다. (시연용 — 실운영 관측은 별도 APM.)
 
 ## MSA 이벤트 통신 흐름 (액션별 사가)
 
@@ -173,27 +173,27 @@ python3 platforms/monitor/serve.py       # 표준 라이브러리만 — 별도 
 
 **이벤트**(oms.order/tms.dispatch/bms.settlement)는 사가가 구독하고, **커맨드**(oms.cmd/tms.cmd/bms.cmd)는 각 서비스가 자기 것만 구독한다. 서비스는 자기가 어느 사가에 속하는지 모른다 — 사가가 이벤트를 엮어 다음 지시를 낼 뿐이다. **오더 상태를 바꾸는 유일한 주체는 OMS**이고, 사가는 "시도"만 한다.
 
-## 코드 ↔ 확정 설계(§7.1.x)
+## 코드 ↔ 설계
 
-| 절 | 개념 | 코드 |
+| 요소 | 개념 | 코드 |
 | --- | --- | --- |
-| §7.1.1 | envelope 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `core/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · core/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
-| §7.1.2 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig` + 각 앱 `application.yml`(`platform.events.topics`, 발행자 소유) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
-| §7.1.3 | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `core/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `core/maintenance/RetentionCleaner` |
-| §7.1.4 | 폴링 릴레이·at-least-once·**age of oldest message 감시**·전송 포트 | `core/outbox/OutboxRelay` · `core/event/transport/MessageTransport`(브로커 교체) · `RelayLagMonitor` |
-| §7.1.5 | 수신 = **모듈이 자기 @KafkaListener 소유**·Inbox 멱등·같은 트랜잭션 | 각 서비스 `presentation/*EventListener`(설정 주입) · `core/event/EventConsumerSupport` + **`core/inbox/InboxRepository`**(ON CONFLICT) |
-| §7.1.6 | 재시도→DLT·**지수 백오프 1s→4s→16s**·non-retryable 즉시 DLT | `core/event/config/EventInfraConfig`(DefaultErrorHandler + ExponentialBackOff + DeadLetterPublishingRecoverer) |
-| §7.1.7 | **사가(코디네이션)/애그리거트(권위)/서비스 API(도메인)** 분리·orderId 상관·가드+낙관락·보상 | **사가**: `platforms/orchestrator: application/{DispatchSaga·CancelDispatchSaga·DeliverSaga}`(무상태) · **권위**: `services/oms: domain/Order`(@Version 낙관락 + 가드 전이) · **보상**: DispatchSaga→`CancelDispatch` · **상태형 사가 엔진(역량)**: `platforms/core: core/saga/SagaStore·JdbcSagaStore`(이 예제 흐름은 무상태라 미사용) · 계약: `platforms/contract` |
-| §7.1.8 | docker-compose 한 방·골든패스 | `docker-compose.yml` · 아래 골든패스 |
+| 봉투·컨텍스트 | envelope 8필드·논리명 eventType·**컨텍스트 자동주입**·**UUIDv7** | `core/event/Envelope · EventContract · OutboxEventPublisher · UuidV7 · core/context/FlowContext`(+`FlowContextFilter`: HTTP 진입점 자동·JWT 파싱 지점) |
+| 토픽 | 토픽=애그리거트당(앞 두 마디)·**이름/파티션/리텐션 as-code·auto-create off** | `EventTypes.topicOf()` · `KafkaTopicConfig` + 각 앱 `application.yml`(`platform.events.topics`, 발행자 소유) · compose `AUTO_CREATE_TOPICS_ENABLE=false` |
+| Outbox | Outbox 하이브리드·**활성 트랜잭션 밖 publish=예외**·발행 7일 보존 | `core/event/OutboxEventPublisher`(tx 검사) · `V1__outbox_inbox.sql` · `core/maintenance/RetentionCleaner` |
+| 릴레이 | 폴링 릴레이·at-least-once·**age of oldest message 감시**·전송 포트 | `core/outbox/OutboxRelay` · `core/event/transport/MessageTransport`(브로커 교체) · `RelayLagMonitor` |
+| 소비·Inbox | 수신 = **모듈이 자기 @KafkaListener 소유**·Inbox 멱등·같은 트랜잭션 | 각 서비스 `presentation/*EventListener`(설정 주입) · `core/event/EventConsumerSupport` + **`core/inbox/InboxRepository`**(ON CONFLICT) |
+| 재시도·DLT | 재시도→DLT·**지수 백오프 1s→4s→16s**·non-retryable 즉시 DLT | `core/event/config/EventInfraConfig`(DefaultErrorHandler + ExponentialBackOff + DeadLetterPublishingRecoverer) |
+| 사가·권위 | **사가(코디네이션)/애그리거트(권위)/서비스 API(도메인)** 분리·orderId 상관·가드+낙관락·보상 | **사가**: `platforms/orchestrator: application/{DispatchSaga·CancelDispatchSaga·DeliverSaga}`(무상태) · **권위**: `services/oms: domain/Order`(@Version 낙관락 + 가드 전이) · **보상**: DispatchSaga→`CancelDispatch` · **상태형 사가 엔진(역량)**: `platforms/core: core/saga/SagaStore·JdbcSagaStore`(이 예제 흐름은 무상태라 미사용) · 계약: `platforms/contract` |
+| 실행·테스트 | docker-compose 한 방·골든패스 | `docker-compose.yml` · 아래 골든패스 |
 
-## 골든패스 — 새 이벤트/핸들러 추가 (§7.1.8)
+## 골든패스 — 새 이벤트/핸들러 추가
 
 1. `platforms/contract/`에 record + `@EventContract` + `ContractCatalog.ALL`에 등록
 2. 발행: 서비스 application 레이어에서 `events.publish(new MyEvent(...))`
 3. 소비: 핸들러 메소드에 `@EventHandler` 한 줄 (공통이 자동 등록 — 그룹=`platform.events.consumer-group`)
 4. 흐름으로 엮을 땐 비즈 서비스는 자기 API·핸들러만 만들고, **액션을 사가로 조합(이벤트→커맨드, 실패 시 보상)하는 건 orchestrator에서**(플랫폼 오너). 오더 상태 전이는 **OMS 애그리거트의 가드**로만.
 
-## 테스트 방법 (§7.1.8 3층)
+## 테스트 방법 (3층)
 
 - **단위** — `OmsServiceUnitTest` + `FakeEventPublisher`: 인프라 0, 비즈 로직만(취소 규칙 판정 포함).
 - **계약** — `ContractCatalogTest`: 모든 `@EventContract` 유일성 + 토픽 유도(앞 두 마디) 규칙.
@@ -207,7 +207,7 @@ python3 platforms/monitor/serve.py       # 표준 라이브러리만 — 별도 
 
 ## 예제라서 여전히 단순화한 것
 
-- **사가 = 무상태 구체 코디네이터**(가독성): 실제는 step/flow 선언형 엔진(§7.1.7, Eventuate Tram 스타일 — 타임아웃·자동 재시도·상태 저장). 원칙(액션별 사가·orderId 상관·애그리거트 권위·가드+낙관락·보상·멱등·비즈 서비스 무지)은 동일. 상태형 사가 엔진(`SagaStore`)은 platforms/core에 역량으로 존재하지만, 이 단순 흐름은 무상태 사가로 충분해 쓰지 않는다.
+- **사가 = 무상태 구체 코디네이터**(가독성): 실제는 step/flow 선언형 엔진(Eventuate Tram 스타일 — 타임아웃·자동 재시도·상태 저장). 원칙(액션별 사가·orderId 상관·애그리거트 권위·가드+낙관락·보상·멱등·비즈 서비스 무지)은 동일. 상태형 사가 엔진(`SagaStore`)은 platforms/core에 역량으로 존재하지만, 이 단순 흐름은 무상태 사가로 충분해 쓰지 않는다.
 - **Schema Registry 없음**(JSON 직접) — eventType 계약은 `ContractCatalog` + 계약 테스트로 대체. 실제는 레지스트리 + CI 게이트.
 - 5 DB(oms·tms·bms·orchestrator·ems)를 한 PostgreSQL 인스턴스에(예제 편의). 실제 DB-per-service는 인스턴스 분리 가능.
-- **범위 밖**(§7.1.x 문서 참조): CDC 릴레이 승격 · JWT 테넌트 검증 · BO 재주입 UI · 이벤트 스토어(콜드) · 오더 1→N 선적(FW식 상관키).
+- **범위 밖**: CDC 릴레이 승격 · JWT 테넌트 검증 · BO 재주입 UI · 이벤트 스토어(콜드) · 오더 1→N 선적(FW식 상관키).

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * §7.1.8 테스트 1층 — FakeEventPublisher로 비즈 로직만 검증(인프라 0).
+ * 테스트 1층 — FakeEventPublisher로 비즈 로직만 검증(인프라 0).
  * 규칙: 도메인 변경과 이벤트 발행이 한 유스케이스에서 함께 일어난다. "배차된 오더 취소 불가"는 여기서 판정.
  */
 class OmsServiceUnitTest {

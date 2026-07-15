@@ -33,7 +33,7 @@ import java.util.function.BooleanSupplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Testcontainers 왕복 테스트(§7.1.8). Postgres + Kafka로 실제 백본을 관통한다.
+ * Testcontainers 왕복 테스트. Postgres + Kafka로 실제 백본을 관통한다.
  * 발행: confirm() → outbox INSERT → 릴레이 → Kafka(oms.order)에 envelope 도착.
  * 소비+멱등: oms.cmd로 MarkDispatched → 주문 DISPATCHED + inbox 기록, 같은 eventId 재전송해도 1회만 처리.
  */
