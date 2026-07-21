@@ -49,9 +49,13 @@ QUERIES = {
     "bms": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
             ",'domain',(select coalesce(json_agg(x),'[]') from (select settlement_id as id, order_id as ref, status, "
             "to_char(updated_at,'HH24:MI:SS') as ts from settlements order by updated_at desc limit 10) x))"),
-    # orchestrator는 무상태 코디네이터 — 이벤트를 받아 커맨드만 발행한다(outbox). saga_instance는
-    # 플랫폼 역량(상태형 사가 엔진)일 뿐, 이 액션별 사가는 상태를 남기지 않으므로 조회하지 않는다.
-    "orchestrator": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX + ")"),
+    # orchestrator — 반응은 무상태지만 liveness 감시를 위해 saga_instance에 진행 기록을 남긴다(#31-③).
+    # stuck = timeout_at이 지난 미완 사가(응답 이벤트 미도착 = 참여 서비스 다운/유실 의심). 타임아웃 스캐너가 감지·WARN.
+    "orchestrator": ("select json_build_object('outbox'," + _OUTBOX + ",'inbox'," + _INBOX +
+            ",'stuck',(select coalesce(json_agg(x),'[]') from (select aggregate_id as order_id, current_step, status, "
+            "to_char(timeout_at,'HH24:MI:SS') as timeout_at, (timeout_at < now()) as timed_out "
+            "from saga_instance where timeout_at is not null and timeout_at < now() "
+            "order by timeout_at limit 20) x))"),
 }
 
 

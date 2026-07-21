@@ -90,6 +90,7 @@ button.run:hover:not(:disabled){filter:brightness(1.05)}
 .empty{font-size:12px;color:var(--faint);font-style:italic;padding:20px;text-align:center}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12.5px;padding:9px 16px;border-radius:10px;opacity:0;transition:opacity .3s;z-index:80;font-family:var(--mono)}
 #toast.show{opacity:1}
+.stuck-badge{background:#fde8ef;color:#b5416a;border:1px solid #f2c3d5;border-radius:6px;padding:1px 7px;font-weight:700}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:14px}
 .legend span{display:flex;align-items:center;gap:5px}
 .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -210,11 +211,13 @@ function renderTopo(svcs){
     const d=svcs[k]||{}; const ob=d.outbox||[]; const ib=d.inbox||[];
     const pend=ob.filter(o=>!o.published).length;
     const div=document.createElement("div"); div.className="node";
-    const dom = k==="orchestrator" ? "무상태 사가(액션별)" : ((d.domain||[]).length+" rows");
+    const dom = k==="orchestrator" ? "무상태 사가 + saga_instance 추적" : ((d.domain||[]).length+" rows");
+    const stuck = d.stuck||[];
     div.innerHTML='<h4>'+SVCNAME[k]+' <span class="tag">'+(k==="orchestrator"?"중앙 코디네이터":k)+'</span></h4>'
       +'<div class="kv"><span>outbox <b>'+ob.length+'</b>'+(pend?' <span class="pend">(대기 '+pend+')</span>':'')+'</span>'
       +'<span>inbox <b>'+ib.length+'</b></span></div>'
-      +'<div class="kv" style="margin-top:3px"><span>'+dom+'</span></div>';
+      +'<div class="kv" style="margin-top:3px"><span>'+dom+'</span></div>'
+      +(k==="orchestrator"&&stuck.length?'<div class="kv" style="margin-top:3px"><span class="stuck-badge">⏱ 멈춘 사가 '+stuck.length+' ('+stuck[0].current_step+')</span></div>':'');
     box.appendChild(div);
   }
 }

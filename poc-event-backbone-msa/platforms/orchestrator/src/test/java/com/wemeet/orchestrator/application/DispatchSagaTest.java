@@ -4,20 +4,26 @@ import com.wemeet.contract.DispatchContracts.CancelDispatch;
 import com.wemeet.contract.DispatchContracts.DispatchCreated;
 import com.wemeet.contract.OrderContracts.DispatchOrder;
 import com.wemeet.contract.OrderContracts.OrderDispatchRejected;
+import com.wemeet.core.saga.SagaStore;
 import com.wemeet.core.testsupport.FakeEventPublisher;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * 배차확정 사가(#2) — 무상태 반응. 상관관계는 이벤트가 실어 나른다.
+ * 배차확정 사가(#2) — 무상태 반응 + 진행 기록(saga_instance). 상관관계는 이벤트가 실어 나른다.
  * DispatchCreated → DispatchOrder(오더 배차 전이 시도), OrderDispatchRejected → CancelDispatch(보상).
- * 전이 성패는 OMS 오더 애그리거트가 권위로 판정하고, 거부면 이 사가가 배차를 보상 취소한다.
  */
 class DispatchSagaTest {
 
     private final FakeEventPublisher events = new FakeEventPublisher();
-    private final DispatchSaga saga = new DispatchSaga(events);
+    private final SagaStore store = mock(SagaStore.class);
+    private final DispatchSaga saga = new DispatchSaga(events, store);
 
     @Test
     void 배차_확정되면_오더_배차_전이를_시도한다_DispatchOrder() {
@@ -28,6 +34,15 @@ class DispatchSagaTest {
                     assertThat(cmd.orderId()).isEqualTo("ORD-1");
                     assertThat(cmd.dispatchId()).isEqualTo("DISP-1");
                 });
+    }
+
+    @Test
+    void 배차_확정시_프로세스_진행을_기록한다_mark() {
+        saga.onDispatchCreated(new DispatchCreated("DISP-1", "ORD-1", "CARRIER-1"));
+
+        // 크로스서비스 프로세스 시작 기록. 배차~배송은 사용자 액션 대기라 timeout 없음(null).
+        verify(store).mark(eq("order-fulfillment"), eq("ORD-1"), anyString(),
+                eq("IN_PROGRESS"), eq("DISPATCH_REQUESTED"), isNull());
     }
 
     @Test

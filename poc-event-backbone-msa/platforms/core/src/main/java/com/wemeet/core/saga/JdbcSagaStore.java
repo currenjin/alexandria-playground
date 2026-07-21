@@ -34,6 +34,18 @@ public class JdbcSagaStore implements SagaStore {
     }
 
     @Override
+    public void mark(String sagaType, String aggregateId, String correlationId,
+                     String status, String currentStep, OffsetDateTime timeoutAt) {
+        jdbc.update("""
+            INSERT INTO saga_instance (saga_id, saga_type, aggregate_id, correlation_id, current_step, status, timeout_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (aggregate_id) DO UPDATE SET
+                status = EXCLUDED.status, current_step = EXCLUDED.current_step,
+                correlation_id = EXCLUDED.correlation_id, timeout_at = EXCLUDED.timeout_at, updated_at = now()
+            """, UUID.randomUUID(), sagaType, aggregateId, correlationId, currentStep, status, timeoutAt);
+    }
+
+    @Override
     public void advance(String aggregateId, String status, String currentStep,
                         Map<String, Object> state, OffsetDateTime timeoutAt) {
         jdbc.update("UPDATE saga_instance SET status=?, current_step=?, state=?::jsonb, timeout_at=?, updated_at=now() WHERE aggregate_id=?",

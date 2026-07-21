@@ -21,6 +21,13 @@ public interface SagaStore {
     void advance(String aggregateId, String status, String currentStep,
                  Map<String, Object> state, OffsetDateTime timeoutAt);
 
+    /**
+     * 진행 기록 upsert (aggregateId 기준). 시작이든 진행이든 한 번에 — 없으면 insert, 있으면 status·step·timeout 갱신.
+     * 무상태 사가가 매 반응마다 "지금 어느 step에서 무엇을 기다린다"만 남기는 용도. timeoutAt=null이면 대기 없음(사용자 액션 대기 등).
+     */
+    void mark(String sagaType, String aggregateId, String correlationId,
+              String status, String currentStep, OffsetDateTime timeoutAt);
+
     /** 종착(step/timeout null). */
     void finish(String aggregateId, String status);
 
