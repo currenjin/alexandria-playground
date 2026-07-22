@@ -1,0 +1,25 @@
+server:
+  port: ${PORT:8000}
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: oms
+          uri: ${OMS_URI:http://localhost:8080}
+          predicates: [Path=/oms/**]
+          filters: [StripPrefix=1]
+        - id: tms
+          uri: ${TMS_URI:http://localhost:8081}
+          predicates: [Path=/tms/**]
+          filters: [StripPrefix=1]
+        - id: bms
+          uri: ${BMS_URI:http://localhost:8082}
+          predicates: [Path=/bms/**]
+          filters: [StripPrefix=1]
+        - id: ems
+          uri: ${EMS_URI:http://localhost:8084}
+          predicates: [Path=/ems/**]
+          filters: [StripPrefix=1]

@@ -1,0 +1,74 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' version '3.3.5' apply false
+    id 'io.spring.dependency-management' version '1.1.6' apply false
+    id 'com.diffplug.spotless' version '6.25.0' apply false
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.diffplug.spotless'
+
+    version = '0.0.1'
+    java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+    repositories { mavenCentral() }
+
+    dependencyManagement { imports { mavenBom SpringBootPlugin.BOM_COORDINATES } }
+    jacoco { toolVersion = '0.8.12' }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.assertj:assertj-core'
+        testImplementation 'org.mockito:mockito-core'
+        testImplementation 'org.mockito:mockito-junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        dependsOn test
+        reports { xml.required = true; html.required = true }
+    }
+
+    spotless { java { target 'src/**/*.java'; googleJavaFormat() } }
+    tasks.matching { it.name in ['spotlessCheck', 'spotlessJavaCheck'] }
+            .configureEach { enabled = false }
+}
+
+configure(subprojects.findAll { it.path.startsWith(':platform:') }) { group = 'com.wemeet.platform' }
+configure(subprojects.findAll { !it.path.startsWith(':platform:') }) { group = 'com.wemeet' }
+
+configure(subprojects.findAll { it.path in [
+        ':oms:backend', ':tms:backend', ':bms:backend', ':ems:backend',
+        ':platform:backend:orchestrator', ':platform:backend:gateway',
+] }) {
+    apply plugin: 'org.springframework.boot'
+}
+
+configure(subprojects.findAll { it.path in [
+        ':platform:backend:core', ':platform:backend:contract', ':platform:backend:common',
+] }) {
+    apply plugin: 'java-library'
+}
+
+configure([project(':platform:backend:core'), project(':platform:backend:orchestrator')]) {
+    jacocoTestReport {
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        'com/wemeet/core/EventBackboneConfig*',
+                        'com/wemeet/core/event/config/**',
+                        'com/wemeet/core/context/WebContextConfig*',
+                        'com/wemeet/orchestrator/OrchestratorApplication*',
+                        'com/wemeet/orchestrator/api/**',
+                ])
+            }))
+        }
+    }
+}

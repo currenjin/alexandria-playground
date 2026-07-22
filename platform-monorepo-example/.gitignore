@@ -1,0 +1,11 @@
+# Gradle
+**/build/
+.gradle/
+# Node / Next
+**/node_modules/
+**/.next/
+**/out/
+# IDE
+.idea/
+*.iml
+.DS_Store

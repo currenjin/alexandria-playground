@@ -1,0 +1,12 @@
+rootProject.name = 'platform-monorepo-example'
+
+include ':platform:backend:common',
+        ':platform:backend:core',
+        ':platform:backend:contract',
+        ':platform:backend:orchestrator',
+        ':platform:backend:gateway'
+
+include ':oms:backend',
+        ':tms:backend',
+        ':bms:backend',
+        ':ems:backend'

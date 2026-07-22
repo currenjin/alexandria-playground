@@ -1,0 +1,27 @@
+spring:
+  application: { name: ems-service }
+  config:
+    import: "optional:classpath:platform-kafka.yml"   # 백본 Kafka 공통 기본값(core 리소스). 있으면 우선=강제. optional은 IDE 크로스모듈 오탐 회피용(파일은 core에 항상 존재).
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ems}
+    username: ${DB_USER:ebe}
+    password: ${DB_PASSWORD:ebe}
+
+server:
+  port: ${PORT:8084}
+
+platform:
+  context: { default-tenant-id: dongsuh, default-corp-id: DS-GRP }   # 데모용 기본 테넌트 — 라이브러리 아닌 이 앱이 소유
+  events:
+    consumer-group: ems
+    subscribe-topics: "ems.cmd"
+    # 이 서비스가 소유·생성하는 토픽 (발행자 소유). 도메인·커맨드=7일, DLT=30일.
+    topics:
+      - { name: ems.example,     partitions: 12, retention-ms: 604800000 }
+      - { name: ems.cmd,       partitions: 12, retention-ms: 604800000 }
+      - { name: ems.example.DLT, partitions: 12, retention-ms: 2592000000 }
+      - { name: ems.cmd.DLT,   partitions: 12, retention-ms: 2592000000 }
+    # relay·retry·retention은 core 기본값 사용(poll 200ms·batch 500·재시도 3회·backoff 1s·보존 7일). 다르게 할 때만 여기서 override.
+
+logging:
+  level: { com.wemeet: DEBUG }

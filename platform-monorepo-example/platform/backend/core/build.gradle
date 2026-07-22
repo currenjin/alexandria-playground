@@ -1,0 +1,15 @@
+plugins {
+    id 'java-test-fixtures'
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-jdbc'
+    api 'org.springframework.kafka:spring-kafka'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    compileOnly 'org.springframework:spring-web'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api'
+
+    testImplementation 'org.springframework:spring-web'
+    testImplementation 'jakarta.servlet:jakarta.servlet-api'
+}

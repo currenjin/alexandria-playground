@@ -1,0 +1,5 @@
+{
+  "name": "wemeet-platform-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.7.0"
+}

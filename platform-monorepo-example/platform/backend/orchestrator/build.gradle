@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':platform:backend:core')
+    implementation project(':platform:backend:contract')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation testFixtures(project(':platform:backend:core'))
+}
