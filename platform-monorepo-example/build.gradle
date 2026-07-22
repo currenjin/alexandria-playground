@@ -41,23 +41,23 @@ subprojects {
             .configureEach { enabled = false }
 }
 
-configure(subprojects.findAll { it.path.startsWith(':platform:') }) { group = 'com.wemeet.platform' }
-configure(subprojects.findAll { !it.path.startsWith(':platform:') }) { group = 'com.wemeet' }
+configure(subprojects.findAll { it.path.startsWith(':platforms:') }) { group = 'com.wemeet.platform' }
+configure(subprojects.findAll { !it.path.startsWith(':platforms:') }) { group = 'com.wemeet' }
 
 configure(subprojects.findAll { it.path in [
-        ':oms:backend', ':tms:backend', ':bms:backend', ':ems:backend',
-        ':platform:backend:orchestrator', ':platform:backend:gateway',
+        ':services:oms:backend', ':services:tms:backend', ':services:bms:backend', ':services:ems:backend',
+        ':platforms:backend:orchestrator', ':platforms:backend:gateway',
 ] }) {
     apply plugin: 'org.springframework.boot'
 }
 
 configure(subprojects.findAll { it.path in [
-        ':platform:backend:core', ':platform:backend:contract', ':platform:backend:common',
+        ':platforms:backend:core', ':platforms:backend:contract', ':platforms:backend:common',
 ] }) {
     apply plugin: 'java-library'
 }
 
-configure([project(':platform:backend:core'), project(':platform:backend:orchestrator')]) {
+configure([project(':platforms:backend:core'), project(':platforms:backend:orchestrator')]) {
     jacocoTestReport {
         afterEvaluate {
             classDirectories.setFrom(files(classDirectories.files.collect {

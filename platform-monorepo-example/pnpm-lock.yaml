@@ -8,14 +8,16 @@ importers:
 
   .: {}
 
-  bms/frontend:
+  platforms/frontend/lib: {}
+
+  platforms/frontend/shell:
     dependencies:
       '@wemeet/lib':
         specifier: workspace:*
-        version: link:../../platform/frontend/lib
+        version: link:../lib
       '@wemeet/ui':
         specifier: workspace:*
-        version: link:../../platform/frontend/ui
+        version: link:../ui
       next:
         specifier: ^14.2.5
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -48,14 +50,30 @@ importers:
         specifier: ^5.5.4
         version: 5.9.3
 
-  ems/frontend:
+  platforms/frontend/ui:
+    dependencies:
+      react-dom:
+        specifier: ^18
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.31
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      typescript:
+        specifier: ^5.5.4
+        version: 5.9.3
+
+  services/bms/frontend:
     dependencies:
       '@wemeet/lib':
         specifier: workspace:*
-        version: link:../../platform/frontend/lib
+        version: link:../../../platforms/frontend/lib
       '@wemeet/ui':
         specifier: workspace:*
-        version: link:../../platform/frontend/ui
+        version: link:../../../platforms/frontend/ui
       next:
         specifier: ^14.2.5
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -88,14 +106,54 @@ importers:
         specifier: ^5.5.4
         version: 5.9.3
 
-  oms/frontend:
+  services/ems/frontend:
     dependencies:
       '@wemeet/lib':
         specifier: workspace:*
-        version: link:../../platform/frontend/lib
+        version: link:../../../platforms/frontend/lib
       '@wemeet/ui':
         specifier: workspace:*
-        version: link:../../platform/frontend/ui
+        version: link:../../../platforms/frontend/ui
+      next:
+        specifier: ^14.2.5
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.14.11
+        version: 20.19.43
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.7(@types/react@18.3.31)
+      autoprefixer:
+        specifier: ^10.4.19
+        version: 10.5.4(postcss@8.5.21)
+      postcss:
+        specifier: ^8.4.40
+        version: 8.5.21
+      tailwindcss:
+        specifier: ^3.4.7
+        version: 3.4.19
+      typescript:
+        specifier: ^5.5.4
+        version: 5.9.3
+
+  services/oms/frontend:
+    dependencies:
+      '@wemeet/lib':
+        specifier: workspace:*
+        version: link:../../../platforms/frontend/lib
+      '@wemeet/ui':
+        specifier: workspace:*
+        version: link:../../../platforms/frontend/ui
       ag-grid-community:
         specifier: ^32.0.2
         version: 32.3.9
@@ -143,32 +201,14 @@ importers:
         specifier: ^5.5.4
         version: 5.9.3
 
-  platform/frontend/lib: {}
-
-  platform/frontend/ui:
-    dependencies:
-      react-dom:
-        specifier: ^18
-        version: 18.3.1(react@18.3.1)
-    devDependencies:
-      '@types/react':
-        specifier: ^18.3.3
-        version: 18.3.31
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      typescript:
-        specifier: ^5.5.4
-        version: 5.9.3
-
-  tms/frontend:
+  services/tms/frontend:
     dependencies:
       '@wemeet/lib':
         specifier: workspace:*
-        version: link:../../platform/frontend/lib
+        version: link:../../../platforms/frontend/lib
       '@wemeet/ui':
         specifier: workspace:*
-        version: link:../../platform/frontend/ui
+        version: link:../../../platforms/frontend/ui
       next:
         specifier: ^14.2.5
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

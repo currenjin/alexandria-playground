@@ -29,7 +29,7 @@ services:
       - ./docker/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
 
   orchestrator-service:
-    build: { context: ., args: { MODULE: platform/backend/orchestrator } }
+    build: { context: ., args: { MODULE: platforms/backend/orchestrator } }
     ports: ["8083:8083"]
     depends_on: [kafka, postgres]
     environment:
@@ -38,7 +38,7 @@ services:
       PORT: 8083
 
   oms-service:
-    build: { context: ., args: { MODULE: oms/backend } }
+    build: { context: ., args: { MODULE: services/oms/backend } }
     ports: ["8080:8080"]
     depends_on: [kafka, postgres]
     environment:
@@ -47,7 +47,7 @@ services:
       PORT: 8080
 
   tms-service:
-    build: { context: ., args: { MODULE: tms/backend } }
+    build: { context: ., args: { MODULE: services/tms/backend } }
     ports: ["8081:8081"]
     depends_on: [kafka, postgres]
     environment:
@@ -56,7 +56,7 @@ services:
       PORT: 8081
 
   bms-service:
-    build: { context: ., args: { MODULE: bms/backend } }
+    build: { context: ., args: { MODULE: services/bms/backend } }
     depends_on: [kafka, postgres]
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/bms
@@ -64,7 +64,7 @@ services:
       PORT: 8082
 
   ems-service:
-    build: { context: ., args: { MODULE: ems/backend } }
+    build: { context: ., args: { MODULE: services/ems/backend } }
     ports: ["8084:8084"]
     depends_on: [kafka, postgres]
     environment:
@@ -73,7 +73,7 @@ services:
       PORT: 8084
 
   gateway-service:
-    build: { context: ., args: { MODULE: platform/backend/gateway } }
+    build: { context: ., args: { MODULE: platforms/backend/gateway } }
     ports: ["8000:8000"]
     depends_on: [oms-service, tms-service, bms-service, ems-service]
     environment:
